@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "privacyraven"
+version = "0.1.0"
+description = "privacy attack library for neural nets"
+readme = "README.md"
+homepage = "https://github.com/trailofbits/PrivacyRaven"
+repository = "https://github.com/trailofbits/PrivacyRaven"
+authors = ["suhacker1 <suhashussain1@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
