@@ -1,0 +1,10 @@
+README.md
+setup.py
+src/privacyraven/__init__.py
+src/privacyraven/console.py
+src/privacyraven.egg-info/PKG-INFO
+src/privacyraven.egg-info/SOURCES.txt
+src/privacyraven.egg-info/dependency_links.txt
+src/privacyraven.egg-info/entry_points.txt
+src/privacyraven.egg-info/requires.txt
+src/privacyraven.egg-info/top_level.txt
