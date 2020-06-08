@@ -1,3 +1,2 @@
 [console_scripts]
 privacyraven = privacyraven.console:main
-

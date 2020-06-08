@@ -7,8 +7,8 @@ Author: suhacker1
 Author-email: suhashussain1@gmail.com
 License: UNKNOWN
 Description: # PrivacyRaven
-        
+
         **PrivacyRaven** is a privacy attack testing library for neural networks. You can use it to evaluate the effectiveness of various privacy preservation techniques and the susceptibility of specific models to these attacks.
-        
+
 Platform: UNKNOWN
 Requires-Python: >=3.7,<4.0
