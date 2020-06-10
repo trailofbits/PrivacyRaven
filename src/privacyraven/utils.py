@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytorch_lightning as pl
 
-
+"""
 def train_and_test(
     classifier,
     max_epochs,
@@ -13,10 +13,21 @@ def train_and_test(
     gpus=1,
     num_nodes=1,
 ):
-    """Instantiates, trains, and evaluates the given model on the test set"""
+    # Instantiates, trains, and evaluates the given model on the test set
     # TODO: Take into account every parameter of the PL trainer
     model = classifier()
     trainer = pl.Trainer(gpus=gpus, num_nodes=num_nodes, max_epochs=max_epochs)
+    trainer.fit(model, train_dataloader, val_dataloader)
+    trainer.test(model, test_dataloaders=test_dataloader)
+    return model
+"""
+
+
+def train_and_test(
+    classifier, train_dataloader, val_dataloader, test_dataloader, hparams
+):
+    model = classifier(hparams)
+    trainer = pl.Trainer(gpus=hparams["gpus"], max_epochs=hparams["max_epochs"])
     trainer.fit(model, train_dataloader, val_dataloader)
     trainer.test(model, test_dataloaders=test_dataloader)
     return model
