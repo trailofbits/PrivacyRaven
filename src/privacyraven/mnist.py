@@ -20,6 +20,30 @@ def train_mnist_victim(
     max_epochs=8,
     learning_rate=1e-3,
 ):
+    """Trains a 3-layer fully connected neural network on MNIST data
+
+    Parameters:
+        transform (Torchvision.transforms): transformation to be applied to MNIST data
+        batch_size (int): size of batches to be trained and tested upon
+        num_workers (int): number of workers assigned to computations
+        rand_split_val (array): description of how val and train data are split
+        gpus (int): num of gpus available to train upon
+        max_epochs (int): the maximum # of epochs to run
+        learning_rate (float): the learning rate for the optimizer
+
+    Returns:
+        Trained model ready for inference"""
+    # Define hyperparameters implied by the use of MNIST
+
+    input_size = 784
+    targets = 10
+    if transform is None:
+        transform = transforms.Compose(
+            [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+        )
+    if rand_split_val is None:
+        rand_split_val = [55000, 5000]
+
     hparams = set_hparams(
         transform,
         batch_size,
@@ -28,6 +52,8 @@ def train_mnist_victim(
         gpus,
         max_epochs,
         learning_rate,
+        input_size,
+        targets,
     )
 
     train_dataloader, val_dataloader, test_dataloader = get_mnist_loaders(hparams)
@@ -39,15 +65,17 @@ def train_mnist_victim(
 
 
 def set_hparams(
-    transform, batch_size, num_workers, rand_split_val, gpus, max_epochs, learning_rate
+    transform,
+    batch_size,
+    num_workers,
+    rand_split_val,
+    gpus,
+    max_epochs,
+    learning_rate,
+    input_size,
+    targets,
 ):
-
-    if transform is None:
-        transform = transforms.Compose(
-            [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
-        )
-    if rand_split_val is None:
-        rand_split_val = [55000, 5000]
+    """Creates a dictionary of hyperparameters"""
     hparams = {}
     hparams["transform"] = transform
     hparams["batch_size"] = int(batch_size)
@@ -56,13 +84,13 @@ def set_hparams(
     hparams["gpus"] = int(gpus)
     hparams["max_epochs"] = int(max_epochs)
     hparams["learning_rate"] = learning_rate
-    hparams["input_size"] = 784
-    hparams["targets"] = 10
-    # print(hparams)
+    hparams["input_size"] = input_size
+    hparams["targets"] = targets
     return hparams
 
 
 def get_mnist_loaders(hparams):
+    """Downloads MNIST and creates PyTorch DataLoaders"""
     mnist_train = MNIST(
         os.getcwd(), train=True, download=True, transform=hparams["transform"]
     )
@@ -99,12 +127,11 @@ class LightningClassifier(pl.LightningModule):
     def forward(self, x):
         """Establishes the neural network's forward pass
 
-    Parameters:
-        x (Torch tensor): MNIST input image
+        Parameters:
+            x (Torch tensor): MNIST input image
 
-    Returns:
-        output probability vector for MNIST classes
-    """
+         Returns:
+            output probability vector for MNIST classes"""
         batch_size, channels, width, height = x.size()
 
         # Input Layer: (batch_size, 1, 28, 28) -> (batch_size, 1*28*28)
@@ -127,25 +154,23 @@ class LightningClassifier(pl.LightningModule):
     def cross_entropy_loss(self, logits, labels):
         """Calculates loss- the difference between model predictions and true labels
 
-    Parameters:
-        logits (Torch tensor): model output predictions
-        labels (Torch tensor): true values for predictions
+        Parameters:
+            logits (Torch tensor): model output predictions
+            labels (Torch tensor): true values for predictions
 
-    Returns:
-        Cross entropy loss
-    """
+        Returns:
+            Cross entropy loss"""
         return F.cross_entropy(logits, labels)
 
     def training_step(self, train_batch, batch_idx):
         """Pushes training data batch through model and calculates loss in loop
 
-    Parameters:
-        train_batch (Torch tensor): batch of training data from training dataloader
-        batch_idx (int): index of batch in contention
+        Parameters:
+            train_batch (Torch tensor): batch of training data from training dataloader
+            batch_idx (int): index of batch in contention
 
-    Returns:
-        Formatted string with cross entropy loss and training logs
-    """
+        Returns:
+            Formatted string with cross entropy loss and training logs"""
         x, y = train_batch
         logits = self.forward(x)
         loss = self.cross_entropy_loss(logits, y)
@@ -155,13 +180,12 @@ class LightningClassifier(pl.LightningModule):
     def validation_step(self, val_batch, batch_idx):
         """Pushes validation data batch through model and calculates loss in loop
 
-    Parameters:
-        val_batch (Tensor): batch of validation data from validation dataloader
-        batch_idx (int): index of batch in contention
+        Parameters:
+            val_batch (Tensor): batch of validation data from validation dataloader
+            batch_idx (int): index of batch in contention
 
-    Returns:
-        Formatted string with resultant cross entropy loss
-    """
+        Returns:
+            Formatted string with resultant cross entropy loss"""
         x, y = val_batch
         logits = self.forward(x)
         loss = self.cross_entropy_loss(logits, y)
@@ -172,12 +196,11 @@ class LightningClassifier(pl.LightningModule):
     def validation_epoch_end(self, outputs):
         """Returns validation step results at the end of the epoch
 
-    Parameters:
-        outputs (array): result of validation step for each batch
+        Parameters:
+            outputs (array): result of validation step for each batch
 
-    Returns:
-        Formatted string with resultant metrics
-    """
+        Returns:
+            Formatted string with resultant metrics"""
         avg_loss = torch.stack([x["val_loss"] for x in outputs]).mean()
         tensorboard_logs = {"val_loss": avg_loss}
         return {"avg_val_loss": avg_loss, "log": tensorboard_logs}
@@ -190,13 +213,12 @@ class LightningClassifier(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         """Pushes test data into the model and returns relevant metrics
 
-    Parameters:
-        batch (Torch tensor): batch of test data from test dataloader
-        batch_idx (int): index of batch in contention
+        Parameters:
+            batch (Torch tensor): batch of test data from test dataloader
+            batch_idx (int): index of batch in contention
 
-    Returns:
-        Formatted string with relevant metrics
-    """
+        Returns:
+            Formatted string with relevant metrics"""
         x, y = batch
         y_hat = self(x)
         targets_hat = torch.argmax(y_hat, dim=1)
@@ -210,12 +232,11 @@ class LightningClassifier(pl.LightningModule):
     def test_epoch_end(self, outputs):
         """Returns test step results at the end of the epoch
 
-    Parameters:
-        outputs (array): result of test step for each batch
+        Parameters:
+            outputs (array): result of test step for each batch
 
-    Returns:
-        Formatted string with resultant metrics
-    """
+        Returns:
+            Formatted string with resultant metrics"""
         avg_loss = torch.stack([x["test_loss"] for x in outputs]).mean()
         tensorboard_logs = {"test_loss": avg_loss}
         return {"avg_test_loss": avg_loss, "log": tensorboard_logs}
