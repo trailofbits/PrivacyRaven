@@ -1,27 +1,28 @@
-# import torch
 import matplotlib.pyplot as plt
 import numpy as np
 import pytorch_lightning as pl
+import torch
+from torch.utils.data import Dataset
 
 
-"""
-def train_and_test(
-    classifier,
-    max_epochs,
-    train_dataloader,
-    val_dataloader,
-    test_dataloader,
-    gpus=1,
-    num_nodes=1,
-):
-    # Instantiates, trains, and evaluates the given model on the test set
-    # TODO: Take into account every parameter of the PL trainer
-    model = classifier()
-    trainer = pl.Trainer(gpus=gpus, num_nodes=num_nodes, max_epochs=max_epochs)
-    trainer.fit(model, train_dataloader, val_dataloader)
-    trainer.test(model, test_dataloaders=test_dataloader)
-    return model
-"""
+# Define dataset class and loaders
+# TODO: Find a better name for this
+class CustomDataset(Dataset):
+    def __init__(self, images, targets, transform=None):
+        self.images = images
+        self.targets = targets
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.images)
+
+    def __getitem__(self, index):
+        image = self.images[index]
+        target = self.targets[index]
+
+        if self.transform is not None:
+            image = self.transform(image.numpy())
+        return image, target
 
 
 def set_hparams(
