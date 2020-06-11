@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytorch_lightning as pl
 
+
 """
 def train_and_test(
     classifier,
@@ -21,6 +22,31 @@ def train_and_test(
     trainer.test(model, test_dataloaders=test_dataloader)
     return model
 """
+
+
+def set_hparams(
+    transform,
+    batch_size,
+    num_workers,
+    rand_split_val,
+    gpus,
+    max_epochs,
+    learning_rate,
+    input_size,
+    targets,
+):
+    """Creates a dictionary of hyperparameters"""
+    hparams = {}
+    hparams["transform"] = transform
+    hparams["batch_size"] = int(batch_size)
+    hparams["num_workers"] = int(num_workers)
+    hparams["rand_split_val"] = rand_split_val
+    hparams["gpus"] = int(gpus)
+    hparams["max_epochs"] = int(max_epochs)
+    hparams["learning_rate"] = learning_rate
+    hparams["input_size"] = input_size
+    hparams["targets"] = targets
+    return hparams
 
 
 def train_and_test(

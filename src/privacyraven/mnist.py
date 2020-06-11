@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader, Dataset, random_split
 from torchvision import datasets, models, transforms
 from torchvision.datasets import MNIST
 
-from privacyraven.utils import convert_to_inference, train_and_test
+from privacyraven.utils import convert_to_inference, set_hparams, train_and_test
 
 
 def train_mnist_victim(
@@ -44,6 +44,7 @@ def train_mnist_victim(
     if rand_split_val is None:
         rand_split_val = [55000, 5000]
 
+    # Establish hyperparameters and DataLoaders
     hparams = set_hparams(
         transform,
         batch_size,
@@ -57,36 +58,12 @@ def train_mnist_victim(
     )
 
     train_dataloader, val_dataloader, test_dataloader = get_mnist_loaders(hparams)
+    # Train, test, and convert the model to inference
     mnist_model = train_and_test(
         LightningClassifier, train_dataloader, val_dataloader, test_dataloader, hparams
     )
     mnist_model = convert_to_inference(mnist_model)
     return mnist_model
-
-
-def set_hparams(
-    transform,
-    batch_size,
-    num_workers,
-    rand_split_val,
-    gpus,
-    max_epochs,
-    learning_rate,
-    input_size,
-    targets,
-):
-    """Creates a dictionary of hyperparameters"""
-    hparams = {}
-    hparams["transform"] = transform
-    hparams["batch_size"] = int(batch_size)
-    hparams["num_workers"] = int(num_workers)
-    hparams["rand_split_val"] = rand_split_val
-    hparams["gpus"] = int(gpus)
-    hparams["max_epochs"] = int(max_epochs)
-    hparams["learning_rate"] = learning_rate
-    hparams["input_size"] = input_size
-    hparams["targets"] = targets
-    return hparams
 
 
 def get_mnist_loaders(hparams):

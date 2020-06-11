@@ -1,5 +1,6 @@
 import torch
 from torch.utils.data import Dataset
+from torchvision.datasets import EMNIST, MNIST
 
 
 # Define dataset class and loaders
