@@ -33,15 +33,7 @@ def get_emnist_data(transform=None, RGB=True):
 
 
 def get_mnist_loaders(hparams):
-    """Downloads MNIST and creates PyTorch DataLoaders"""
-    mnist_train = MNIST(
-        os.getcwd(), train=True, download=True, transform=hparams["transform"]
-    )
-    mnist_test = MNIST(
-        os.getcwd(), train=False, download=True, transform=hparams["transform"]
-    )
-    mnist_train, mnist_val = random_split(mnist_train, hparams["rand_split_val"])
-
+    mnist_train, mnist_val, mnist_test = get_mnist_data(hparams)
     train_dataloader = DataLoader(
         mnist_train,
         batch_size=hparams["batch_size"],
@@ -56,3 +48,14 @@ def get_mnist_loaders(hparams):
         mnist_test, batch_size=hparams["batch_size"], num_workers=hparams["num_workers"]
     )
     return train_dataloader, val_dataloader, test_dataloader
+
+
+def get_mnist_data(hparams):
+    mnist_train = MNIST(
+        os.getcwd(), train=True, download=True, transform=hparams["transform"]
+    )
+    mnist_test = MNIST(
+        os.getcwd(), train=False, download=True, transform=hparams["transform"]
+    )
+    mnist_train, mnist_val = random_split(mnist_train, hparams["rand_split_val"])
+    return mnist_train, mnist_val, mnist_test
