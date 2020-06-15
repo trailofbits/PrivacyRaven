@@ -16,7 +16,7 @@ def query_model(model, input_data, input_size=None):
     """
     input_data = input_data.cuda()
     if input_size is not None:
-        input_data = input_data.reshape(input_data, input_size)
+        input_data = input_data.reshape(input_size)
     prediction = model(input_data)
     np_prediction = prediction.cpu().numpy()
     target = int(np.argmax(np_prediction))

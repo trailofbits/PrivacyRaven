@@ -1,14 +1,14 @@
 import torch
 import tqdm
 
-from privacyraven.query import get_query_target
+from privacyraven.query import get_target
 
 
 def label_agreement(
     test,
     substitute_model,
     victim_model,
-    query=get_query_target,
+    query=get_target,
     substitute_size=None,
     victim_size=None,
     points=100,
