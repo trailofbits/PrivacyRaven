@@ -19,6 +19,7 @@ class ModelExtractionAttack:
         self.query = query
         self.synthesize = synthesize
         self.victim_input_size = victim_input_size
+        self.substitute_input_size = substitute_input_size
         self.query_limit = query_limit
         self.public_data = public_data
         self.adv_attack = adv_attack
@@ -27,5 +28,10 @@ class ModelExtractionAttack:
 
     def synthesize_data(self):
         return self.synthesize(
-            self.query, self.query_limit, self.public_data, self.adv_attack
+            self.query,
+            self.query_limit,
+            self.victim_input_size,
+            self.substitute_input_size,
+            self.public_data,
+            self.adv_attack,
         )
