@@ -27,11 +27,11 @@ class ModelExtractionAttack:
         self.x_train, self.y_train = self.synthesize_data()
 
     def synthesize_data(self):
+        # The synthesizers need a better abstraction
         return self.synthesize(
+            self.public_data,
             self.query,
             self.query_limit,
             self.victim_input_size,
             self.substitute_input_size,
-            self.public_data,
-            self.adv_attack,
         )

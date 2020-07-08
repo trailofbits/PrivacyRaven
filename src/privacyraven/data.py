@@ -10,6 +10,9 @@ from tqdm import tqdm
 
 
 def get_emnist_data(transform=None, RGB=True):
+    """Returns EMNIST train and test datasets.
+    DataLoaders are not returned as with MNIST since EMNIST exists to be used as public data"""
+
     if transform is None and (RGB is True):
         transform = transforms.Compose(
             [

@@ -16,6 +16,7 @@ tqdm = "^4.46.1"
 matplotlib = "^3.2.1"
 sklearn = "^0.0"
 pytorch_lightning = "^0.7.6"
+ipykernel = "^5.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.3"
