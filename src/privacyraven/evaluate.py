@@ -13,6 +13,24 @@ def label_agreement(
     victim_size=None,
     points=100,
 ):
+    """Calculates the agreement between the victim and substitute models
+
+    Parameters:
+        test: A tuple-like dataset to sample test images from
+        substitute_model: A model trained upon synthetic data
+        victim_model: A model that has been extracted
+        query: A function that returns labels of model given data
+        substitute_size: A tuple with size of data sent to the
+                         substitute model
+        victim_size: A tuple with size of data sent to the victim
+                     model
+        points: An integer representing the number of test samples
+
+    Returns:
+        agreed: An integer of the number of samples with the same
+                predicted labels
+
+    """
     agreed = 0
 
     for i in tqdm(range(1, points)):

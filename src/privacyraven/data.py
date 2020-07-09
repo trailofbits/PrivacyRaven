@@ -11,7 +11,17 @@ from tqdm import tqdm
 
 def get_emnist_data(transform=None, RGB=True):
     """Returns EMNIST train and test datasets.
-    DataLoaders are not returned as with MNIST since EMNIST exists to be used as public data"""
+
+    This function is assumed to be primarily used as public data.
+    Hence, DataLoaders and data splits are inside synthesis.
+
+    Parameters:
+        transform: Relevant Torchvision transforms to apply to EMNIST
+        RGB: A boolean value that decides if the images are RGB
+
+    Returns:
+        Two Torchvision datasets with the EMNIST train and test sets
+    """
 
     if transform is None and (RGB is True):
         transform = transforms.Compose(
@@ -36,6 +46,7 @@ def get_emnist_data(transform=None, RGB=True):
 
 
 def get_mnist_loaders(hparams):
+    """Returns MNIST DataLoaders from hyperparams in a dict"""
     mnist_train, mnist_val, mnist_test = get_mnist_data(hparams)
     train_dataloader = DataLoader(
         mnist_train,
@@ -54,6 +65,7 @@ def get_mnist_loaders(hparams):
 
 
 def get_mnist_data(hparams):
+    """Returns MNIST train and test sets from hyperparams in a dict"""
     mnist_train = MNIST(
         os.getcwd(), train=True, download=True, transform=hparams["transform"]
     )

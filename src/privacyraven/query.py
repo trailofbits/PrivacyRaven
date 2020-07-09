@@ -3,7 +3,7 @@ import pytorch_lightning as pl
 import torch
 
 
-def reshape_query_input(input_data, input_size):
+def reshape_input(input_data, input_size):
     if input_size is not None:
         try:
             input_data = input_data.reshape(input_size)
@@ -14,7 +14,7 @@ def reshape_query_input(input_data, input_size):
 
 
 def establish_query(query_func, input_size):
-    return lambda input_data: query_func(reshape_query_input(input_data, input_size))
+    return lambda input_data: query_func(reshape_input(input_data, input_size))
 
 
 def query_model(model, input_data, input_size=None):
@@ -29,7 +29,7 @@ def query_model(model, input_data, input_size=None):
         target (int): predicted label
     """
     input_data = input_data.cuda()
-    input_data = reshape_query_input(input_data, input_size)
+    input_data = reshape_input(input_data, input_size)
     prediction_as_torch = model(input_data)
     prediction_as_np = prediction_as_torch.cpu().numpy()
     target = int(np.argmax(prediction_as_np))

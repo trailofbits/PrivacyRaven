@@ -20,9 +20,11 @@ class ThreeLayerClassifier(pl.LightningModule):
 
     def forward(self, x):
         """Establishes the neural network's forward pass
+
         Parameters:
-            x (Torch tensor): input image
-         Returns:
+            x: A Torch tensor of the input data
+
+        Returns:
             output probability vector for classes"""
         batch_size, channels, width, height = x.size()
 
