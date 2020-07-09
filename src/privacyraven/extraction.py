@@ -1,12 +1,14 @@
 import torch
 
+from privacyraven.query import establish_query
+
 
 class ModelExtractionAttack:
     def __init__(
         self,
         query,
         synthesize,
-        victim_input_size=(1, 1, 28, 28),
+        victim_input_size=(1, 28, 28, 1),
         substitute_input_size=(1, 3, 28, 28),
         query_limit=100,
         public_data=None,
@@ -16,7 +18,7 @@ class ModelExtractionAttack:
 
         super(ModelExtractionAttack, self).__init__()
 
-        self.query = query
+        self.query = establish_query(query, victim_input_size)
         self.synthesize = synthesize
         self.victim_input_size = victim_input_size
         self.substitute_input_size = substitute_input_size
