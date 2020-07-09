@@ -1,6 +1,7 @@
 import torch
 
 from privacyraven.query import establish_query
+from privacyraven.synthesis import synthesize, synths
 
 
 class ModelExtractionAttack:
@@ -29,7 +30,12 @@ class ModelExtractionAttack:
         self.x_train, self.y_train = self.synthesize_data()
 
     def synthesize_data(self):
-        # The synthesizers need a better abstraction
+        # Need to add argument differentiation
+        return synthesize(self.synthesize)
+
+
+"""
+# The synthesizers need a better abstraction
         return self.synthesize(
             self.public_data,
             self.query,
@@ -37,3 +43,4 @@ class ModelExtractionAttack:
             self.victim_input_size,
             self.substitute_input_size,
         )
+"""
