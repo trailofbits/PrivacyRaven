@@ -13,7 +13,7 @@ def get_emnist_data(transform=None, RGB=True):
     """Returns EMNIST train and test datasets.
 
     This function is assumed to be primarily used as public data.
-    Hence, DataLoaders and data splits are inside synthesis.
+    DataLoaders and data splits are in synthesis.py
 
     Parameters:
         transform: Relevant Torchvision transforms to apply to EMNIST

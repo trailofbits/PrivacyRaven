@@ -4,6 +4,18 @@ import torch
 
 
 def reshape_input(input_data, input_size):
+    """Reshape input data before querying model
+
+    This function will conduct a low-level resize if the size of
+    the input data is not compatabile with the model input size.
+
+    Parameters:
+        input_data: A Torch tensor or Numpy array of the data
+        input_size: A tuple of integers describing the new size
+
+    Returns:
+        Data of new shape
+    """
     if input_size is not None:
         try:
             input_data = input_data.reshape(input_size)
@@ -14,19 +26,22 @@ def reshape_input(input_data, input_size):
 
 
 def establish_query(query_func, input_size):
+    """Equips a query function with the capacity to reshape data"""
     return lambda input_data: query_func(reshape_input(input_data, input_size))
 
 
 def query_model(model, input_data, input_size=None):
     """Returns the predictions of a Pytorch model
+
     Parameters:
-        model (pl.LightningModule): model to be queried
-        input_data (Tensor): the x for the model
-        input_size (tuple of python:ints): describes shape of x
+        model: A pl.LightningModule or Torch module to be queried
+        input_data: A Torch tensor entering the model
+        input_size: A tuple of ints describes the shape of x
+
     Returns:
-        prediction (Tensor): predicton probabilities
-        np_prediction (Numpy array): predicton probabilities
-        target (int): predicted label
+        prediction_as_torch: A Torch tensor of the predicton probabilities
+        prediction_as_np: A Numpy array of the predicton probabilities
+        target: An integer displaying the predicted label
     """
     input_data = input_data.cuda()
     input_data = reshape_input(input_data, input_size)
@@ -38,12 +53,14 @@ def query_model(model, input_data, input_size=None):
 
 def get_target(model, input_data, input_size=None):
     """Returns the predicted target of a Pytorch model
+
     Parameters:
-        model (pl.LightningModule): model to be queried
-        input_data (Tensor): the x for the model
-        input_size (tuple of python:ints): describes shape of x
+        model: A pl.LightningModule or Torch module to be queried
+        input_data: A Torch tensor entering the model
+        input_size: A tuple of ints describes the shape of x
+
     Returns:
-        target (int): predicted label
+        target: An integer displaying the predicted label
     """
     prediction_as_torch, prediction_as_np, target = query_model(
         model, input_data, input_size

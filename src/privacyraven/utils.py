@@ -5,9 +5,7 @@ import torch
 from torch.utils.data import Dataset
 
 
-# Define dataset class and loaders
-# TODO: Find a better name for this
-class CustomDataset(Dataset):
+class NewDataset(Dataset):
     def __init__(self, images, targets, transform=None):
         self.images = images
         self.targets = targets
@@ -26,17 +24,22 @@ class CustomDataset(Dataset):
 
 
 def set_hparams(
-    transform,
-    batch_size,
-    num_workers,
-    rand_split_val,
-    gpus,
-    max_epochs,
-    learning_rate,
-    input_size,
-    targets,
+    transform=None,
+    batch_size=100,
+    num_workers=4,
+    rand_split_val=None,
+    gpus=1,
+    max_epochs=8,
+    learning_rate=1e-3,
+    input_size=None,
+    targets=None,
 ):
     """Creates a dictionary of hyperparameters"""
+    if rand_split_val is None:
+        rand_split_val = [55000, 5000]
+
+    if (input_size is None) or (targets is None):
+        return "Input size and number of targets need to be defined"
     hparams = {}
     hparams["transform"] = transform
     hparams["batch_size"] = int(batch_size)

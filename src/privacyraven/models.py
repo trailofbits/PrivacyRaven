@@ -47,18 +47,22 @@ class ThreeLayerClassifier(pl.LightningModule):
 
     def cross_entropy_loss(self, logits, labels):
         """Calculates loss- the difference between model predictions and true labels
+
         Parameters:
-            logits (Torch tensor): model output predictions
-            labels (Torch tensor): true values for predictions
+            logits: A Torch tensor of model output predictions
+            labels: A Torch tensor of true values for predictions
+
         Returns:
             Cross entropy loss"""
         return F.cross_entropy(logits, labels)
 
     def training_step(self, train_batch, batch_idx):
         """Pushes training data batch through model and calculates loss in loop
+
         Parameters:
-            train_batch (Torch tensor): batch of training data from training dataloader
-            batch_idx (int): index of batch in contention
+            train_batch: A Torch tensor of a batch of training data from training dataloader
+            batch_idx: An integer of the index of batch in contention
+
         Returns:
             Formatted string with cross entropy loss and training logs"""
         x, y = train_batch
