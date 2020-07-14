@@ -28,9 +28,10 @@ class ModelExtractionAttack:
                                    the substitute inputs
             query_limit: An integer limiting the queries to
                          the victim model
-            public_data:---
-            retrain:---
-        """
+            public_data: A Torchvision/tuple-like dataset
+                         for the Knockoff attack
+            retrain: A Boolean value that determines if
+                    retraining occurs"""
 
         super(ModelExtractionAttack, self).__init__()
 
@@ -40,16 +41,30 @@ class ModelExtractionAttack:
         self.substitute_input_size = substitute_input_size
         self.query_limit = query_limit
         self.public_data = public_data
-        # self.adv_attack = adv_attack
+        # TODO: Use retrain value
 
         self.x_train, self.y_train = self.synthesize_data()
 
     def synthesize_data(self):
-        # TODO: Complete arguments
-        return synthesize(self.synthesizer)
+        return synthesize(
+            self.synthesizer,
+            self.public_data,
+            self.query_limit,
+            self.victim_input_size,
+            self.substitute_input_size,
+        )
 
 
-def run_all_extraction(model):
+def run_all_extraction(
+    query, victim_input_size, substitute_input_size, query_limit, public_data, retrain
+):
     for s in synths:
-        # TODO: Complete arguments
-        ModelExtractionAttack(model, s)
+        ModelExtractionAttack(
+            query,
+            s,
+            victim_input_size,
+            substitute_input_size,
+            query_limit,
+            public_data,
+            retrain,
+        )

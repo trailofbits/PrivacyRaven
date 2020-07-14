@@ -6,6 +6,8 @@ from torch.utils.data import Dataset
 
 
 class NewDataset(Dataset):
+    """Creates a Dataset class for PyTorch"""
+
     def __init__(self, images, targets, transform=None):
         self.images = images
         self.targets = targets
@@ -72,12 +74,12 @@ def convert_to_inference(model):
 
 
 def show_test_image(dataset, idx, cmap="gray"):
-    """Shows a single datapoint from the test set as an image
+    """Shows a single datapoint from a test dataset as an image
 
     Parameters:
-        dataset (Torch dataset/Tuple): test dataset to obtain image from
-        idx (int): index describing position of image
-        cmap (String): optional; defines color map for image
+        dataset: A Torch dataset or tuple of the dataset with the image
+        idx: An integer of the index of the image position
+        cmap: An optional string defining the color map for image
 
     Returns:
         data sampled and displayed
