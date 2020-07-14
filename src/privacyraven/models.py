@@ -73,9 +73,11 @@ class ThreeLayerClassifier(pl.LightningModule):
 
     def validation_step(self, val_batch, batch_idx):
         """Pushes validation data batch through model and calculates loss in loop
+
         Parameters:
-            val_batch (Tensor): batch of validation data from validation dataloader
-            batch_idx (int): index of batch in contention
+            val_batch: A Torch tensor batch of validation data from validation dataloader
+            batch_idx: An integer of the index of batch in contention
+
         Returns:
             Formatted string with resultant cross entropy loss"""
         x, y = val_batch
@@ -88,7 +90,7 @@ class ThreeLayerClassifier(pl.LightningModule):
     def validation_epoch_end(self, outputs):
         """Returns validation step results at the end of the epoch
         Parameters:
-            outputs (array): result of validation step for each batch
+            outputs: An array with the result of validation step for each batch
         Returns:
             Formatted string with resultant metrics"""
         avg_loss = torch.stack([x["val_loss"] for x in outputs]).mean()
@@ -103,8 +105,8 @@ class ThreeLayerClassifier(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         """Pushes test data into the model and returns relevant metrics
         Parameters:
-            batch (Torch tensor): batch of test data from test dataloader
-            batch_idx (int): index of batch in contention
+            batch: A Torch tensor of a batch of test data
+            batch_idx: An integer of the index of batch in contention
         Returns:
             Formatted string with relevant metrics"""
         x, y = batch
@@ -120,7 +122,7 @@ class ThreeLayerClassifier(pl.LightningModule):
     def test_epoch_end(self, outputs):
         """Returns test step results at the end of the epoch
         Parameters:
-            outputs (array): result of test step for each batch
+            outputs: An array with the result of test step for each batch
         Returns:
             Formatted string with resultant metrics"""
         avg_loss = torch.stack([x["test_loss"] for x in outputs]).mean()
@@ -145,7 +147,7 @@ class ImagenetTransferLearning(pl.LightningModule):
         """Establishes the neural network's forward pass
 
         Parameters:
-            x (Torch tensor): input image
+            x: A Torch tensor of the input image
 
         Returns:
             Output probability vector for classes
@@ -166,8 +168,8 @@ class ImagenetTransferLearning(pl.LightningModule):
         """Calculates loss
 
         Parameters:
-            logits (Torch tensor): model output predictions
-            labels (Torch tensor): true values for predictions
+            logits: A Torch tensor of the model output predictions
+            labels: A Torch tensor of the true values for predictions
 
         Returns:
             Loss
@@ -178,8 +180,8 @@ class ImagenetTransferLearning(pl.LightningModule):
         """Pushes training data batch through model and calculates loss in loop
 
         Parameters:
-            train_batch (Torch tensor): batch of training data from training dataloader
-            batch_idx (int): index of batch in contention
+            train_batch: A Torch tensor with the batch of training data
+            batch_idx: An integer of the index of batch in contention
 
         Returns:
             Formatted string with cross entropy loss and training logs
@@ -194,8 +196,8 @@ class ImagenetTransferLearning(pl.LightningModule):
         """Pushes validation data batch through model and calculates loss in loop
 
         Parameters:
-            val_batch (Tensor): batch of validation data from validation dataloader
-            batch_idx (int): index of batch in contention
+            val_batch: A Torch tensor of a batch of validation data
+            batch_idx: An integer of the index of batch in contention
 
         Returns:
             Formatted string with resultant cross entropy loss
@@ -211,7 +213,7 @@ class ImagenetTransferLearning(pl.LightningModule):
         """Returns validation step results at the end of the epoch
 
         Parameters:
-            outputs (array): result of validation step for each batch
+            outputs: An array of the result of validation step for each batch
 
         Returns:
             Formatted string with resultant metrics
@@ -231,8 +233,8 @@ class ImagenetTransferLearning(pl.LightningModule):
         """Pushes test data into the model and returns relevant metrics
 
         Parameters:
-            batch (Torch tensor): batch of test data from test dataloader
-            batch_idx (int): index of batch in contention
+            batch: A Torch tensor of a batch of test data from test dataloader
+            batch_idx: An integer of the index of batch in contention
 
         Returns:
             Formatted string with relevant metrics
@@ -251,7 +253,7 @@ class ImagenetTransferLearning(pl.LightningModule):
         """Returns test step results at the end of the epoch
 
         Parameters:
-            outputs (array): result of test step for each batch
+            outputs: An array with the results of test step for each batch
 
         Returns:
             Formatted string with resultant metrics

@@ -25,13 +25,13 @@ def train_mnist_victim(
     """Trains a 3-layer fully connected neural network on MNIST data
 
     Parameters:
-        transform (Torchvision.transforms): transformation to be applied to MNIST data
-        batch_size (int): size of batches to be trained and tested upon
-        num_workers (int): number of workers assigned to computations
-        rand_split_val (array): description of how val and train data are split
-        gpus (int): num of gpus available to train upon
-        max_epochs (int): the maximum # of epochs to run
-        learning_rate (float): the learning rate for the optimizer
+        transform: A Torchvision.transforms transformation to be applied to MNIST data
+        batch_size: An integer of the size of batches to be trained and tested upon
+        num_workers: An integer number of workers assigned to computations
+        rand_split_val: An array describing how the val and train data are split
+        gpus: An integer num of gpus available to train upon
+        max_epochs: An integer of the maximum # of epochs to run
+        learning_rate: A float that is the learning rate for the optimizer
 
     Returns:
         Trained model ready for inference"""

@@ -45,16 +45,11 @@ class ModelExtractionAttack:
         self.x_train, self.y_train = self.synthesize_data()
 
     def synthesize_data(self):
-        # Need to add argument differentiation
+        # TODO: Complete arguments
         return synthesize(self.synthesizer)
 
 
-"""
-        return self.synthesize(
-            self.public_data,
-            self.query,
-            self.query_limit,
-            self.victim_input_size,
-            self.substitute_input_size,
-        )
-"""
+def run_all_extraction(model):
+    for s in synths:
+        # TODO: Complete arguments
+        ModelExtractionAttack(model, s)
