@@ -43,12 +43,5 @@ def label_agreement(
         if substitute_result == victim_result:
             agreed = agreed + 1
 
-    print(
-        "Out of "
-        + str(points)
-        + " data points, the models agreed upon "
-        + str(agreed)
-        + "."
-    )
-
+    print(f"Out of {points} data points, the models agreed upon {agreed}.")
     return agreed

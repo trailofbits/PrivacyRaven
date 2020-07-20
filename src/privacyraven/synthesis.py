@@ -36,7 +36,9 @@ def knockoff(data, query, query_limit, victim_input_size, substitute_input_size)
             x = torch.cat((x, xi))
             yi = torch.tensor([query(xi)])
             y = torch.cat((y, yi))
-    print("Dataset Created: " + str(x.shape) + str(y.shape))
+    # print("Dataset Created: " + str(x.shape) + str(y.shape))
+
+    print(f"Dataset Created: {x.shape}; {y.shape}")
     return x, y
 
 
