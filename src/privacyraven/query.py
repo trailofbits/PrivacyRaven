@@ -3,7 +3,7 @@ import pytorch_lightning as pl
 import torch
 
 
-def reshape_input(input_data, input_size):
+def reshape_input(input_data, input_size, warning=False):
     """Reshape input data before querying model
 
     This function will conduct a low-level resize if the size of
@@ -12,6 +12,7 @@ def reshape_input(input_data, input_size):
     Parameters:
         input_data: A Torch tensor or Numpy array of the data
         input_size: A tuple of integers describing the new size
+        warning: A Boolean that turns warnings on or off
 
     Returns:
         Data of new shape
@@ -20,7 +21,8 @@ def reshape_input(input_data, input_size):
         try:
             input_data = input_data.reshape(input_size)
         except Exception:
-            print("Warning: Data loss is possible during resizing.")
+            if warning is True:
+                print("Warning: Data loss is possible during resizing.")
             input_data = input_data.resize_(input_size)
     return input_data
 

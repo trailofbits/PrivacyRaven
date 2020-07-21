@@ -1,4 +1,5 @@
 """
+
 # import os
 from torchvision import transforms
 import privacyraven as pr
@@ -27,6 +28,8 @@ model = train_mnist_victim()
 
 """
 """
+
+
 def knockoff(data, query, query_limit, victim_input_size, substitute_input_size):
     for i in tqdm(range(0, query_limit)):
         if i == 0:
@@ -41,6 +44,8 @@ def knockoff(data, query, query_limit, victim_input_size, substitute_input_size)
             y = torch.cat((y, yi))
     print("Dataset Created: " + str(x.shape) + str(y.shape))
     return x, y
+
+
 """
 """
 

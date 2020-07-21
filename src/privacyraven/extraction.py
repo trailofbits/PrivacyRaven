@@ -49,6 +49,7 @@ class ModelExtractionAttack:
         return synthesize(
             self.synthesizer,
             self.seed_data,
+            self.query,
             self.query_limit,
             self.victim_input_size,
             self.substitute_input_size,

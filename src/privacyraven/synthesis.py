@@ -1,6 +1,8 @@
 import torch
 from tqdm import tqdm
 
+from privacyraven.query import reshape_input
+
 synths = dict()
 
 
@@ -29,10 +31,12 @@ def knockoff(data, query, query_limit, victim_input_size, substitute_input_size)
         if i == 0:
             x, y0 = data[0]
             y = torch.tensor([query(x)])
-            x = x.reshape(substitute_input_size)
+            # x = x.reshape(substitute_input_size)
+            x = reshape_input(x, substitute_input_size, warning=False)
         else:
             xi, y0 = data[i]
-            xi = xi.reshape(substitute_input_size)
+            # xi = xi.reshape(substitute_input_size)
+            xi = reshape_input(xi, substitute_input_size, warning=False)
             x = torch.cat((x, xi))
             yi = torch.tensor([query(xi)])
             y = torch.cat((y, yi))
