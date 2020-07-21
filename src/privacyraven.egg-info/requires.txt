@@ -1,7 +1,0 @@
-click<8.0.0,>=7.1.2
-matplotlib<4.0.0,>=3.2.1
-pytorch_lightning<0.8.0,>=0.7.6
-sklearn<0.1,>=0.0
-torch<2.0.0,>=1.5.0
-torchvision<0.7.0,>=0.6.0
-tqdm<5.0.0,>=4.46.1
