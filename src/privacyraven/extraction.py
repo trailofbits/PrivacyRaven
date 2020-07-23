@@ -12,7 +12,8 @@ class ModelExtractionAttack:
         victim_input_size=(1, 28, 28, 1),
         substitute_input_size=(1, 3, 28, 28),
         query_limit=100,
-        seed_data=None,
+        seed_data_train=None,
+        seed_data_test=None,
         retrain=None,
     ):
         """Defines and launches a model extraction attack
@@ -28,8 +29,10 @@ class ModelExtractionAttack:
                                    the substitute inputs
             query_limit: An integer limiting the queries to
                          the victim model
-            seed_data: A Torchvision/tuple-like dataset
-                         for the Knockoff attack
+            seed_data_train: A Torchvision/tuple-like train
+                             dataset for the extraction
+            seed_data_test: A Torchvision/tuple-like test
+                            dataset for the extraction
             retrain: A Boolean value that determines if
                     retraining occurs"""
 
@@ -40,15 +43,17 @@ class ModelExtractionAttack:
         self.victim_input_size = victim_input_size
         self.substitute_input_size = substitute_input_size
         self.query_limit = query_limit
-        self.seed_data = seed_data
+        self.seed_data_train = seed_data_train
+        self.seed_data_test = seed_data_test
         # TODO: Use retrain value
 
-        self.x_train, self.y_train = self.synthesize_data()
+        self.synth_train, self.synth_valid, self.synth_test = self.synthesize_data()
 
     def synthesize_data(self):
         return synthesize(
             self.synthesizer,
-            self.seed_data,
+            self.seed_data_train,
+            self.seed_data_test,
             self.query,
             self.query_limit,
             self.victim_input_size,
@@ -57,7 +62,13 @@ class ModelExtractionAttack:
 
 
 def run_all_extraction(
-    query, victim_input_size, substitute_input_size, query_limit, seed_data, retrain
+    query,
+    victim_input_size,
+    substitute_input_size,
+    query_limit,
+    seed_data_train,
+    seed_data_test,
+    retrain,
 ):
     for s in synths:
         ModelExtractionAttack(
@@ -66,6 +77,7 @@ def run_all_extraction(
             victim_input_size,
             substitute_input_size,
             query_limit,
-            seed_data,
+            seed_data_train,
+            seed_data_test,
             retrain,
         )
