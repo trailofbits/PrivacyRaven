@@ -18,7 +18,7 @@ class ModelExtractionAttack:
     ):
         """Defines and launches a model extraction attack
 
-        Parameters:
+        Attributes:
             query: A function that queries the victim model
             synthesizer: A string with the synthesizer name;
                          these names are contained within
@@ -45,8 +45,6 @@ class ModelExtractionAttack:
         self.query_limit = query_limit
         self.seed_data_train = seed_data_train
         self.seed_data_test = seed_data_test
-        # TODO: Use retrain value
-
         self.synth_train, self.synth_valid, self.synth_test = self.synthesize_data()
 
     def synthesize_data(self):
