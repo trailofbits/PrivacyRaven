@@ -1,8 +1,10 @@
 # .flake8
 [flake8]
-select = B,B9,BLK,C,E,F,I,S,W
+select = B,B9,BLK,C,E,F,I,S,W #ANN, D
+#docstring-convention = google
 ignore = E203,E501,W503,F401
 max-line-length = 100
 application-import-names = privacyraven,tests
 import-order-style = google
-per-file-ignores = tests/*:S101
+#per-file-ignores = tests/*:S101
+exclude = tests/*.py, examples/*.py, noxfile.py

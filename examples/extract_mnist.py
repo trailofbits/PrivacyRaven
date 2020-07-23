@@ -5,16 +5,15 @@ from privacyraven.query import get_target
 from privacyraven.victim import train_mnist_victim
 
 
-# Create a PyTorch Lightning model
+# Create a query function for a PyTorch Lightning model
 model = train_mnist_victim()
 
 
-# Create a query function for the model
 def query_mnist(input_data):
     return get_target(model, input_data)
 
 
-# Obtain public/seed data to be used in extraction
+# Obtain seed (or public) data to be used in extraction
 emnist_train, emnist_test = get_emnist_data()
 
 # Run a 'Knockoff Nets' Model Extraction Attack

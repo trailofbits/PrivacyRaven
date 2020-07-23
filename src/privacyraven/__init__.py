@@ -1,4 +1,4 @@
 # src/privacyraven/__init__.py
-# __version__ = "0.1.0"
+"""PrivacyRaven: Comprehensive Privacy Testing for Deep Learning."""
 
 from privacyraven.version import __version__

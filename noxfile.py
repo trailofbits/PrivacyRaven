@@ -8,6 +8,7 @@ nox.options.sessions = "lint", "safety", "tests"
 
 
 def install_with_constraints(session, *args, **kwargs):
+    """Install packages constrained by the Poetry lock file"""
     with tempfile.NamedTemporaryFile() as requirements:
         session.run(
             "poetry",
@@ -31,6 +32,7 @@ def tests(session):
 
 @nox.session(python=["3.8", "3.7"])
 def tests(session):
+    """Run the test suite"""
     args = session.posargs or ["--cov", "-m", "not e2e"]
     session.run("poetry", "install", "--no-dev", external=True)
     install_with_constraints(
@@ -41,6 +43,7 @@ def tests(session):
 
 @nox.session(python="3.8")
 def black(session):
+    """Format code with black"""
     args = session.posargs or locations
     install_with_constraints(session, "black")
     session.run("black", *args)
@@ -48,6 +51,7 @@ def black(session):
 
 @nox.session(python=["3.8", "3.7"])
 def lint(session):
+    """Lint with flake8"""
     args = session.posargs or locations
     install_with_constraints(
         session,
@@ -55,6 +59,7 @@ def lint(session):
         "flake8-bandit",
         "flake8-black",
         "flake8-bugbear",
+        # "flake8-docstrings",
         "flake8-import-order",
     )
     session.run("flake8", *args)
@@ -62,6 +67,7 @@ def lint(session):
 
 @nox.session(python="3.8")
 def safety(session):
+    """Analyze dependencies for insecure packages"""
     with tempfile.NamedTemporaryFile() as requirements:
         session.run(
             "poetry",
