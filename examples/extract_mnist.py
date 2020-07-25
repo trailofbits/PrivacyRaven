@@ -3,7 +3,7 @@ from privacyraven.data import get_emnist_data
 from privacyraven.extraction import ModelExtractionAttack
 from privacyraven.query import get_target
 from privacyraven.victim import train_mnist_victim
-
+from privacyraven.models import ImagenetTransferLearning
 
 # Create a query function for a PyTorch Lightning model
 model = train_mnist_victim()
@@ -17,12 +17,20 @@ def query_mnist(input_data):
 emnist_train, emnist_test = get_emnist_data()
 
 # Run a 'Knockoff Nets' Model Extraction Attack
+
 test = ModelExtractionAttack(
     query_mnist,
-    "knockoff",
-    (1, 28, 28, 1),
-    (1, 3, 28, 28),
     100,
+    (1, 28, 28, 1),
+    10,
+    (1, 3, 28, 28),
+    "knockoff",
+    ImagenetTransferLearning,
+    1000,
     emnist_train,
     emnist_test,
 )
+
+print(test.hparams)
+
+print(test.substitute_model)

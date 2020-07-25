@@ -16,6 +16,7 @@ Hence, we developed PrivacyRaven: a comprehensive privacy testing suite for deep
 ### Model Extraction Demo
 
 ```python
+#examples/extract_mnist.py
 import privacyraven as pr
 from privacyraven.data import get_emnist_data
 from privacyraven.extraction import ModelExtractionAttack
