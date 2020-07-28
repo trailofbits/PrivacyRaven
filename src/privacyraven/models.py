@@ -139,7 +139,8 @@ class ImagenetTransferLearning(pl.LightningModule):
         self.feature_extractor.eval()
 
         # Establish classifier
-        self.layer_1 = torch.nn.Linear(hparams["input_size"], 128)
+        # self.layer_1 = torch.nn.Linear(hparams["input_size"], 128)
+        self.layer_1 = torch.nn.Linear(1000, 128)
         self.layer_2 = torch.nn.Linear(128, 256)
         self.layer_3 = torch.nn.Linear(256, hparams["targets"])
 

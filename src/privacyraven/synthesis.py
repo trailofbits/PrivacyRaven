@@ -32,17 +32,17 @@ def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
 
 
 @register_synth
-def knockoff(data, query, query_limit, victim_input_size, substitute_input_size):
+def knockoff(data, query, query_limit, victim_input_shape, substitute_input_shape):
     """Execute the synthetic data generation phase of the KnockOff Nets attack"""
 
     for i in tqdm(range(0, query_limit)):
         if i == 0:
             x, y0 = data[0]
             y = torch.tensor([query(x)])
-            x = reshape_input(x, substitute_input_size, warning=False)
+            x = reshape_input(x, substitute_input_shape)
         else:
             xi, y0 = data[i]
-            xi = reshape_input(xi, substitute_input_size, warning=False)
+            xi = reshape_input(xi, substitute_input_shape)
             x = torch.cat((x, xi))
             yi = torch.tensor([query(xi)])
             y = torch.cat((y, yi))

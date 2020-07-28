@@ -11,7 +11,7 @@ class ModelExtractionAttack:
         self,
         query,
         query_limit=100,
-        victim_input_size=None,
+        victim_input_shape=None,
         victim_output_targets=None,  # (targets)
         substitute_input_shape=None,
         synthesizer="Knockoff",
@@ -26,33 +26,17 @@ class ModelExtractionAttack:
         max_epochs=10,
         learning_rate=1e-3,
     ):
-        """Defines and launches a model extraction attack
-
-        Attributes:
-            query: A function that queries the victim model
-            synthesizer: A string with the synthesizer name;
-                         these names are contained within
-                         synths and synthesis.py
-            victim_input_size: A tuple describing the size
-                               of the victim input data
-            substitute_input_size: A tuple with the size of
-                                   the substitute inputs
-            query_limit: An integer limiting the queries to
-                         the victim model
-            seed_data_train: A Torchvision/tuple-like train
-                             dataset for the extraction
-            seed_data_test: A Torchvision/tuple-like test
-                            dataset for the extraction
-            retrain: A Boolean value that determines if
-                    retraining occurs"""
+        """Defines and launches a model extraction attack"""
 
         super(ModelExtractionAttack, self).__init__()
 
-        self.query = establish_query(query, victim_input_size)
+        print("Executing model extraction")
+
+        self.query = establish_query(query, victim_input_shape)
 
         # Is there a way to avoid 14 lines of direct assignment?
         self.query_limit = query_limit
-        self.victim_input_size = victim_input_size
+        self.victim_input_shape = victim_input_shape
         self.victim_output_targets = victim_output_targets
         self.substitute_input_size = substitute_input_size
         self.substitute_input_shape = substitute_input_shape
@@ -77,17 +61,19 @@ class ModelExtractionAttack:
         self.substitute_model = self.get_substitute_model()
 
     def synthesize_data(self):
+        print("Synthesizing Data")
         return synthesize(
             self.synthesizer,
             self.seed_data_train,
             self.seed_data_test,
             self.query,
             self.query_limit,
-            self.victim_input_size,
+            self.victim_input_shape,
             self.substitute_input_shape,
         )
 
     def set_substitute_hparams(self):
+        print("Setting substitute hyperparameters")
         hparams = set_hparams(
             self.transform,
             self.batch_size,
@@ -99,9 +85,11 @@ class ModelExtractionAttack:
             self.substitute_input_size,
             self.victim_output_targets,
         )
+        print(hparams)
         return hparams
 
     def set_dataloaders(self):
+        print("Creating DataLoaders")
         train_dataloader = DataLoader(
             self.synth_train,
             batch_size=self.hparams["batch_size"],
@@ -120,6 +108,8 @@ class ModelExtractionAttack:
         return train_dataloader, valid_dataloader, test_dataloader
 
     def get_substitute_model(self):
+        print("Training and testing substitute model")
+
         model = train_and_test(
             self.substitute_model,
             self.train_dataloader,
