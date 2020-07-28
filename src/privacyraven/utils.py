@@ -29,7 +29,7 @@ def set_hparams(
     transform=None,
     batch_size=100,
     num_workers=4,
-    rand_split_val=None,
+    # rand_split_val=None,
     gpus=1,
     max_epochs=8,
     learning_rate=1e-3,
@@ -37,8 +37,8 @@ def set_hparams(
     targets=None,
 ):
     """Creates a dictionary of hyperparameters"""
-    if rand_split_val is None:
-        rand_split_val = [55000, 5000]
+    # if rand_split_val is None:
+    rand_split_val = [55000, 5000]
 
     if (input_size is None) or (targets is None):
         return "Input size and number of targets need to be defined"

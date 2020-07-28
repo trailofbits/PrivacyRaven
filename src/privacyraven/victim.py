@@ -51,7 +51,7 @@ def train_mnist_victim(
         transform,
         batch_size,
         num_workers,
-        rand_split_val,
+        # rand_split_val,
         gpus,
         max_epochs,
         learning_rate,

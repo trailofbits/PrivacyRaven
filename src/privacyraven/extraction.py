@@ -21,7 +21,7 @@ class ModelExtractionAttack:
         seed_data_test=None,
         transform=None,
         batch_size=100,
-        num_workers=4,
+        num_workers=0,
         gpus=1,
         max_epochs=10,
         learning_rate=1e-3,
@@ -58,6 +58,7 @@ class ModelExtractionAttack:
             self.valid_dataloader,
             self.test_dataloader,
         ) = self.set_dataloaders()
+
         self.substitute_model = self.get_substitute_model()
 
     def synthesize_data(self):
@@ -78,7 +79,7 @@ class ModelExtractionAttack:
             self.transform,
             self.batch_size,
             self.num_workers,
-            None,
+            # None,
             self.gpus,
             self.max_epochs,
             self.learning_rate,
@@ -105,6 +106,7 @@ class ModelExtractionAttack:
             batch_size=self.hparams["batch_size"],
             num_workers=self.hparams["num_workers"],
         )
+        print(train_dataloader, valid_dataloader, test_dataloader)
         return train_dataloader, valid_dataloader, test_dataloader
 
     def get_substitute_model(self):
