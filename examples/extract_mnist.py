@@ -25,7 +25,7 @@ test = ModelExtractionAttack(
     10,
     (1, 3, 28, 28),
     "knockoff",
-    ThreeLayerClassifier,
+    ImagenetTransferLearning,
     1000,
     emnist_train,
     emnist_test,
