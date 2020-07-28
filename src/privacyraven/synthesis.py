@@ -27,7 +27,7 @@ def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
 
     synth_train = NewDataset(x_train, y_train)
     synth_valid = NewDataset(x_valid, y_valid)
-    synth_test = NewDataset(x_test, y_valid)
+    synth_test = NewDataset(x_test, y_test)
     return synth_train, synth_valid, synth_test
 
 

@@ -21,7 +21,7 @@ class ModelExtractionAttack:
         seed_data_test=None,
         transform=None,
         batch_size=100,
-        num_workers=0,
+        num_workers=4,
         gpus=1,
         max_epochs=10,
         learning_rate=1e-3,
