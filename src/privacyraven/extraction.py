@@ -26,12 +26,23 @@ class ModelExtractionAttack:
         max_epochs=10,
         learning_rate=1e-3,
     ):
-        """Defines and launches a model extraction attack"""
+        """Defines and launches a model extraction attack
+
+        This is a black-box label-only extraction attack. A keyword representing
+        a synthesis functions enables the creation of synthetic data, which is then
+        used to create a substitute model. Presently, this class does not perform
+        substitute model retraining.
+
+        Attributes:
+            query:--
+            query_limit:--
+        """
 
         super(ModelExtractionAttack, self).__init__()
 
         print("Executing model extraction")
 
+        # Extend the query function to incorporate reshaping or resizing the input
         self.query = establish_query(query, victim_input_shape)
 
         # Is there a way to avoid 14 lines of direct assignment?

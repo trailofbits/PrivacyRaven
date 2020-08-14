@@ -12,7 +12,7 @@ from tqdm import tqdm
 def get_emnist_data(transform=None, RGB=True):
     """Returns EMNIST train and test datasets.
 
-    This function is assumed to be primarily used as public data.
+    This function is assumed to be primarily used as seed data.
     DataLoaders and data splits are in synthesis.py
 
     Parameters:
