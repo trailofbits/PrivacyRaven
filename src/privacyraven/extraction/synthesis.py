@@ -49,3 +49,12 @@ def knockoff(data, query, query_limit, victim_input_shape, substitute_input_shap
 
     print(f"Dataset Created: {x.shape}; {y.shape}")
     return x, y
+
+
+@register_synth
+def adv_boost(data, query, query_limit, victim_input_shape, substitute_input_shape):
+
+    x, y = knockoff(
+        data, query, query_limit, victim_input_shape, substitute_input_shape
+    )
+    pass
