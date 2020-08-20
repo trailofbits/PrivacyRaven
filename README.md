@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/pasted.png">
+  <img swidth="400" height="400" src="images/pasted.png">
 </p>
 
 **PrivacyRaven** is a privacy testing library for deep learning systems.
