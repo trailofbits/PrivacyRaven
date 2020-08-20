@@ -1,5 +1,5 @@
-from privacyraven.extraction import ModelExtractionAttack
-from privacyraven.synthesis import synths
+from privacyraven.extraction.core import ModelExtractionAttack
+from privacyraven.extraction.synthesis import synths
 
 
 def run_all_extraction(

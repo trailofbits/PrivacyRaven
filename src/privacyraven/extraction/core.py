@@ -1,9 +1,13 @@
 import torch
 from torch.utils.data import DataLoader
 
-from privacyraven.query import establish_query
-from privacyraven.synthesis import synthesize, synths
-from privacyraven.utils import convert_to_inference, set_hparams, train_and_test
+from privacyraven.extraction.synthesis import synthesize, synths
+from privacyraven.utils.model_creation import (
+    convert_to_inference,
+    set_hparams,
+    train_and_test,
+)
+from privacyraven.utils.query import establish_query
 
 
 class ModelExtractionAttack:

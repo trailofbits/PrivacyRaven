@@ -8,9 +8,13 @@ from torch.utils.data import DataLoader, Dataset, random_split
 from torchvision import datasets, models, transforms
 from torchvision.datasets import MNIST
 
-from privacyraven.data import get_mnist_loaders
-from privacyraven.models import ThreeLayerClassifier
-from privacyraven.utils import convert_to_inference, set_hparams, train_and_test
+from privacyraven.models.pytorch import ThreeLayerClassifier
+from privacyraven.utils.data import get_mnist_loaders
+from privacyraven.utils.model_creation import (
+    convert_to_inference,
+    set_hparams,
+    train_and_test,
+)
 
 
 def train_mnist_victim(

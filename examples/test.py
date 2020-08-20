@@ -1,11 +1,11 @@
 import numpy as np
 import torch
 import privacyraven as pr
-from privacyraven.data import get_emnist_data
-from privacyraven.extraction import ModelExtractionAttack
-from privacyraven.query import get_target
-from privacyraven.victim import train_mnist_victim
-from privacyraven.models import ImagenetTransferLearning
+from privacyraven.utils.data import get_emnist_data
+from privacyraven.extraction.core import ModelExtractionAttack
+from privacyraven.utils.query import get_target
+from privacyraven.models.victim import train_mnist_victim
+from privacyraven.models.pytorch import ImagenetTransferLearning
 from art.attacks.evasion import BoundaryAttack
 from art.estimators.classification import BlackBoxClassifier
 

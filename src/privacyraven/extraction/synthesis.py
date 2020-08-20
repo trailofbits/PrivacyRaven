@@ -2,8 +2,8 @@ from sklearn.model_selection import train_test_split
 import torch
 from tqdm import tqdm
 
-from privacyraven.query import reshape_input
-from privacyraven.utils import NewDataset
+from privacyraven.utils.model_creation import NewDataset
+from privacyraven.utils.query import reshape_input
 
 synths = dict()
 
