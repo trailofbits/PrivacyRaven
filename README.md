@@ -1,5 +1,5 @@
 <p align="center">
- <img swidth="200" height="200" src="images/cropped.png">
+ <img swidth="300" height="300" src="images/cropped.png">
 </p>
 <hr style="height:5px"/>
 
