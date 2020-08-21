@@ -1,13 +1,14 @@
 <p align="center">
-  <img swidth="400" height="400" src="images/pasted.png">
+  <img swidth="400" height="400" src="images/cropped.png">
 </p>
+<hr style="height:5px"/>
 
 **PrivacyRaven** is a privacy testing library for deep learning systems.
 You can use it to determine the susceptibility of a model to different privacy attacks; evaluate privacy preserving machine learning techniques; develop novel privacy metrics and attacks; and repurpose attacks for data provenance and other use cases.
 
-Presently, PrivacyRaven supports label-only black-box model extraction, membership inference, and model inversion attacks.
+PrivacyRaven supports label-only black-box model extraction, membership inference, and model inversion attacks.
 We plan to include differential privacy verification, automated hyperparameter optimization, more classes of attacks, and other features; see the GitHub issues for more information.
-PrivacyRaven has been featured at the [OpenMined Privacy Conference](), [Empire Hacking](), [DEF CON AI Village Journal Club](), [Trail of Bits blog](), and other venues.
+PrivacyRaven has been featured at the [OpenMined Privacy Conference](https://pricon.openmined.org/), [Empire Hacking](https://www.empirehacking.nyc/), [Trail of Bits blog](https://blog.trailofbits.com/), and other venues.
 
 ## Why use PrivacyRaven?
 
@@ -22,7 +23,7 @@ Hence, we developed PrivacyRaven- a machine learning assurance tool that aims to
 
 ## How does it work?
 
-### Model Extraction Demo
+### Demo
 
 ```python
 #examples/extract_mnist.py
@@ -32,5 +33,7 @@ Hence, we developed PrivacyRaven- a machine learning assurance tool that aims to
 1. Install [poetry](https://python-poetry.org/docs/).
 2. Git clone this repository.
 3. Run `poetry install`.
+
+An official pip release is coming soon.
 
 ## Want to contribute to PrivacyRaven?
