@@ -45,7 +45,10 @@ def query_model(model, input_data, input_size=None):
         prediction_as_np: A Numpy array of the predicton probabilities
         target: An integer displaying the predicted label
     """
-    input_data = input_data.cuda()
+    try:
+        input_data = input_data.cuda()
+    except Exception:
+        print("Cuda method is not being used")
     input_data = reshape_input(input_data, input_size)
     prediction_as_torch = model(input_data)
     prediction_as_np = prediction_as_torch.cpu().numpy()

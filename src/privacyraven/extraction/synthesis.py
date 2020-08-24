@@ -16,6 +16,7 @@ def register_synth(func):
 
 def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
     """Synthesize training and testing data for a substitute model"""
+    print(synths)
     func = synths[func_name]
     x_train, y_train = func(seed_data_train, *args, **kwargs)
     x_test, y_test = func(seed_data_test, *args, **kwargs)

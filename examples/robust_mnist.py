@@ -33,7 +33,9 @@ attack = BoundaryAttack(test, False)
 
 X, y = emnist_train.data, emnist_train.targets
 
-# X.to(torch.float32)
+print(attack)
+
+X = X.to(torch.float32)
 
 adv = attack.generate(X, y)
 
