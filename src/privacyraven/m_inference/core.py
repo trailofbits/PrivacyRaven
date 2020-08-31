@@ -14,7 +14,6 @@ class MembershipInferenceAttack(object):
     query_limit = attr.ib(default=100)
     victim_input_shape = attr.ib(default=None)
     victim_output_targets = attr.ib(default=None)
-    # substitute_input_size = attr.ib(default=None)
     substitute_input_shape = attr.ib(default=None)
     synthesizer = attr.ib(default="knockoff")
     substitute_model = attr.ib(default=None)
@@ -27,10 +26,14 @@ class MembershipInferenceAttack(object):
     gpus = attr.ib(default=1)
     max_epochs = attr.ib(default=10)
     learning_rate = attr.ib(default=1e-3)
-    attack = attr.ib(init=False)
+    extract = attr.ib(init=False)
 
     def __attrs_post_init__(self):
-        self.attack = ModelExtractionAttack(
+        self.extract = self.extract_substitute()
+        return self.extract
+
+    def extract_substitute(self):
+        extract = ModelExtractionAttack(
             self.query,
             self.query_limit,
             self.victim_input_shape,
@@ -48,4 +51,4 @@ class MembershipInferenceAttack(object):
             self.max_epochs,
             self.learning_rate,
         )
-        return self.attack
+        return extract

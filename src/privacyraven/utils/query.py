@@ -17,6 +17,10 @@ def reshape_input(input_data, input_size, warning=False):
     Returns:
         Data of new shape
     """
+    try:
+        input_data = torch.from_numpy(input_data)
+    except Exception:
+        print(input_data.size())
     if input_size is not None:
         try:
             input_data = input_data.reshape(input_size)

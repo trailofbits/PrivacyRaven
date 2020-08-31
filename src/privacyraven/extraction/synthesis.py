@@ -1,3 +1,5 @@
+from art.attacks.evasion import BoundaryAttack, HopSkipJump
+from art.estimators.classifiers import BlackBoxClassifier
 from sklearn.model_selection import train_test_split
 import torch
 from tqdm import tqdm
@@ -33,16 +35,22 @@ def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
 
 
 @register_synth
-def knockoff(data, query, query_limit, victim_input_shape, substitute_input_shape):
-    """Execute the synthetic data generation phase of the KnockOff Nets attack"""
+def copycat(data, query, query_limit, victim_input_shape, substitute_input_shape):
+    """Generates a dataset from unlabeled data"""
 
     for i in tqdm(range(0, query_limit)):
         if i == 0:
-            x, y0 = data[0]
+            try:
+                x, y0 = data[0]
+            except Exception:
+                x = data[0]
             y = torch.tensor([query(x)])
             x = reshape_input(x, substitute_input_shape)
         else:
-            xi, y0 = data[i]
+            try:
+                xi, y0 = data[i]
+            except Exception:
+                xi = data[i]
             xi = reshape_input(xi, substitute_input_shape)
             x = torch.cat((x, xi))
             yi = torch.tensor([query(xi)])
@@ -53,9 +61,28 @@ def knockoff(data, query, query_limit, victim_input_shape, substitute_input_shap
 
 
 @register_synth
-def adv_boost(data, query, query_limit, victim_input_shape, substitute_input_shape):
-
-    x, y = knockoff(
-        data, query, query_limit, victim_input_shape, substitute_input_shape
+def hopskipjump(data, query, query_limit, victim_input_shape, substitute_input_shape):
+    """Generates a dataset from unlabeled data"""
+    copycat_limit = int(query_limit * 0.5)
+    x, y = copycat(
+        data, query, copycat_limit, victim_input_shape, substitute_input_shape
     )
+    x = x.to(torch.float32)
+    config = BlackBoxClassifier(
+        predict=query,
+        input_shape=victim_input_shape,
+        nb_classes=10,
+        preprocessing_defences=None,
+        postprocessing_defences=None,
+        preprocessing=None,
+    )
+    attack = HopSkipJump(config, False, max_iter=50, max_eval=100, init_eval=10)
+    return attack
+
+
+@register_synth
+def seeded_hopskipjump(
+    data, query, query_limit, victim_input_shape, substitute_input_shape
+):
     pass
+    return "null"

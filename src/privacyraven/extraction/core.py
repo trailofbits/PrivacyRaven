@@ -18,7 +18,7 @@ class ModelExtractionAttack:
         victim_input_shape=None,
         victim_output_targets=None,  # (targets)
         substitute_input_shape=None,
-        synthesizer="Knockoff",
+        synthesizer="copycat",
         substitute_model=None,
         substitute_input_size=1000,
         seed_data_train=None,
@@ -86,6 +86,7 @@ class ModelExtractionAttack:
             self.query_limit,
             self.victim_input_shape,
             self.substitute_input_shape,
+            self.victim_output_targets,
         )
 
     def set_substitute_hparams(self):
