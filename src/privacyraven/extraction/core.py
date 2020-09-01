@@ -38,9 +38,20 @@ class ModelExtractionAttack:
         substitute model retraining.
 
         Attributes:
-            query:--
-            query_limit:--
-        """
+            query: Function that queries deep learning model
+            query_limit: Int of amount of times the model can be queried
+            victim_input_shape: Tuple of ints describing the shape of victim inputs
+            victim_output_targets: Int of number of labels
+            substitute_input_shape: Tuple of ints describing shape of data accepted
+                                     by the substitute model
+            substitute_input_size: Int of input size for the substitute model
+            seed_data_train: Tuple of tensors or tensors of seed data
+            seed_data_test: Same as above for test data
+            transform: A torchvision.transform to be applied to the data
+            batch_size: Int stating how many samples are in a batch of data
+            num_workers: Int of the number of workers used in training
+            max_epochs: Int of the maximum number of epochs used to train the model
+            learning_rate: Float of the learning rate of the model"""
 
         super(ModelExtractionAttack, self).__init__()
 
@@ -49,7 +60,7 @@ class ModelExtractionAttack:
         # Extend the query function to incorporate reshaping or resizing the input
         self.query = establish_query(query, victim_input_shape)
 
-        # Is there a way to avoid 14 lines of direct assignment?
+        # Directly assign parameters
         self.query_limit = query_limit
         self.victim_input_shape = victim_input_shape
         self.victim_output_targets = victim_output_targets

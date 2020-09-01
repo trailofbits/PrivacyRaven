@@ -8,9 +8,7 @@ from privacyraven.m_inference.robustness import find_robustness
 
 @attr.s
 class MembershipInferenceAttack(object):
-    """
-    Launches a membership inference attack
-    """
+    """Launches a membership inference attack"""
 
     query = attr.ib()
     query_limit = attr.ib(default=100)

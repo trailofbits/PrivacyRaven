@@ -89,10 +89,14 @@ While PrivacyRaven was built upon a [plethora of research](https://github.com/st
 + [Copycat CNN: Stealing Knowledge by Persuading Confession with Random Non-Labeled Data](https://ieeexplore.ieee.org/document/8489592)
 + [Knockoff Nets: Stealing Functionality of Black-Box Models](https://arxiv.org/abs/1812.02766)
 
-## FAQ
+## Name Inspiration
+The raven has been associated with a variety of concepts in different cultures through time.
+Among these, the raven is commonly associated with prophecy and insight.
+Naturally, we named the tool PrivacyRaven because it is designed to provide insights into the privacy of deep learning.
 
-### What's with the name?
+## License
+This library is released under the [Apache License 2.0]().
 
-### License
-
-### Core maintainers
+## Core Maintainers
++ Suha Hussain
++ Jim Miller

@@ -17,8 +17,16 @@ def register_synth(func):
 
 
 def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
-    """Synthesize training and testing data for a substitute model"""
-    print(synths)
+    """Synthesize training and testing data for a substitute model
+
+    Parameters:
+        func_name: String of the function name
+        seed_data_train: Tuple of tensors or tensor of training data
+        seed_data_test: Tuple of tensors or tensor of training data
+
+    Returns:
+        Three NewDatasets containing synthetic data
+    """
     func = synths[func_name]
     x_train, y_train = func(seed_data_train, *args, **kwargs)
     x_test, y_test = func(seed_data_test, *args, **kwargs)
@@ -35,6 +43,7 @@ def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
 
 
 def set_evasion_model(query, victim_input_shape, victim_input_targets):
+    """Defines the threat model for an evasion attack"""
     config = BlackBoxClassifier(
         predict=query,
         input_shape=victim_input_shape,
@@ -47,12 +56,17 @@ def set_evasion_model(query, victim_input_shape, victim_input_targets):
 
 
 def init_hopskipjump(config, data, limit=50):
+    """Runs the HopSkipJump evasion attack
+
+    Arxiv Paper: https://arxiv.org/abs/1904.02144"""
     attack = HopSkipJump(config, False, max_iter=limit, max_eval=100, init_eval=10)
     return attack.generate(data)
 
 
 def get_data_limit(data):
+    """Uses the size of the data to establish a synthesis restriction"""
     try:
+        # Differentiate between labeled and unlabeled data
         x_i, y_i = data.data, data.targets
         data_limit = x_i.size()
     except Exception:
@@ -70,7 +84,9 @@ def copycat(
     substitute_input_shape,
     victim_input_targets,
 ):
-    """Generates a dataset from unlabeled data"""
+    """Creates a synthetic dataset by labeling unlabeled seed data
+
+    Arix Paper: https://ieeexplore.ieee.org/document/8489592"""
     data_limit = get_data_limit(data)
     if data_limit > query_limit:
         limit = query_limit
@@ -107,7 +123,7 @@ def hopskipjump(
     substitute_input_shape,
     victim_input_targets,
 ):
-    """Generates a dataset from unlabeled data"""
+    """Generates a dataset from unlabeled data using the hopskipjump attack"""
     x, y = copycat(data, query, query_limit, victim_input_shape, substitute_input_shape)
     x = x.to(torch.float32)
     config = set_evasion_model(query, victim_input_shape, victim_input_targets)
@@ -126,6 +142,7 @@ def seeded_hopskipjump(
     substitute_input_shape,
     victim_input_targets,
 ):
+    """Generates a dataset from labeled data using the hopskipjump attack"""
     data = data.to(torch.float32)
     config = set_evasion_model(query, victim_input_shape, victim_input_targets)
     x_adv, y_adv = init_hopskipjump(config, data, query_limit)

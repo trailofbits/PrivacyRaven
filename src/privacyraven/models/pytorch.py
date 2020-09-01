@@ -238,8 +238,7 @@ class ImagenetTransferLearning(pl.LightningModule):
             batch_idx: An integer of the index of batch in contention
 
         Returns:
-            Formatted string with relevant metrics
-        """
+            Formatted string with relevant metrics"""
         x, y = batch
         y_hat = self(x)
         targets_hat = torch.argmax(y_hat, dim=1)
@@ -257,8 +256,7 @@ class ImagenetTransferLearning(pl.LightningModule):
             outputs: An array with the results of test step for each batch
 
         Returns:
-            Formatted string with resultant metrics
-        """
+            Formatted string with resultant metrics"""
         avg_loss = torch.stack([x["test_loss"] for x in outputs]).mean()
         tensorboard_logs = {"test_loss": avg_loss}
         return {"avg_test_loss": avg_loss, "log": tensorboard_logs}
