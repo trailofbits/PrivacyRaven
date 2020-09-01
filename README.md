@@ -79,16 +79,6 @@ PrivacyRaven is still a work-in-progress.
 We invite you to contribute however you can whether you want to incorporate a new synthesis technique or make an attack function more readable.
 Please visit [CONTRIBUTING.md](https://github.com/trailofbits/PrivacyRaven/blob/master/CONTRIBUTING.md) to get started.
 
-## References
-
-While PrivacyRaven was built upon a [plethora of research](https://github.com/stratosphereips/awesome-ml-privacy-attacks) on attacking machine learning privacy, the research most critical to the development of PrivacyRaven are:
-
-+ [A Survey of Privacy Attacks in Machine Learning](https://arxiv.org/abs/2007.07646)
-+ [Label-Only Membership Inference Attacks](https://arxiv.org/abs/2007.143210)
-+ [Neural Network Inversion in Adversarial Setting via Background Knowledge Alignment](https://dl.acm.org/doi/pdf/10.1145/3319535.3354261?casa_token=lDNQ40-4Wa4AAAAA%3Ap9olQ3qMdDZ0n2sl-nNIgk4sOuLRMBTGVTxycZ5wjGpnFPf5lTz-MYw0e8ISggSseHC9T46it5yX)
-+ [Copycat CNN: Stealing Knowledge by Persuading Confession with Random Non-Labeled Data](https://ieeexplore.ieee.org/document/8489592)
-+ [Knockoff Nets: Stealing Functionality of Black-Box Models](https://arxiv.org/abs/1812.02766)
-
 ## Name Inspiration
 The raven has been associated with a variety of concepts in different cultures through time.
 Among these, the raven is commonly associated with prophecy and insight.
