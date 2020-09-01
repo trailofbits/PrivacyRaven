@@ -67,6 +67,7 @@ Since the only main requirement from the victim model is a query function, Priva
 The other classes of attacks can be launched in a similar fashion. See the `examples` folder for more information.
 
 ## Want to use PrivacyRaven?
+
 1. Install [poetry](https://python-poetry.org/docs/).
 2. Git clone this repository.
 3. Run `poetry install`.
@@ -79,17 +80,21 @@ PrivacyRaven is still a work-in-progress.
 We invite you to contribute however you can whether you want to incorporate a new synthesis technique or make an attack function more readable.
 Please visit [CONTRIBUTING.md](https://github.com/trailofbits/PrivacyRaven/blob/master/CONTRIBUTING.md) to get started.
 
-## Name Inspiration
+## Why is it called PrivacyRaven?
+
 The raven has been associated with a variety of concepts in different cultures through time.
 Among these, the raven is commonly associated with prophecy and insight.
 Naturally, we named the tool PrivacyRaven because it is designed to provide insights into the privacy of deep learning.
 
-## License
-This library is released under the [Apache License 2.0](https://github.com/trailofbits/PrivacyRaven/blob/master/LICENSE).
+## Who maintains PrivacyRaven?
 
-## Core Maintainers
-+ Suha Hussain
-+ Jim Miller
+The core maintainers are:
++ [Suha Hussain](https://github.com/suhacker1)
++ [Jim Miller](https://github.com/james-miller-93)
+
+## License
+
+This library is released under the [Apache License 2.0](https://github.com/trailofbits/PrivacyRaven/blob/master/LICENSE).
 
 ## References
 
