@@ -5,7 +5,7 @@ from privacyraven.utils.data import get_emnist_data
 from privacyraven.m_inference.core import MembershipInferenceAttack
 from privacyraven.utils.query import get_target
 from privacyraven.models.victim import train_mnist_victim
-from privacyraven.models.pytorch import ImagenetTransferLearning
+from privacyraven.models.pytorch import ImagenetTransferLearning, ThreeLayerClassifier
 
 # Create a query function for a PyTorch Lightning model
 model = train_mnist_victim()
@@ -26,8 +26,8 @@ attack = MembershipInferenceAttack(
     (1, 28, 28, 1),
     10,
     (1, 3, 28, 28),
-    "knockoff",
-    ImagenetTransferLearning,
+    "copycat",
+    ThreeLayerClassifier,
     1000,
     emnist_train,
     emnist_test,
