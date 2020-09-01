@@ -60,7 +60,7 @@ attack = ModelExtractionAttack(
     ImagenetTransferLearning, # substitute model
     1000, # substitute input size
     emnist_train, # seed training data
-    emnist_test, # seed testing data
+    emnist_test # seed testing data
 )
 ```
 Since the only main requirement from the victim model is a query function, PrivacyRaven can be used to attack a wide range of models regardless of the framework and distribution method.
@@ -89,7 +89,7 @@ Naturally, we named the tool PrivacyRaven because it is designed to provide insi
 ## Who maintains PrivacyRaven?
 
 The core maintainers are:
-+ [Suha Hussain](https://github.com/suhacker1)
++ [Suha S. Hussain](https://github.com/suhacker1)
 + [Jim Miller](https://github.com/james-miller-93)
 
 ## License
