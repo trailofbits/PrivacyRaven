@@ -8,7 +8,7 @@ You can use it to determine the susceptibility of a model to different privacy a
 
 PrivacyRaven supports label-only black-box model extraction, membership inference, and (soon) model inversion attacks.
 We also plan to include differential privacy verification, automated hyperparameter optimization, more classes of attacks, and other features; see the GitHub issues for more information.
-PrivacyRaven has been featured at the [OpenMined Privacy Conference](https://pricon.openmined.org/), [Empire Hacking](https://www.empirehacking.nyc/), [Trail of Bits blog](https://blog.trailofbits.com/), and other venues.
+PrivacyRaven has been featured at the [OpenMined Privacy Conference](https://pricon.openmined.org/), [Empire Hacking](https://www.empirehacking.nyc/), and [Trail of Bits blog](https://blog.trailofbits.com/).
 
 ## Why use PrivacyRaven?
 
@@ -23,7 +23,12 @@ Hence, we developed PrivacyRaven- a machine learning assurance tool that aims to
 
 ## How does it work?
 
-### Demo
+PrivacyRaven partions each attack into multiple customizable and optimizable phases.
+Different interfaces are also provided for each attack.
+The interface shown below is known as the core interface.
+PrivacyRaven also provides wrappers around specific attack configurations found in the literature and a run-all-attacks feature.
+
+Here is how you would launch a model extraction attack in PrivacyRaven:
 
 ```python
 #examples/extract_mnist.py
@@ -43,21 +48,31 @@ def query_mnist(input_data):
 # Obtain seed (or public) data to be used in extraction
 emnist_train, emnist_test = get_emnist_data()
 
-# Run a 'Knockoff Nets' Model Extraction Attack
+# Run a Model Extraction Attack
 
 attack = ModelExtractionAttack(
-    query_mnist,
-    100,
-    (1, 28, 28, 1),
-    10,
-    (1, 3, 28, 28),
-    "copycat",
-    ImagenetTransferLearning,
-    1000,
-    emnist_train,
-    emnist_test,
+    query_mnist, # query function
+    100, # query limit
+    (1, 28, 28, 1), # victim input shape
+    10, # target classes
+    (1, 3, 28, 28), # substitute input shape
+    "copycat", # name of synthesizer
+    ImagenetTransferLearning, # substitute model
+    1000, # substitute input size
+    emnist_train, # seed training data
+    emnist_test, # seed testing data
 )
 ```
+
+In the first part of this example, a query function is created for a PyTorch Lightning model included within the library.
+Next, the extended MNIST dataset is downloaded to seed the attack.
+The bulk of the attack is contained within the last line.
+After the attack is configured, the "copycat" synthesizer is used to train the "ImagenetTransferLearning" model.
+The synthesizer queries the victim model to create a synthetic dataset from the seeded data.
+This synthetic data is then used to train a classifier pretrained on ImageNet.
+
+Since the only main requirement from the victim model is a query function, PrivacyRaven can be used to attack a wide range of models regardless of the framework and distribution method.
+More examples can be found in the `examples` folder.
 
 ## Want to use PrivacyRaven?
 1. Install [poetry](https://python-poetry.org/docs/).
@@ -75,3 +90,7 @@ PrivacyRaven is still a work-in-progress. We invite you to contribute however yo
 While PrivacyRaven was built upon a plethora of research on attacking machine learning privacy, the research most critical to PrivacyRaven are:
 
 + [--]()
+
+## FAQ
+
+### What's with the name?

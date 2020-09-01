@@ -22,11 +22,14 @@ def cloudleak(
 
     """Run CloudLeak model extraction attacks
 
-    CloudLeak was introduced in this paper:---
-    This function uses different adversarial attack-based synthesis
-    functions to comply with the label-only black-box threat model.These
-    attacks aim for a functionally equivalent model and perform
-    best on binary classifiers."""
+    Returns an array of attacks that use synthesis functions
+    based on adversarial/evasion attacks
+
+    Based upon: https://bit.ly/31Npbgj
+
+    Unlike the paper, this function does not include subset
+    sampling strategies and relies upon different evasion
+    attacks in order to comply with the threat model"""
 
     adv_synths = ["HopSkipJump"]
 
@@ -73,7 +76,7 @@ def copycats(
     max_epochs,
     learning_rate,
 ):
-    """Runs a CopyCat attack
+    """Runs the CopyCat model extraction attack
 
     Arxiv Paper: https://arxiv.org/abs/1806.05476
 
