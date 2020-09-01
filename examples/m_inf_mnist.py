@@ -15,10 +15,8 @@ def query_mnist(input_data):
     return get_target(model, input_data)
 
 
-# Obtain seed (or public) data to be used in extraction
+# Obtain seed (or public) data to be used
 emnist_train, emnist_test = get_emnist_data()
-
-# Run a 'Knockoff Nets' Model Extraction Attack
 
 attack = MembershipInferenceAttack(
     query_mnist,
