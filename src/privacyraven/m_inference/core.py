@@ -53,3 +53,6 @@ class MembershipInferenceAttack(object):
             self.learning_rate,
         )
         return extract
+
+    # def calculate_robustness(self):
+    # return X, y
