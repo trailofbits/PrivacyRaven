@@ -70,7 +70,7 @@ An official pip release is coming soon.
 
 PrivacyRaven is still a work-in-progress. We invite you to contribute however you can whether you want to incorporate a new synthesis technique or make an attack function more readable. Please visit CONTRIBUTING.md to get started.
 
-# References
+## References
 
 While PrivacyRaven was built upon a plethora of research on attacking machine learning privacy, the research most critical to PrivacyRaven are:
 
