@@ -85,7 +85,7 @@ Among these, the raven is commonly associated with prophecy and insight.
 Naturally, we named the tool PrivacyRaven because it is designed to provide insights into the privacy of deep learning.
 
 ## License
-This library is released under the [Apache License 2.0]().
+This library is released under the [Apache License 2.0](https://github.com/trailofbits/PrivacyRaven/blob/master/LICENSE).
 
 ## Core Maintainers
 + Suha Hussain
