@@ -28,6 +28,8 @@ class ModelExtractionAttack(object):
         victim_output_targets: Int of number of labels
         substitute_input_shape: Tuple of ints describing shape of data accepted
         by the substitute model
+        substitute_model_arch: PyTorch module of substitute architecture.
+                               This can be found in models/pytorch.py
         substitute_input_size: Int of input size for the substitute model
         seed_data_train: Tuple of tensors or tensors of seed data
         seed_data_test: Same as above for test data
