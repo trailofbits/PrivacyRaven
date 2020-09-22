@@ -25,8 +25,7 @@ def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
         seed_data_test: Tuple of tensors or tensor of training data
 
     Returns:
-        Three NewDatasets containing synthetic data
-    """
+        Three NewDatasets containing synthetic data"""
     func = synths[func_name]
     x_train, y_train = func(seed_data_train, *args, **kwargs)
     x_test, y_test = func(seed_data_test, *args, **kwargs)
@@ -65,12 +64,12 @@ def init_hopskipjump(config, data, limit=50):
 
 def get_data_limit(data):
     """Uses the size of the data to establish a synthesis restriction"""
-    # print(data)
     try:
         # Differentiate between labeled and unlabeled data
         x_i, y_i = data.data, data.targets
         data_limit = x_i.size()
     except Exception:
+        # This requires data to have a size attribute
         data_limit = data.size()
     data_limit = int(data_limit[0])
     return data_limit
@@ -89,23 +88,21 @@ def copycat(
 
     Arix Paper: https://ieeexplore.ieee.org/document/8489592"""
     data_limit = get_data_limit(data)
-    # print("Data limit is " + str(data_limit))
 
-    # print(data)
-
+    # The limit must be lower than or equal to the number of queries
     if data_limit > query_limit:
         limit = query_limit
     else:
         limit = data_limit
 
-    # print("limit is " + str(limit))
-
     for i in tqdm(range(0, limit)):
         if i == 0:
+            # First assume that the data is in a tuple-like format
             try:
                 x, y0 = data[0]
             except Exception:
                 x = data[0]
+            # Creates new tensors
             y = torch.tensor([query(x)])
             x = reshape_input(x, substitute_input_shape)
         else:
@@ -113,6 +110,7 @@ def copycat(
                 xi, y0 = data[i]
             except Exception:
                 xi = data[i]
+            # Concatenates current data to new tensors
             xi = reshape_input(xi, substitute_input_shape)
             x = torch.cat((x, xi))
             yi = torch.tensor([query(xi)])
