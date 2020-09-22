@@ -65,6 +65,7 @@ def init_hopskipjump(config, data, limit=50):
 
 def get_data_limit(data):
     """Uses the size of the data to establish a synthesis restriction"""
+    # print(data)
     try:
         # Differentiate between labeled and unlabeled data
         x_i, y_i = data.data, data.targets
@@ -88,10 +89,17 @@ def copycat(
 
     Arix Paper: https://ieeexplore.ieee.org/document/8489592"""
     data_limit = get_data_limit(data)
+    # print("Data limit is " + str(data_limit))
+
+    # print(data)
+
     if data_limit > query_limit:
         limit = query_limit
     else:
         limit = data_limit
+
+    # print("limit is " + str(limit))
+
     for i in tqdm(range(0, limit)):
         if i == 0:
             try:
