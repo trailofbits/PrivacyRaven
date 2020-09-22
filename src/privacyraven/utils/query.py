@@ -2,6 +2,8 @@ import numpy as np
 import pytorch_lightning as pl
 import torch
 
+from contextlib import suppress
+
 
 def reshape_input(input_data, input_size, warning=False):
     """Reshape input data before querying model
@@ -17,10 +19,9 @@ def reshape_input(input_data, input_size, warning=False):
     Returns:
         Data of new shape
     """
-    try:
+    with suppress(Exception):
         input_data = torch.from_numpy(input_data)
-    except Exception:
-        print(input_data.size())
+
     if input_size is not None:
         try:
             input_data = input_data.reshape(input_size)
@@ -49,10 +50,8 @@ def query_model(model, input_data, input_size=None):
         prediction_as_np: A Numpy array of the predicton probabilities
         target: An integer displaying the predicted label
     """
-    try:
+    with suppress(Exception):
         input_data = input_data.cuda()
-    except Exception:
-        print("Cuda method is not being used")
     input_data = reshape_input(input_data, input_size)
     prediction_as_torch = model(input_data)
     prediction_as_np = prediction_as_torch.cpu().numpy()
