@@ -24,7 +24,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **System Information:**
-Describe as much of the setup details as possible. 
+Describe as much of the setup details as possible.
 
 **Additional context**
 Add any other context about the problem here.
