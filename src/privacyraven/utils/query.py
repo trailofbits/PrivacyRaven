@@ -1,8 +1,8 @@
+from contextlib import suppress
+
 import numpy as np
 import pytorch_lightning as pl
 import torch
-
-from contextlib import suppress
 
 
 def reshape_input(input_data, input_size, warning=False):

@@ -4,11 +4,53 @@ import tempfile
 import nox
 
 locations = "src", "tests", "noxfile.py"
+
+
+@nox.session(python=["3.8", "3.7"])
+def tests(session):
+    args = session.posargs or ["--cov"]
+    session.run("poetry", "install", external=True)
+    session.run("poetry", "run", "pytest", *args, external=True)
+
+
+@nox.session(python=["3.8", "3.7"])
+def lint(session):
+    args = session.posargs or locations
+    session.install("flake8", "flake8-bugbear", "flake8-import-order")
+    session.run("flake8", *args)
+
+
+@nox.session(python="3.8")
+def black(session):
+    args = session.posargs or locations
+    session.install("black")
+    session.run("black", *args)
+
+
+"""
+@nox.session(python="3.8")
+def safety(session):
+    with tempfile.NamedTemporaryFile() as requirements:
+        session.run(
+            "poetry",
+            "export",
+            "--dev",
+            "--format=requirements.txt",
+            "--without-hashes",
+            f"--output={requirements.name}",
+            external=True,
+        )
+        session.install("safety")
+        session.run("safety", "check", f"--file={requirements.name}", "--full-report")
+
+
+
+locations = "src", "tests", "noxfile.py"
 nox.options.sessions = "lint", "safety", "tests"
 
 
 def install_with_constraints(session, *args, **kwargs):
-    """Install packages constrained by the Poetry lock file"""
+    #Install packages constrained by the Poetry lock file
     with tempfile.NamedTemporaryFile() as requirements:
         session.run(
             "poetry",
@@ -21,18 +63,9 @@ def install_with_constraints(session, *args, **kwargs):
         session.install(f"--constraint={requirements.name}", *args, **kwargs)
 
 
-"""
 @nox.session(python=["3.8", "3.7"])
 def tests(session):
-    args = session.posargs or ["--cov"]
-    session.run("poetry", "install", external=True)
-    session.run("pytest", *args)
-"""
-
-
-@nox.session(python=["3.8", "3.7"])
-def tests(session):
-    """Run the test suite"""
+    #Run the test suite
     args = session.posargs or ["--cov", "-m", "not e2e"]
     session.run("poetry", "install", "--no-dev", external=True)
     install_with_constraints(
@@ -44,7 +77,7 @@ def tests(session):
 
 @nox.session(python="3.8")
 def black(session):
-    """Format code with black"""
+    #Format code with black#
     args = session.posargs or locations
     install_with_constraints(session, "black")
     session.run("black", *args)
@@ -52,7 +85,7 @@ def black(session):
 
 @nox.session(python=["3.8", "3.7"])
 def lint(session):
-    """Lint with flake8"""
+    #Lint with flake8
     args = session.posargs or locations
     install_with_constraints(
         session,
@@ -68,7 +101,7 @@ def lint(session):
 
 @nox.session(python="3.8")
 def safety(session):
-    """Analyze dependencies for insecure packages"""
+    #Analyze dependencies for insecure packages
     with tempfile.NamedTemporaryFile() as requirements:
         session.run(
             "poetry",
@@ -81,3 +114,4 @@ def safety(session):
         )
         install_with_constraints(session, "safety")
         session.run("safety", "check", f"--file={requirements.name}", "--full-report")
+"""
