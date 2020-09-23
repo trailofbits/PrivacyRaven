@@ -39,6 +39,7 @@ def tests(session):
         session, "coverage[toml]", "pytest", "pytest-cov", "pytest-mock"
     )
     session.run("pytest", *args)
+    #session.run("poetry run pytest", *args)
 
 
 @nox.session(python="3.8")
