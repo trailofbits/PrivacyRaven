@@ -2,13 +2,13 @@
 name: Feature request
 about: Suggest an idea for this project
 title: ''
-labels: 
+labels:
 assignees: ''
 
 ---
 
 **Is your feature request related to a problem? Please describe.**
-Provide a clear and concise description of what the problem is. If this is related to code quality, style, or efficiency improvements, please make that clear. 
+Provide a clear and concise description of what the problem is. If this is related to code quality, style, or efficiency improvements, please make that clear.
 
 **Describe the solution you'd like.**
 Provide a clear and concise description of what you want to happen.

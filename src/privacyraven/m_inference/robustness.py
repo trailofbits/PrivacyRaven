@@ -1,7 +1,7 @@
+import torch
 from art.attacks.evasion import BoundaryAttack, HopSkipJump
 from art.estimators.classification import BlackBoxClassifier
 from sklearn.model_selection import train_test_split
-import torch
 from tqdm import tqdm
 
 from privacyraven.extraction.synthesis import hopskipjump
