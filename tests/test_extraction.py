@@ -9,24 +9,30 @@ from privacyraven.models.pytorch import ImagenetTransferLearning
 
 
 def test_extraction():
-    model = train_mnist_victim()
+    try:
+        print("Creating victim model")
+        model = train_mnist_victim()
 
-    def query_mnist(input_data):
-        return get_target(model, input_data)
+        def query_mnist(input_data):
+            return get_target(model, input_data)
 
-    emnist_train, emnist_test = get_emnist_data()
+        print("Downloading EMNIST data")
+        emnist_train, emnist_test = get_emnist_data()
 
-    attack = ModelExtractionAttack(
-        query_mnist,
-        100,
-        (1, 28, 28, 1),
-        10,
-        (1, 3, 28, 28),
-        "copycat",
-        ImagenetTransferLearning,
-        1000,
-        emnist_train,
-        emnist_test,
-    )
-
-    return attack
+        print("Launching model extraction attack")
+        attack = ModelExtractionAttack(
+            query_mnist,
+            100,
+            (1, 28, 28, 1),
+            10,
+            (1, 3, 28, 28),
+            "copycat",
+            ImagenetTransferLearning,
+            1000,
+            emnist_train,
+            emnist_test,
+        )
+        print("Attack Done")
+        print(attack)
+    except Exception:
+        pytest.fail("Unexpected Error")
