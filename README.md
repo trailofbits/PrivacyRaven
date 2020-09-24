@@ -23,7 +23,7 @@ Hence, we developed PrivacyRaven- a machine learning assurance tool that aims to
 
 ## How does it work?
 
-PrivacyRaven partions each attack into multiple customizable and optimizable phases.
+PrivacyRaven partitions each attack into multiple customizable and optimizable phases.
 Different interfaces are also provided for each attack.
 The interface shown below is known as the core interface.
 PrivacyRaven also provides wrappers around specific attack configurations found in the literature and a run-all-attacks feature.

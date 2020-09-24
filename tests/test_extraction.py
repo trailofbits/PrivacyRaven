@@ -11,7 +11,7 @@ from privacyraven.utils.query import get_target
 def test_extraction():
     try:
         print("Creating victim model")
-        model = train_mnist_victim()
+        model = train_mnist_victim(gpus=0)
 
         def query_mnist(input_data):
             return get_target(model, input_data)
@@ -20,19 +20,20 @@ def test_extraction():
         emnist_train, emnist_test = get_emnist_data()
 
         print("Launching model extraction attack")
+        # A single GPU is assumed
         attack = ModelExtractionAttack(
-            query_mnist,
-            100,
-            (1, 28, 28, 1),
-            10,
-            (1, 3, 28, 28),
-            "copycat",
-            ImagenetTransferLearning,
-            1000,
-            emnist_train,
-            emnist_test,
+            query=query_mnist,
+            query_limit=100,
+            victim_input_shape=(1, 28, 28, 1),
+            victim_output_targets=10,
+            substitute_input_shape=(1, 3, 28, 28),
+            synthesizer="copycat",
+            substitute_model_arch=ImagenetTransferLearning,
+            substitute_input_size=1000,
+            seed_data_train=emnist_train,
+            seed_data_test=emnist_test,
+            gpus=0,
         )
-        print("Attack Done")
         print(attack)
     except Exception:
         pytest.fail("Unexpected Error")
