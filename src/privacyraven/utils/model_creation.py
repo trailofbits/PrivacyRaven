@@ -1,3 +1,5 @@
+from contextlib import suppress
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pytorch_lightning as pl
@@ -69,7 +71,8 @@ def convert_to_inference(model):
     """Allows a model to be used in an inference setting"""
     model.freeze()
     model.eval()
-    model.cuda()
+    with suppress(Exception):
+        model.cuda()
     return model
 
 
