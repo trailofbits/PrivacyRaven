@@ -8,7 +8,7 @@ You can use it to determine the susceptibility of a model to different privacy a
 
 PrivacyRaven supports label-only black-box model extraction, membership inference, and (soon) model inversion attacks.
 We also plan to include differential privacy verification, automated hyperparameter optimization, more classes of attacks, and other features; see the GitHub issues for more information.
-PrivacyRaven has been featured at the [OpenMined Privacy Conference](https://pricon.openmined.org/), [Empire Hacking](https://www.empirehacking.nyc/), and [Trail of Bits blog](https://blog.trailofbits.com/).
+PrivacyRaven has been featured at the [OpenMined Privacy Conference](https://www.youtube.com/watch?v=F46lX5VIoas&list=PLUNOsx6Az_ZGKQd_p4StdZRFQkCBwnaY6&t=2h21m50s), [Empire Hacking](https://www.empirehacking.nyc/), and [Trail of Bits blog](https://blog.trailofbits.com/2020/10/08/privacyraven-has-left-the-nest/).
 
 ## Why use PrivacyRaven?
 
@@ -72,7 +72,8 @@ The other classes of attacks can be launched in a similar fashion. See the `exam
 2. Git clone this repository.
 3. Run `poetry install`.
 
-An official pip release is coming soon.
+Feel free to join our #privacyraven channel in [Empire Hacking](https://empireslacking.herokuapp.com/) if you need help using or extending PrivacyRaven.
+The official pip release will arrive soon.
 
 ## Want to contribute to PrivacyRaven?
 
@@ -94,7 +95,8 @@ The core maintainers are:
 
 ## License
 
-This library is released under the [Apache License 2.0](https://github.com/trailofbits/PrivacyRaven/blob/master/LICENSE).
+This library is available under the [Apache License 2.0](https://github.com/trailofbits/PrivacyRaven/blob/master/LICENSE).
+For an exception to the terms, please [contact us](mailto:opensource@trailofbits.com).
 
 ## References
 
