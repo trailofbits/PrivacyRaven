@@ -47,6 +47,7 @@ def set_evasion_model(query, victim_input_shape, victim_input_targets):
         predict=query,
         input_shape=victim_input_shape,
         nb_classes=victim_input_targets,
+        clip_values=(0, 255),
         preprocessing_defences=None,
         postprocessing_defences=None,
         preprocessing=None,
@@ -95,6 +96,8 @@ def copycat(
     else:
         limit = data_limit
 
+    print(limit)
+
     for i in tqdm(range(0, limit)):
         if i == 0:
             # First assume that the data is in a tuple-like format
@@ -116,8 +119,11 @@ def copycat(
             yi = torch.tensor([query(xi)])
             y = torch.cat((y, yi))
 
-    print(f"Dataset Created: {x.shape}; {y.shape}")
+    # print(f"Dataset Created: {x.shape}; {y.shape}")
     return x, y
+
+
+# def copycat_wrap(
 
 
 @register_synth
@@ -130,8 +136,18 @@ def hopskipjump(
     victim_input_targets,
 ):
     """Generates a dataset from unlabeled data using the hopskipjump attack"""
-    x, y = copycat(data, query, query_limit, victim_input_shape, substitute_input_shape)
+    x, y = copycat(
+        data,
+        query,
+        query_limit,
+        victim_input_shape,
+        substitute_input_shape,
+        victim_input_targets,
+    )
     x = x.to(torch.float32)
+    import pdb
+
+    pdb.set_trace()
     config = set_evasion_model(query, victim_input_shape, victim_input_targets)
     x_adv, y_adv = init_hopskipjump(config, data)
     x = torch.cat((x, x_adv))
