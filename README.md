@@ -7,7 +7,7 @@
 You can use it to determine the susceptibility of a model to different privacy attacks; evaluate privacy preserving machine learning techniques; develop novel privacy metrics and attacks; and repurpose attacks for data provenance and other use cases.
 
 PrivacyRaven supports label-only black-box model extraction, membership inference, and (soon) model inversion attacks.
-We also plan to include differential privacy verification, automated hyperparameter optimization, more classes of attacks, and other features; see the GitHub issues for more information.
+We also plan to include differential privacy verification, automated hyperparameter optimization, more classes of attacks, and other features; see the [GitHub issues](https://github.com/trailofbits/PrivacyRaven/issues) for more information.
 PrivacyRaven has been featured at the [OpenMined Privacy Conference](https://www.youtube.com/watch?v=F46lX5VIoas&list=PLUNOsx6Az_ZGKQd_p4StdZRFQkCBwnaY6&t=2h21m50s), [Empire Hacking](https://www.empirehacking.nyc/), and [Trail of Bits blog](https://blog.trailofbits.com/2020/10/08/privacyraven-has-left-the-nest/).
 
 ## Why use PrivacyRaven?
@@ -17,9 +17,9 @@ However, these models are vulnerable to privacy attacks that target both the int
 Recent literature has seen an arms race between privacy attacks and defenses on various systems.
 And until now, engineers and researchers have not had the privacy analysis tools they need to rival this trend.
 Hence, we developed PrivacyRaven- a machine learning assurance tool that aims to be:
-+ **Usable**: By providing multiple levels of abstraction, PrivacyRaven enables users to choose to automate much of the internal mechanics or directly control it when necessary based upon their use case and familiarity with the domain.
-+ **Flexible**: A modular design makes these attack configurations customizable and interoperable. Furthermore, it allows new privacy metrics and attacks to be incorporated in a straightforward process.
-+ **Efficient**: PrivacyRaven reduces the boilerplate, affording quick prototyping and fast experimentation. Each attack can be launched in less than 15 lines of code.
++ **Usable**: Multiple levels of abstraction allow users to either automate much of the internal mechanics or directly control them, depending on their use case and familiarity with the domain. 
++ **Flexible**: A modular design makes the attack configurations customizable and interoperable. It also allows new privacy metrics and attacks to be incorporated straightforwardly.
++ **Efficient**: PrivacyRaven reduces the boilerplate, affording quick prototyping and fast experimentation. Each attack can be launched in fewer than 15 lines of code.
 
 ## How does it work?
 
