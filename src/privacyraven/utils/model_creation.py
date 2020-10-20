@@ -5,6 +5,21 @@ import numpy as np
 import pytorch_lightning as pl
 import torch
 from torch.utils.data import Dataset
+from art.estimators.classification import BlackBoxClassifier
+
+
+def set_evasion_model(query, victim_input_shape, victim_input_targets):
+    """Defines the threat model for an evasion attack"""
+    config = BlackBoxClassifier(
+        predict=query,
+        input_shape=victim_input_shape,
+        nb_classes=victim_input_targets,
+        clip_values=(0, 255),
+        preprocessing_defences=None,
+        postprocessing_defences=None,
+        preprocessing=None,
+    )
+    return config
 
 
 class NewDataset(Dataset):

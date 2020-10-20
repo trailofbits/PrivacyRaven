@@ -70,6 +70,7 @@ class ModelExtractionAttack(object):
         self.query = establish_query(self.query, self.victim_input_shape)
         self.synth_train, self.synth_valid, self.synth_test = self.synthesize_data()
         print("Synthetic Data Generated")
+
         self.hparams = self.set_substitute_hparams()
         (
             self.train_dataloader,
