@@ -1,10 +1,9 @@
 import torch
 from art.attacks.evasion import BoundaryAttack, HopSkipJump
-from art.estimators.classification import BlackBoxClassifier
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
-from privacyraven.utils.model_creation import NewDataset
+from privacyraven.utils.model_creation import NewDataset, set_evasion_model
 from privacyraven.utils.query import reshape_input
 
 synths = dict()
@@ -27,6 +26,7 @@ def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
     Returns:
         Three NewDatasets containing synthetic data"""
     func = synths[func_name]
+    print("Time to synthesize")
     x_train, y_train = func(seed_data_train, *args, **kwargs)
     x_test, y_test = func(seed_data_test, *args, **kwargs)
     print("Synthesis complete")
@@ -39,20 +39,6 @@ def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
     synth_valid = NewDataset(x_valid, y_valid)
     synth_test = NewDataset(x_test, y_test)
     return synth_train, synth_valid, synth_test
-
-
-def set_evasion_model(query, victim_input_shape, victim_input_targets):
-    """Defines the threat model for an evasion attack"""
-    config = BlackBoxClassifier(
-        predict=query,
-        input_shape=victim_input_shape,
-        nb_classes=victim_input_targets,
-        clip_values=(0, 255),
-        preprocessing_defences=None,
-        postprocessing_defences=None,
-        preprocessing=None,
-    )
-    return config
 
 
 def init_hopskipjump(config, data, limit=50):
@@ -96,7 +82,7 @@ def copycat(
     else:
         limit = data_limit
 
-    print(limit)
+    # print(limit)
 
     for i in tqdm(range(0, limit)):
         if i == 0:
@@ -120,10 +106,44 @@ def copycat(
             y = torch.cat((y, yi))
 
     # print(f"Dataset Created: {x.shape}; {y.shape}")
+    print(x.dtype)
+    print(y.dtype)
     return x, y
 
 
 # def copycat_wrap(
+
+
+@register_synth
+def hop(
+    data,
+    query,
+    query_limit,
+    victim_input_shape,
+    substitute_input_shape,
+    victim_input_targets,
+):
+    # How to distribute query?
+    config = set_evasion_model(query, victim_input_shape, victim_input_targets)
+    attack = HopSkipJump(
+        config, False, norm="inf", max_iter=50, max_eval=100, init_eval=10
+    )
+    X, y = copycat(
+        data,
+        query,
+        query_limit,
+        victim_input_shape,
+        substitute_input_shape,
+        victim_input_targets,
+    )
+    print(X.shape)
+    result = attack.generate(X)
+    result = torch.as_tensor(result)
+    result = result.clone().detach()
+    print(result.shape)
+    y = torch.Tensor([query(x) for x in result])
+    y = y.long()
+    return result, y
 
 
 @register_synth
@@ -145,9 +165,9 @@ def hopskipjump(
         victim_input_targets,
     )
     x = x.to(torch.float32)
-    import pdb
+    # import pdb
 
-    pdb.set_trace()
+    # pdb.set_trace()
     config = set_evasion_model(query, victim_input_shape, victim_input_targets)
     x_adv, y_adv = init_hopskipjump(config, data)
     x = torch.cat((x, x_adv))
