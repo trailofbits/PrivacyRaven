@@ -41,14 +41,6 @@ def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
     return synth_train, synth_valid, synth_test
 
 
-def init_hopskipjump(config, data, limit=50):
-    """Runs the HopSkipJump evasion attack
-
-    Arxiv Paper: https://arxiv.org/abs/1904.02144"""
-    attack = HopSkipJump(config, False, max_iter=limit, max_eval=100, init_eval=10)
-    return attack.generate(data)
-
-
 def get_data_limit(data):
     """Uses the size of the data to establish a synthesis restriction"""
     try:
@@ -111,11 +103,8 @@ def copycat(
     return x, y
 
 
-# def copycat_wrap(
-
-
 @register_synth
-def hop(
+def hopskipjump(
     data,
     query,
     query_limit,
@@ -123,15 +112,24 @@ def hop(
     substitute_input_shape,
     victim_input_targets,
 ):
-    # How to distribute query?
+    """Runs the HopSkipJump evasion attack
+
+    Arxiv Paper: https://arxiv.org/abs/1904.02144"""
     config = set_evasion_model(query, victim_input_shape, victim_input_targets)
+    internal_limit = int(query_limit * 0.5)
+    evasion_limit = int(query_limit * 0.5)
     attack = HopSkipJump(
-        config, False, norm="inf", max_iter=50, max_eval=100, init_eval=10
+        config,
+        False,
+        norm="inf",
+        max_iter=evasion_limit,
+        max_eval=evasion_limit,
+        init_eval=10,
     )
     X, y = copycat(
         data,
         query,
-        query_limit,
+        internal_limit,
         victim_input_shape,
         substitute_input_shape,
         victim_input_targets,
@@ -144,48 +142,3 @@ def hop(
     y = torch.Tensor([query(x) for x in result])
     y = y.long()
     return result, y
-
-
-@register_synth
-def hopskipjump(
-    data,
-    query,
-    query_limit,
-    victim_input_shape,
-    substitute_input_shape,
-    victim_input_targets,
-):
-    """Generates a dataset from unlabeled data using the hopskipjump attack"""
-    x, y = copycat(
-        data,
-        query,
-        query_limit,
-        victim_input_shape,
-        substitute_input_shape,
-        victim_input_targets,
-    )
-    x = x.to(torch.float32)
-    # import pdb
-
-    # pdb.set_trace()
-    config = set_evasion_model(query, victim_input_shape, victim_input_targets)
-    x_adv, y_adv = init_hopskipjump(config, data)
-    x = torch.cat((x, x_adv))
-    y = torch.cat((y, y_adv))
-    return x, y
-
-
-@register_synth
-def seeded_hopskipjump(
-    data,
-    query,
-    query_limit,
-    victim_input_shape,
-    substitute_input_shape,
-    victim_input_targets,
-):
-    """Generates a dataset from labeled data using the hopskipjump attack"""
-    data = data.to(torch.float32)
-    config = set_evasion_model(query, victim_input_shape, victim_input_targets)
-    x_adv, y_adv = init_hopskipjump(config, data, query_limit)
-    return x_adv, y_adv
