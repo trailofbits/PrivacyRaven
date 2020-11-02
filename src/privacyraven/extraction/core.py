@@ -37,7 +37,9 @@ class ModelExtractionAttack(object):
         batch_size: Int stating how many samples are in a batch of data
         num_workers: Int of the number of workers used in training
         max_epochs: Int of the maximum number of epochs used to train the model
-        learning_rate: Float of the learning rate of the model"""
+        learning_rate: Float of the learning rate of the model
+        callback: A PytorchLightning CallBack
+    """
 
     query = attr.ib()
     query_limit = attr.ib(default=100)
@@ -56,6 +58,7 @@ class ModelExtractionAttack(object):
     gpus = attr.ib(default=1)
     max_epochs = attr.ib(default=10)
     learning_rate = attr.ib(default=1e-3)
+    callback = attr.ib(default=None)
 
     synth_train = attr.ib(init=False)
     synth_valid = attr.ib(init=False)
@@ -133,6 +136,7 @@ class ModelExtractionAttack(object):
             self.valid_dataloader,
             self.test_dataloader,
             self.hparams,
+            self.callback,
         )
         model = convert_to_inference(model)
         return model
