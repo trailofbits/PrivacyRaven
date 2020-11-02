@@ -7,6 +7,7 @@ A single GPU is assumed.
 """
 
 import privacyraven as pr
+
 from privacyraven.utils.data import get_emnist_data
 from privacyraven.extraction.core import ModelExtractionAttack
 from privacyraven.utils.query import get_target
@@ -20,7 +21,6 @@ model = train_mnist_victim()
 def query_mnist(input_data):
     # PrivacyRaven provides built-in query functions
     return get_target(model, input_data)
-
 
 # Obtain seed (or public) data to be used in extraction
 emnist_train, emnist_test = get_emnist_data()
@@ -36,5 +36,5 @@ attack = ModelExtractionAttack(
     ImagenetTransferLearning,
     1000,
     emnist_train,
-    emnist_test,
+    emnist_test
 )
