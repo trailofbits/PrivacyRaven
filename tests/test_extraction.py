@@ -20,7 +20,8 @@ def test_extraction():
         emnist_train, emnist_test = get_emnist_data()
 
         print("Launching model extraction attack")
-        # A single GPU is assumed
+ 
+        #This is a CPU-only attack
         attack = ModelExtractionAttack(
             query=query_mnist,
             query_limit=100,

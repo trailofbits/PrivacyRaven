@@ -10,65 +10,6 @@ from hypothesis import given, strategies as st
 
 # TODO: replace st.nothing() with appropriate strategies
 
-
-@given(
-    estimator=st.nothing(),
-    targeted=st.booleans(),
-    delta=st.just(0.01),
-    epsilon=st.just(0.01),
-    step_adapt=st.just(0.667),
-    max_iter=st.just(5000),
-    num_trial=st.just(25),
-    sample_size=st.just(20),
-    init_size=st.just(100),
-)
-def test_fuzz_BoundaryAttack(
-    estimator,
-    targeted,
-    delta,
-    epsilon,
-    step_adapt,
-    max_iter,
-    num_trial,
-    sample_size,
-    init_size,
-):
-    art.attacks.evasion.boundary.BoundaryAttack(
-        estimator=estimator,
-        targeted=targeted,
-        delta=delta,
-        epsilon=epsilon,
-        step_adapt=step_adapt,
-        max_iter=max_iter,
-        num_trial=num_trial,
-        sample_size=sample_size,
-        init_size=init_size,
-    )
-
-
-@given(
-    classifier=st.nothing(),
-    targeted=st.booleans(),
-    norm=st.just(2),
-    max_iter=st.just(50),
-    max_eval=st.just(10000),
-    init_eval=st.just(100),
-    init_size=st.just(100),
-)
-def test_fuzz_HopSkipJump(
-    classifier, targeted, norm, max_iter, max_eval, init_eval, init_size
-):
-    art.attacks.evasion.hop_skip_jump.HopSkipJump(
-        classifier=classifier,
-        targeted=targeted,
-        norm=norm,
-        max_iter=max_iter,
-        max_eval=max_eval,
-        init_eval=init_eval,
-        init_size=init_size,
-    )
-
-
 @given(
     data=st.nothing(),
     query=st.nothing(),
@@ -94,7 +35,7 @@ def test_fuzz_copycat(
         victim_input_targets=victim_input_targets,
     )
 
-
+"""
 @given(data=st.nothing())
 def test_fuzz_get_data_limit(data):
     privacyraven.extraction.synthesis.get_data_limit(data=data)
