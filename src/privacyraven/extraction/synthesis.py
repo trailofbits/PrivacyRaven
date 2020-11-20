@@ -3,6 +3,7 @@ from art.attacks.evasion import BoundaryAttack, HopSkipJump
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
+from privacyraven.utils.data import is_combined
 from privacyraven.utils.model_creation import NewDataset, set_evasion_model
 from privacyraven.utils.query import reshape_input
 
@@ -27,6 +28,7 @@ def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
         Three NewDatasets containing synthetic data"""
     func = synths[func_name]
     print("Time to synthesize")
+    # import pdb; pdb.set_trace()
     x_train, y_train = func(seed_data_train, *args, **kwargs)
     x_test, y_test = func(seed_data_test, *args, **kwargs)
     print("Synthesis complete")
@@ -49,6 +51,7 @@ def get_data_limit(data):
         data_limit = x_i.size()
     except Exception:
         # This requires data to have a size attribute
+        # data = torch.tensor(data)
         data_limit = data.size()
     data_limit = int(data_limit[0])
     return data_limit
@@ -75,14 +78,19 @@ def copycat(
         limit = data_limit
 
     # print(limit)
-
+    # import pdb; pdb.set_trace();
     for i in tqdm(range(0, limit)):
         if i == 0:
             # First assume that the data is in a tuple-like format
             try:
                 x, y0 = data[0]
+                # print(x.size())
             except Exception:
-                x = data[0]
+                # print(data.size())
+                # x = data[0]
+                x = data[-1:]
+                x = x.type(torch.FloatTensor)
+                # print(x.size())
             # Creates new tensors
             y = torch.tensor([query(x)])
             x = reshape_input(x, substitute_input_shape)
@@ -90,7 +98,8 @@ def copycat(
             try:
                 xi, y0 = data[i]
             except Exception:
-                xi = data[i]
+                xi = data[-i+1:]
+                xi = xi.type(torch.FloatTensor)
             # Concatenates current data to new tensors
             xi = reshape_input(xi, substitute_input_shape)
             x = torch.cat((x, xi))
@@ -98,8 +107,8 @@ def copycat(
             y = torch.cat((y, yi))
 
     # print(f"Dataset Created: {x.shape}; {y.shape}")
-    print(x.dtype)
-    print(y.dtype)
+    # print(x.dtype)
+    # print(y.dtype)
     return x, y
 
 

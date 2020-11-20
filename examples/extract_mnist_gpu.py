@@ -22,8 +22,11 @@ def query_mnist(input_data):
     # PrivacyRaven provides built-in query functions
     return get_target(model, input_data)
 
+
 # Obtain seed (or public) data to be used in extraction
 emnist_train, emnist_test = get_emnist_data()
+
+# import pdb; pdb.set_trace()
 
 # Run a Model Extraction Attack
 attack = ModelExtractionAttack(
@@ -36,5 +39,5 @@ attack = ModelExtractionAttack(
     ImagenetTransferLearning,
     1000,
     emnist_train.data,
-    emnist_test.targets
+    emnist_test.data,
 )
