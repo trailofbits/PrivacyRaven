@@ -32,10 +32,12 @@ def valid_query():
 def valid_data():
     return arrays(np.float64, (10, 28, 28, 1), st.floats())
 
+
 emnist_train, emnist_test = get_emnist_data()
 
+
 @given(
-    data=st.just(emnist_train),    #valid_data(),
+    data=st.just(emnist_train),  # valid_data(),
     query=valid_query(),
     query_limit=st.just(100),
     victim_input_shape=st.just((1, 28, 28, 1)),
@@ -50,34 +52,40 @@ def test_copycat(
     substitute_input_shape,
     victim_input_targets,
 ):
-    combined = is_combined(data)
+    try:
+        # See if the data is labeled regardless of specific representation
+        labeled = True
+        x, y = data[0]
+    except ValueError:
+        # A value error is raised if the data is not labeled
+        labeled = False
+        x_data = data.detach().clone().float()
+        y_data = None
+        bounded = False
+    # Labeled data can come in multiple data formats, including, but
+    # not limited to Torchvision datasets, lists of tuples, and
+    # tuple of tuples
+    if labeled:
+        try:
+            x_data, y_data = data.data.detach().clone().float(), data.targets.detach().clone().float()
+            bounded = False
+        except AttributeError:
+            bounded = True
 
-    data_limit = privacyraven.extraction.synthesis.get_data_limit(data)
+            data_limit = int(len(data))
+            limit = query_limit if data_limit > query_limit else data_limit
+            data = data[:limit]
 
-    # The limit must be lower than or equal to the number of queries
-    if (data_limit > query_limit) and combined:
-        limit = query_limit
-        # Slice the x data so we can just iterate over that
-        data = torch.tensor((image for i, (x, y) in enumerate(data)))
-        print(type(data))
-        print(data.size())
-    elif (data_limit > query_limit) and not(combined):
-        limit = query_limit
-    else:
-        limit = data_limit
+            x_data = torch.FloatTensor([x for x, y in data])
+            y_data = torch.FloatTensor([y for x, y in data])
 
-    # import pdb; pdb.set_trace()
-    # data = torch.from_numpy(data)
-    # print(data.size())
-    """
-    return privacyraven.extraction.synthesis.copycat(
-        data=data,
-        query=query,
-        query_limit=query_limit,
-        victim_input_shape=victim_input_shape,
-        substitute_input_shape=substitute_input_shape,
-        victim_input_targets=victim_input_targets,
-    )
-    """
+
+    if not(bounded):
+        data_limit = int(x_data.size()[0])
+        limit = query_limit if data_limit > query_limit else data_limit
+
+
+            # return x, y
+
 
 test_copycat()

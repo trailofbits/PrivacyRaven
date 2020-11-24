@@ -29,6 +29,8 @@ def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
     func = synths[func_name]
     print("Time to synthesize")
     # import pdb; pdb.set_trace()
+    seed_data_train = synthesize(seed_data_train)
+    seed_data_test = synthesize(seed_data_test)
     x_train, y_train = func(seed_data_train, *args, **kwargs)
     x_test, y_test = func(seed_data_test, *args, **kwargs)
     print("Synthesis complete")
@@ -42,9 +44,45 @@ def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
     synth_test = NewDataset(x_test, y_test)
     return synth_train, synth_valid, synth_test
 
+def process_data(data):
+    try:
+        # See if the data is labeled regardless of specific representation
+        labeled = True
+        x, y = data[0]
+    except ValueError:
+        # A value error is raised if the data is not labeled
+        labeled = False
+        x_data = data.detach().clone().float()
+        y_data = None
+        bounded = False
+    # Labeled data can come in multiple data formats, including, but
+    # not limited to Torchvision datasets, lists of tuples, and
+    # tuple of tuples
+    if labeled:
+        try:
+            x_data, y_data = data.data.detach().clone().float(), data.targets.detach().clone().float()
+            bounded = False
+        except AttributeError:
+            bounded = True
 
-def get_data_limit(data):
+            data_limit = int(len(data))
+            limit = query_limit if data_limit > query_limit else data_limit
+            data = data[:limit]
+
+            x_data = torch.FloatTensor([x for x, y in data])
+            y_data = torch.FloatTensor([y for x, y in data])
+
+
+    if not(bounded):
+        data_limit = int(x_data.size()[0])
+        limit = query_limit if data_limit > query_limit else data_limit
+    processed_data = (x_data, y_data)
+    return processed_data
+
+
+def get_data_limit(data, combined=None):
     """Uses the size of the data to establish a synthesis restriction"""
+    """
     try:
         # Differentiate between labeled and unlabeled data
         x_i, y_i = data.data, data.targets
@@ -54,7 +92,42 @@ def get_data_limit(data):
         # data = torch.tensor(data)
         data_limit = data.size()
     data_limit = int(data_limit[0])
+    """
+    if combined == None:
+        combined = is_combined(data)
+
+    #import pdb; pdb.set_trace()
+    if combined:
+        try:
+            x, y = data.data, data.targets
+            data_limit = x.size()
+        except Exception:
+            print("Fill")
+            data_limit = 0
+            # Swoop in all of the x data 
+    else:
+        data_limit = data.size()
+    data_limit = int(data_limit[0])
+    # print("Data limit is " + str(data_limit))
     return data_limit
+
+
+@register_synth
+def new_copycat(
+    data,
+    query,
+    query_limit,
+    victim_input_shape,
+    substitute_input_shape,
+    victim_input_targets,
+):
+    (x_data, y_data) = data
+
+    for x in x_data:
+        # How do I efficiently do this? map, filter, reduce?
+        y = 
+        x = reshape_input(x, substitute_input_shape)
+
 
 
 @register_synth
@@ -69,6 +142,7 @@ def copycat(
     """Creates a synthetic dataset by labeling unlabeled seed data
 
     Arix Paper: https://ieeexplore.ieee.org/document/8489592"""
+    # import pdb; pdb.set_trace();
     data_limit = get_data_limit(data)
 
     # The limit must be lower than or equal to the number of queries
@@ -111,7 +185,6 @@ def copycat(
     # print(y.dtype)
     return x, y
 
-
 @register_synth
 def hopskipjump(
     data,
@@ -143,11 +216,11 @@ def hopskipjump(
         substitute_input_shape,
         victim_input_targets,
     )
-    print(X.shape)
+    # print(X.shape)
     result = attack.generate(X)
     result = torch.as_tensor(result)
     result = result.clone().detach()
-    print(result.shape)
+    # print(result.shape)
     y = torch.Tensor([query(x) for x in result])
     y = y.long()
     return result, y
