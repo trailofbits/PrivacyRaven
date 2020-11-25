@@ -35,9 +35,9 @@ attack = ModelExtractionAttack(
     (1, 28, 28, 1),
     10,
     (1, 3, 28, 28),
-    "copycat",
+    "new_copycat",
     ImagenetTransferLearning,
     1000,
-    emnist_train.data,
-    emnist_test.data,
+    emnist_train,
+    emnist_test
 )

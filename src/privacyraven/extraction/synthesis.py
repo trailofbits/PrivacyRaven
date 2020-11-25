@@ -16,7 +16,9 @@ def register_synth(func):
     return func
 
 
-def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
+def synthesize(
+    func_name, seed_data_train, seed_data_test, query, query_limit, *args, **kwargs
+):
     """Synthesize training and testing data for a substitute model
 
     Parameters:
@@ -29,22 +31,35 @@ def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
     func = synths[func_name]
     print("Time to synthesize")
     # import pdb; pdb.set_trace()
-    seed_data_train = synthesize(seed_data_train)
-    seed_data_test = synthesize(seed_data_test)
-    x_train, y_train = func(seed_data_train, *args, **kwargs)
-    x_test, y_test = func(seed_data_test, *args, **kwargs)
+
+    # We split the query limit in half to account for two datasets.
+    query_limit = int(0.5 * query_limit)
+
+    seed_data_train = process_data(seed_data_train, query_limit)
+    seed_data_test = process_data(seed_data_test, query_limit)
+
+    x_train, y_train = func(seed_data_train, query, query_limit, *args, **kwargs)
+    x_test, y_test = func(seed_data_test, query, query_limit, *args, **kwargs)
     print("Synthesis complete")
 
+    # import pdb
+
+    # pdb.set_trace()
+
+    # Presently, we have hard-coded specific values for the test-train split.
+    # In the future, this should be automated and/or optimized in some form.
     x_train, x_valid, y_train, y_valid = train_test_split(
         x_train, y_train, test_size=0.4, random_state=42
     )
 
+    # The NewDataset ensures the synthesized data is a valid PL network input.
     synth_train = NewDataset(x_train, y_train)
     synth_valid = NewDataset(x_valid, y_valid)
     synth_test = NewDataset(x_test, y_test)
     return synth_train, synth_valid, synth_test
 
-def process_data(data):
+
+def process_data(data, query_limit):
     try:
         # See if the data is labeled regardless of specific representation
         labeled = True
@@ -60,7 +75,10 @@ def process_data(data):
     # tuple of tuples
     if labeled:
         try:
-            x_data, y_data = data.data.detach().clone().float(), data.targets.detach().clone().float()
+            x_data, y_data = (
+                data.data.detach().clone().float(),
+                data.targets.detach().clone().float(),
+            )
             bounded = False
         except AttributeError:
             bounded = True
@@ -69,13 +87,14 @@ def process_data(data):
             limit = query_limit if data_limit > query_limit else data_limit
             data = data[:limit]
 
-            x_data = torch.FloatTensor([x for x, y in data])
-            y_data = torch.FloatTensor([y for x, y in data])
+            x_data = torch.Tensor([x for x, y in data]).float()
+            y_data = torch.Tensor([y for x, y in data]).float()
 
-
-    if not(bounded):
+    if not (bounded):
         data_limit = int(x_data.size()[0])
         limit = query_limit if data_limit > query_limit else data_limit
+    # print(x_data.size())
+    # print(y_data.size())
     processed_data = (x_data, y_data)
     return processed_data
 
@@ -96,7 +115,7 @@ def get_data_limit(data, combined=None):
     if combined == None:
         combined = is_combined(data)
 
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     if combined:
         try:
             x, y = data.data, data.targets
@@ -104,7 +123,7 @@ def get_data_limit(data, combined=None):
         except Exception:
             print("Fill")
             data_limit = 0
-            # Swoop in all of the x data 
+            # Swoop in all of the x data
     else:
         data_limit = data.size()
     data_limit = int(data_limit[0])
@@ -123,11 +142,27 @@ def new_copycat(
 ):
     (x_data, y_data) = data
 
-    for x in x_data:
-        # How do I efficiently do this? map, filter, reduce?
-        y = 
-        x = reshape_input(x, substitute_input_shape)
+    # for x in x_data:
+    # How do I efficiently do this? map, filter, reduce?
+    import pdb; pdb.set_trace()
 
+
+    y_data = torch.Tensor([query(x_data)]).float()
+
+    # y_data = torch.FloatTensor([query(x_data)])
+
+    # import pdb; pdb.set_trace()
+
+    # x = reshape_input(x, substitute_input_shape)
+    start = int(y_data.size()[0])
+
+    new_shape = list(substitute_input_shape)
+    new_shape[0] = start
+    new_shape = tuple(new_shape)
+
+    x_data = reshape_input(x_data, new_shape)
+    print(x_data.size())
+    return x_data, y_data
 
 
 @register_synth
@@ -172,7 +207,7 @@ def copycat(
             try:
                 xi, y0 = data[i]
             except Exception:
-                xi = data[-i+1:]
+                xi = data[-i + 1 :]
                 xi = xi.type(torch.FloatTensor)
             # Concatenates current data to new tensors
             xi = reshape_input(xi, substitute_input_shape)
@@ -184,6 +219,7 @@ def copycat(
     # print(x.dtype)
     # print(y.dtype)
     return x, y
+
 
 @register_synth
 def hopskipjump(
