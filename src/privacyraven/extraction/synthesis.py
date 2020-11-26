@@ -85,6 +85,7 @@ def process_data(data, query_limit):
 
             data_limit = int(len(data))
             limit = query_limit if data_limit > query_limit else data_limit
+
             data = data[:limit]
 
             x_data = torch.Tensor([x for x, y in data]).float()
@@ -93,8 +94,10 @@ def process_data(data, query_limit):
     if not (bounded):
         data_limit = int(x_data.size()[0])
         limit = query_limit if data_limit > query_limit else data_limit
-    # print(x_data.size())
-    # print(y_data.size())
+
+        x_data = x_data.narrow(0, int(limit - 1), 1)
+    print(x_data.size())
+    print(y_data.size())
     processed_data = (x_data, y_data)
     return processed_data
 
@@ -144,8 +147,9 @@ def new_copycat(
 
     # for x in x_data:
     # How do I efficiently do this? map, filter, reduce?
-    import pdb; pdb.set_trace()
+    import pdb
 
+    pdb.set_trace()
 
     y_data = torch.Tensor([query(x_data)]).float()
 
