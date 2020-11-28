@@ -5,7 +5,7 @@ import pytorch_lightning as pl
 import torch
 
 
-def reshape_input(input_data, input_size, warning=False):
+def reshape_input(input_data, input_size, single=True, warning=False):
     """Reshape input data before querying model
 
     This function will conduct a low-level resize if the size of
@@ -22,12 +22,29 @@ def reshape_input(input_data, input_size, warning=False):
     with suppress(Exception):
         input_data = torch.from_numpy(input_data)
 
-    if input_size is not None:
-        try:
+    if input_size is None:
+        if warning is True:
+            print("No size was given and no reshaping can occur")
+        return input_data
+
+    start = len(input_data)
+
+    # I should internally move this to query()
+    alternate = list(input_size)
+    alternate[0] = start
+    alternate = tuple(alternate)
+
+    try:
+        if single:
+            input_data = input_data.reshape(alternate)
+        else:
             input_data = input_data.reshape(input_size)
-        except Exception:
-            if warning is True:
-                print("Warning: Data loss is possible during resizing.")
+    except Exception:
+        if warning is True:
+            print("Warning: Data loss is possible during resizing.")
+        if single:
+            input_data = input_data.resize_(alternate)
+        else:
             input_data = input_data.resize_(input_size)
     return input_data
 
@@ -55,7 +72,11 @@ def query_model(model, input_data, input_size=None):
     input_data = reshape_input(input_data, input_size)
     prediction_as_torch = model(input_data)
     prediction_as_np = prediction_as_torch.cpu().numpy()
-    target = int(np.argmax(prediction_as_np))
+    # target = int(np.argmax(prediction_as_np))
+    # target = torch.argmax(prediction_as_torch)
+
+    #Find out why optional size doesn't work
+    target = torch.tensor([torch.argmax(row) for row in torch.unbind(prediction_as_torch)])
     return prediction_as_torch, prediction_as_np, target
 
 

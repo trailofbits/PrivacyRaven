@@ -96,42 +96,10 @@ def process_data(data, query_limit):
         limit = query_limit if data_limit > query_limit else data_limit
 
         x_data = x_data.narrow(0, int(limit - 1), 1)
-    print(x_data.size())
-    print(y_data.size())
+    # print(x_data.size())
+    # print(y_data.size())
     processed_data = (x_data, y_data)
     return processed_data
-
-
-def get_data_limit(data, combined=None):
-    """Uses the size of the data to establish a synthesis restriction"""
-    """
-    try:
-        # Differentiate between labeled and unlabeled data
-        x_i, y_i = data.data, data.targets
-        data_limit = x_i.size()
-    except Exception:
-        # This requires data to have a size attribute
-        # data = torch.tensor(data)
-        data_limit = data.size()
-    data_limit = int(data_limit[0])
-    """
-    if combined == None:
-        combined = is_combined(data)
-
-    # import pdb; pdb.set_trace()
-    if combined:
-        try:
-            x, y = data.data, data.targets
-            data_limit = x.size()
-        except Exception:
-            print("Fill")
-            data_limit = 0
-            # Swoop in all of the x data
-    else:
-        data_limit = data.size()
-    data_limit = int(data_limit[0])
-    # print("Data limit is " + str(data_limit))
-    return data_limit
 
 
 @register_synth
@@ -147,19 +115,28 @@ def new_copycat(
 
     # for x in x_data:
     # How do I efficiently do this? map, filter, reduce?
-    import pdb
+    # import pdb
 
-    pdb.set_trace()
+    # pdb.set_trace()
 
-    y_data = torch.Tensor([query(x_data)]).float()
-
+    # y_data = torch.Tensor([query(x_data)]).float()
     # y_data = torch.FloatTensor([query(x_data)])
 
+    # Will it be necessary to slice tbh?
+    y_data = torch.Tensor([query(x) for x in x_data.unbind()]).float()
+
+    print("With unbind()")
+    print(y_data.size())
+
+    print("Without")
+    test = query(x_data)
+    print(test.size())
     # import pdb; pdb.set_trace()
 
     # x = reshape_input(x, substitute_input_shape)
     start = int(y_data.size()[0])
 
+    # I should internally move this to query()
     new_shape = list(substitute_input_shape)
     new_shape[0] = start
     new_shape = tuple(new_shape)
@@ -167,6 +144,47 @@ def new_copycat(
     x_data = reshape_input(x_data, new_shape)
     print(x_data.size())
     return x_data, y_data
+
+
+@register_synth
+def hopskipjump(
+    data,
+    query,
+    query_limit,
+    victim_input_shape,
+    substitute_input_shape,
+    victim_input_targets,
+):
+    """Runs the HopSkipJump evasion attack
+
+    Arxiv Paper: https://arxiv.org/abs/1904.02144"""
+    config = set_evasion_model(query, victim_input_shape, victim_input_targets)
+    internal_limit = int(query_limit * 0.5)
+    evasion_limit = int(query_limit * 0.5)
+    attack = HopSkipJump(
+        config,
+        False,
+        norm="inf",
+        max_iter=evasion_limit,
+        max_eval=evasion_limit,
+        init_eval=10,
+    )
+    X, y = copycat(
+        data,
+        query,
+        internal_limit,
+        victim_input_shape,
+        substitute_input_shape,
+        victim_input_targets,
+    )
+    # print(X.shape)
+    result = attack.generate(X)
+    result = torch.as_tensor(result)
+    result = result.clone().detach()
+    # print(result.shape)
+    y = torch.Tensor([query(x) for x in result])
+    y = y.long()
+    return result, y
 
 
 @register_synth
@@ -225,42 +243,33 @@ def copycat(
     return x, y
 
 
-@register_synth
-def hopskipjump(
-    data,
-    query,
-    query_limit,
-    victim_input_shape,
-    substitute_input_shape,
-    victim_input_targets,
-):
-    """Runs the HopSkipJump evasion attack
+def get_data_limit(data, combined=None):
+    """Uses the size of the data to establish a synthesis restriction"""
+    """
+    try:
+        # Differentiate between labeled and unlabeled data
+        x_i, y_i = data.data, data.targets
+        data_limit = x_i.size()
+    except Exception:
+        # This requires data to have a size attribute
+        # data = torch.tensor(data)
+        data_limit = data.size()
+    data_limit = int(data_limit[0])
+    """
+    if combined == None:
+        combined = is_combined(data)
 
-    Arxiv Paper: https://arxiv.org/abs/1904.02144"""
-    config = set_evasion_model(query, victim_input_shape, victim_input_targets)
-    internal_limit = int(query_limit * 0.5)
-    evasion_limit = int(query_limit * 0.5)
-    attack = HopSkipJump(
-        config,
-        False,
-        norm="inf",
-        max_iter=evasion_limit,
-        max_eval=evasion_limit,
-        init_eval=10,
-    )
-    X, y = copycat(
-        data,
-        query,
-        internal_limit,
-        victim_input_shape,
-        substitute_input_shape,
-        victim_input_targets,
-    )
-    # print(X.shape)
-    result = attack.generate(X)
-    result = torch.as_tensor(result)
-    result = result.clone().detach()
-    # print(result.shape)
-    y = torch.Tensor([query(x) for x in result])
-    y = y.long()
-    return result, y
+    # import pdb; pdb.set_trace()
+    if combined:
+        try:
+            x, y = data.data, data.targets
+            data_limit = x.size()
+        except Exception:
+            print("Fill")
+            data_limit = 0
+            # Swoop in all of the x data
+    else:
+        data_limit = data.size()
+    data_limit = int(data_limit[0])
+    # print("Data limit is " + str(data_limit))
+    return data_limit
