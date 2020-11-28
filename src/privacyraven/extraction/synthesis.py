@@ -80,6 +80,9 @@ def process_data(data, query_limit):
                 data.targets.detach().clone().float(),
             )
             bounded = False
+            print(x_data.size())
+            # print(y_data.size())
+            # Something goes wrong when this hits
         except AttributeError:
             bounded = True
 
@@ -91,13 +94,20 @@ def process_data(data, query_limit):
             x_data = torch.Tensor([x for x, y in data]).float()
             y_data = torch.Tensor([y for x, y in data]).float()
 
-    if not (bounded):
+    if bounded is False:
         data_limit = int(x_data.size()[0])
         limit = query_limit if data_limit > query_limit else data_limit
+        # x_data = x_data.narrow(0, int(limit - 1), 1)
+        x_data = x_data.narrow(0, 0, int(limit))
 
-        x_data = x_data.narrow(0, int(limit - 1), 1)
-    # print(x_data.size())
+        print("the limit is")
+        print(limit)
+        # print(x_data.size())
+        # x_data = x_data[:limit]
+
+    print(x_data.size())
     # print(y_data.size())
+    print("Data has been processed")
     processed_data = (x_data, y_data)
     return processed_data
 
@@ -123,14 +133,16 @@ def new_copycat(
     # y_data = torch.FloatTensor([query(x_data)])
 
     # Will it be necessary to slice tbh?
-    y_data = torch.Tensor([query(x) for x in x_data.unbind()]).float()
+    # y_data = torch.Tensor([query(x) for x in x_data.unbind()]).float()
 
-    print("With unbind()")
-    print(y_data.size())
+    y_data = query(x_data)
 
-    print("Without")
-    test = query(x_data)
-    print(test.size())
+    # print("With unbind()")
+    # print(y_data.size())
+
+    # print("Without")
+    # test = query(x_data)
+    # print(test.size())
     # import pdb; pdb.set_trace()
 
     # x = reshape_input(x, substitute_input_shape)
@@ -142,6 +154,8 @@ def new_copycat(
     new_shape = tuple(new_shape)
 
     x_data = reshape_input(x_data, new_shape)
+
+    print(y_data.size())
     print(x_data.size())
     return x_data, y_data
 

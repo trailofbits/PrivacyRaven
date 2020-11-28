@@ -13,11 +13,12 @@ def is_combined(data):
     """Determines whether or not the dataset has both x and y data"""
     try:
         combined = True
-        #X, Y = data.data, data.targets
+        # X, Y = data.data, data.targets
         x, y = data[0]
     except ValueError:
         combined = False
     return combined
+
 
 def get_emnist_data(transform=None, RGB=True):
     """Returns EMNIST train and test datasets.

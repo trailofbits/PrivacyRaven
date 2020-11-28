@@ -20,7 +20,7 @@ model = train_mnist_victim()
 
 def query_mnist(input_data):
     # PrivacyRaven provides built-in query functions
-    return get_target(model, input_data)
+    return get_target(model, input_data, (1, 28, 28, 1))
 
 
 # Obtain seed (or public) data to be used in extraction

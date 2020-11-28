@@ -73,11 +73,18 @@ def set_hparams(
 
 
 def train_and_test(
-    classifier, train_dataloader, val_dataloader, test_dataloader, hparams, callback=None
+    classifier,
+    train_dataloader,
+    val_dataloader,
+    test_dataloader,
+    hparams,
+    callback=None,
 ):
     model = classifier(hparams)
     if callback is not None:
-        trainer = pl.Trainer(gpus=hparams["gpus"], max_epochs=hparams["max_epochs"], callbacks=[callback])
+        trainer = pl.Trainer(
+            gpus=hparams["gpus"], max_epochs=hparams["max_epochs"], callbacks=[callback]
+        )
     else:
         trainer = pl.Trainer(gpus=hparams["gpus"], max_epochs=hparams["max_epochs"])
 

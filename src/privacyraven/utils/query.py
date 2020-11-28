@@ -69,15 +69,16 @@ def query_model(model, input_data, input_size=None):
     """
     with suppress(Exception):
         input_data = input_data.cuda()
-    input_data = reshape_input(input_data, input_size)
-    prediction_as_torch = model(input_data)
-    prediction_as_np = prediction_as_torch.cpu().numpy()
+    if input_size is not None:
+        input_data = reshape_input(input_data, input_size)
+    prediction = model(input_data)
+    # prediction_as_np = prediction_as_torch.cpu().numpy()
     # target = int(np.argmax(prediction_as_np))
     # target = torch.argmax(prediction_as_torch)
 
-    #Find out why optional size doesn't work
-    target = torch.tensor([torch.argmax(row) for row in torch.unbind(prediction_as_torch)])
-    return prediction_as_torch, prediction_as_np, target
+    # Find out why optional size doesn't work
+    target = torch.tensor([torch.argmax(row) for row in torch.unbind(prediction)])
+    return prediction, target
 
 
 def get_target(model, input_data, input_size=None):
@@ -91,7 +92,5 @@ def get_target(model, input_data, input_size=None):
     Returns:
         target: An integer displaying the predicted label
     """
-    prediction_as_torch, prediction_as_np, target = query_model(
-        model, input_data, input_size
-    )
+    prediction, target = query_model(model, input_data, input_size)
     return target
