@@ -29,7 +29,6 @@ def reshape_input(input_data, input_size, single=True, warning=False):
 
     start = len(input_data)
 
-    # I should internally move this to query()
     alternate = list(input_size)
     alternate[0] = start
     alternate = tuple(alternate)

@@ -21,6 +21,12 @@ class ModelExtractionAttack(object):
     used to create a substitute model. Presently, this class does not perform
     substitute model retraining.
 
+    Changes to the arguments of this model must be reflected in changes to
+    'extraction/attacks.py' as well as 'm_inference/*.py'.
+
+    If your API is rate limited, it is recommended to create a dataset from
+    querying the API prior to applying PrivacyRaven.
+
     Attributes:
         query: Function that queries deep learning model
         query_limit: Int of amount of times the model can be queried
@@ -38,8 +44,7 @@ class ModelExtractionAttack(object):
         num_workers: Int of the number of workers used in training
         max_epochs: Int of the maximum number of epochs used to train the model
         learning_rate: Float of the learning rate of the model
-        callback: A PytorchLightning CallBack
-    """
+        callback: A PytorchLightning CallBack"""
 
     query = attr.ib()
     query_limit = attr.ib(default=100)
@@ -70,6 +75,7 @@ class ModelExtractionAttack(object):
     substitute_model = attr.ib(init=False)
 
     def __attrs_post_init__(self):
+        """The attack is executed here"""
         self.query = establish_query(self.query, self.victim_input_shape)
         self.synth_train, self.synth_valid, self.synth_test = self.synthesize_data()
         print("Synthetic Data Generated")
@@ -136,7 +142,8 @@ class ModelExtractionAttack(object):
             self.valid_dataloader,
             self.test_dataloader,
             self.hparams,
-            self.callback,
+            self.callback
         )
+        # This may limit the attack to PyTorch Lightning substitutes
         model = convert_to_inference(model)
         return model

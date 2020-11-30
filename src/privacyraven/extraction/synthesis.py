@@ -7,6 +7,7 @@ from privacyraven.utils.data import is_combined
 from privacyraven.utils.model_creation import NewDataset, set_evasion_model
 from privacyraven.utils.query import reshape_input
 
+# Creates an empty dictionary for synthesis functions
 synths = dict()
 
 
@@ -19,7 +20,9 @@ def register_synth(func):
 def synthesize(
     func_name, seed_data_train, seed_data_test, query, query_limit, *args, **kwargs
 ):
-    """Synthesize training and testing data for a substitute model
+    """Synthesizes training and testing data for a substitute model
+
+    First, the data is processed. Then, the synthesizer function is called.
 
     Parameters:
         func_name: String of the function name
@@ -30,7 +33,6 @@ def synthesize(
         Three NewDatasets containing synthetic data"""
     func = synths[func_name]
     print("Time to synthesize")
-    # import pdb; pdb.set_trace()
 
     # We split the query limit in half to account for two datasets.
     query_limit = int(0.5 * query_limit)
@@ -41,10 +43,6 @@ def synthesize(
     x_train, y_train = func(seed_data_train, query, query_limit, *args, **kwargs)
     x_test, y_test = func(seed_data_test, query, query_limit, *args, **kwargs)
     print("Synthesis complete")
-
-    # import pdb
-
-    # pdb.set_trace()
 
     # Presently, we have hard-coded specific values for the test-train split.
     # In the future, this should be automated and/or optimized in some form.
@@ -60,6 +58,8 @@ def synthesize(
 
 
 def process_data(data, query_limit):
+    """Returns x and (if given labeled data) y tensors that are shortened
+    to the length of the query_limit if applicable"""
     try:
         # See if the data is labeled regardless of specific representation
         labeled = True
@@ -72,7 +72,8 @@ def process_data(data, query_limit):
         bounded = False
     # Labeled data can come in multiple data formats, including, but
     # not limited to Torchvision datasets, lists of tuples, and
-    # tuple of tuples
+    # tuple of tuples. We attempt to address these edge cases
+    # through the exception of an AttributeError
     if labeled:
         try:
             x_data, y_data = (
@@ -80,10 +81,10 @@ def process_data(data, query_limit):
                 data.targets.detach().clone().float(),
             )
             bounded = False
-            print(x_data.size())
-            # print(y_data.size())
-            # Something goes wrong when this hits
         except AttributeError:
+            # Setting 'bounded' increases efficiency as data that
+            # will be ignored due to the query limit will not be
+            # included in the initial x and y data tensors
             bounded = True
 
             data_limit = int(len(data))
@@ -97,23 +98,17 @@ def process_data(data, query_limit):
     if bounded is False:
         data_limit = int(x_data.size()[0])
         limit = query_limit if data_limit > query_limit else data_limit
-        # x_data = x_data.narrow(0, int(limit - 1), 1)
+
+        # torch.narrow is more efficient than indexing and splicing
         x_data = x_data.narrow(0, 0, int(limit))
 
-        print("the limit is")
-        print(limit)
-        # print(x_data.size())
-        # x_data = x_data[:limit]
-
-    print(x_data.size())
-    # print(y_data.size())
     print("Data has been processed")
     processed_data = (x_data, y_data)
     return processed_data
 
 
 @register_synth
-def new_copycat(
+def copycat(
     data,
     query,
     query_limit,
@@ -122,41 +117,8 @@ def new_copycat(
     victim_input_targets,
 ):
     (x_data, y_data) = data
-
-    # for x in x_data:
-    # How do I efficiently do this? map, filter, reduce?
-    # import pdb
-
-    # pdb.set_trace()
-
-    # y_data = torch.Tensor([query(x_data)]).float()
-    # y_data = torch.FloatTensor([query(x_data)])
-
-    # Will it be necessary to slice tbh?
-    # y_data = torch.Tensor([query(x) for x in x_data.unbind()]).float()
-
     y_data = query(x_data)
-
-    # print("With unbind()")
-    # print(y_data.size())
-
-    # print("Without")
-    # test = query(x_data)
-    # print(test.size())
-    # import pdb; pdb.set_trace()
-
-    # x = reshape_input(x, substitute_input_shape)
-    start = int(y_data.size()[0])
-
-    # I should internally move this to query()
-    new_shape = list(substitute_input_shape)
-    new_shape[0] = start
-    new_shape = tuple(new_shape)
-
-    x_data = reshape_input(x_data, new_shape)
-
-    print(y_data.size())
-    print(x_data.size())
+    x_data = reshape_input(x_data, substitute_input_shape)
     return x_data, y_data
 
 
@@ -192,15 +154,24 @@ def hopskipjump(
         victim_input_targets,
     )
     # print(X.shape)
-    result = attack.generate(X)
-    result = torch.as_tensor(result)
-    result = result.clone().detach()
+    result = torch.from_numpy(attack.generate(X)).detach().clone().float()
+    # result = torch.as_tensor(result)
+    # result = result.clone().detach()
+
+    # import pdb; pdb.set_trace()
+    # result = torch.tensor(attack.generate(X), ).detach().clone()
+
     # print(result.shape)
-    y = torch.Tensor([query(x) for x in result])
-    y = y.long()
+    # y = torch.Tensor([query(x) for x in result])
+    # y = y.long()
+    y = query(result)
+    # print(y.size())
+
+    result = reshape_input(result, substitute_input_shape)
     return result, y
 
 
+"""
 @register_synth
 def copycat(
     data,
@@ -210,9 +181,9 @@ def copycat(
     substitute_input_shape,
     victim_input_targets,
 ):
-    """Creates a synthetic dataset by labeling unlabeled seed data
+    #Creates a synthetic dataset by labeling unlabeled seed data
 
-    Arix Paper: https://ieeexplore.ieee.org/document/8489592"""
+    #Arix Paper: https://ieeexplore.ieee.org/document/8489592
     # import pdb; pdb.set_trace();
     data_limit = get_data_limit(data)
 
@@ -258,8 +229,7 @@ def copycat(
 
 
 def get_data_limit(data, combined=None):
-    """Uses the size of the data to establish a synthesis restriction"""
-    """
+    #Uses the size of the data to establish a synthesis restriction
     try:
         # Differentiate between labeled and unlabeled data
         x_i, y_i = data.data, data.targets
@@ -269,7 +239,6 @@ def get_data_limit(data, combined=None):
         # data = torch.tensor(data)
         data_limit = data.size()
     data_limit = int(data_limit[0])
-    """
     if combined == None:
         combined = is_combined(data)
 
@@ -287,3 +256,4 @@ def get_data_limit(data, combined=None):
     data_limit = int(data_limit[0])
     # print("Data limit is " + str(data_limit))
     return data_limit
+"""

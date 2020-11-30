@@ -26,18 +26,19 @@ def query_mnist(input_data):
 # Obtain seed (or public) data to be used in extraction
 emnist_train, emnist_test = get_emnist_data()
 
-# import pdb; pdb.set_trace()
-
-# Run a Model Extraction Attack
+# Run a model extraction attack
 attack = ModelExtractionAttack(
     query_mnist,
     100,
     (1, 28, 28, 1),
     10,
     (1, 3, 28, 28),
-    "new_copycat",
+    "hopskipjump",  
+    # "copycat",
     ImagenetTransferLearning,
     1000,
     emnist_train,
-    emnist_test
+    emnist_test,
 )
+
+# Use emnist_train.data and emnist_test.data for unlabeled data
