@@ -3,7 +3,7 @@ from art.attacks.evasion import BoundaryAttack, HopSkipJump
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
-from privacyraven.utils.data import is_combined
+# from privacyraven.utils.data import is_combined
 from privacyraven.utils.model_creation import NewDataset, set_evasion_model
 from privacyraven.utils.query import reshape_input
 
@@ -88,6 +88,8 @@ def process_data(data, query_limit):
             bounded = True
 
             data_limit = int(len(data))
+            if query_limit is None:
+                data_limit = query_limit
             limit = query_limit if data_limit > query_limit else data_limit
 
             data = data[:limit]
@@ -97,6 +99,8 @@ def process_data(data, query_limit):
 
     if bounded is False:
         data_limit = int(x_data.size()[0])
+        if query_limit is None:
+            data_limit = query_limit
         limit = query_limit if data_limit > query_limit else data_limit
 
         # torch.narrow is more efficient than indexing and splicing

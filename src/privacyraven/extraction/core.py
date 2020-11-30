@@ -10,7 +10,7 @@ from privacyraven.utils.model_creation import (
     train_and_test,
 )
 from privacyraven.utils.query import establish_query
-
+from privacyraven.utils.evaluate import label_agreement
 
 @attr.s
 class ModelExtractionAttack(object):
@@ -56,6 +56,7 @@ class ModelExtractionAttack(object):
     substitute_input_size = attr.ib(default=1000)
     seed_data_train = attr.ib(default=None)
     seed_data_test = attr.ib(default=None)
+    test_data = attr.ib(default=None)
 
     transform = attr.ib(default=None)
     batch_size = attr.ib(default=100)
@@ -88,6 +89,12 @@ class ModelExtractionAttack(object):
         ) = self.set_dataloaders()
 
         self.substitute_model = self.get_substitute_model()
+        if self.test_data is None:
+            self.label_agreement = label_agreement(self.seed_data_test, self.substitute_model, self.query, self.victim_input_shape, self.substitute_input_shape)
+        else:
+            self.label_agreement = label_agreement(self.test_data, self.substitute_model, self.query, self.victim_input_shape, self.substitute_input_shape)
+
+        print(self.label_agreement)
 
     def synthesize_data(self):
         return synthesize(

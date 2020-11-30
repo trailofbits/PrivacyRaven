@@ -1,15 +1,36 @@
 import torch
 import tqdm
-from privacyraven.utils.query import get_target
+from privacyraven.utils.query import query_model, get_target
+from privacyraven.extraction.synthesis import process_data
 
 
-def label_agreement(
-    test,
+def label_agreement(test_data, substitute_model, query_victim, victim_input_shape, substitute_input_shape):
+    agreed = 0
+
+    print(test_data.size())
+
+    x_data, y_data = process_data(test_data, None)
+
+    # for x in x_data:
+        #substitute_result = int(query(substitute_model, x, substitute_shape))
+        # victim_result = int(query(victim_model, x, victim_shape))
+
+    substitute_result_tensor, substitute_result_targets = query_model(substitute_model, x_data, substitute_input_shape)
+    victim_result_tensor, victim_result_targets = query_victim(x_data)
+
+    import pdb; pdb.set_trace()
+
+    print(f"Out of {points} data points, the models agreed upon {agreed}.")
+    return agreed
+
+
+def old_label_agreement(
+    test_data,
     substitute_model,
     victim_model,
     query=get_target,
-    substitute_size=None,
-    victim_size=None,
+    substitute_shape=None,
+    victim_shape=None,
     points=100,
 ):
     """Calculates the agreement between the victim and substitute models
@@ -32,12 +53,17 @@ def label_agreement(
     """
     agreed = 0
 
-    for i in tqdm(range(1, points)):
-        # Case: Torchvision Dataset
-        x, y = test[i]
+    # for i in tqdm(range(1, points)):
+    # Case: Torchvision Dataset
+    # x, y = test[i]
 
-        substitute_result = int(query(substitute_model, x, substitute_size))
-        victim_result = int(query(victim_model, x, victim_size))
+    x_data, y_data = process_data(test_data)
+
+    for x in x_data:
+        substitute_result = int(query(substitute_model, x, substitute_shape))
+        # victim_result = int(query(victim_model, x, victim_shape))
+
+        victim_result = int(victim_model(x))
 
         if substitute_result == victim_result:
             agreed = agreed + 1
