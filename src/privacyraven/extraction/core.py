@@ -10,7 +10,8 @@ from privacyraven.utils.model_creation import (
     train_and_test,
 )
 from privacyraven.utils.query import establish_query
-from privacyraven.utils.evaluate import label_agreement
+from privacyraven.extraction.metrics import label_agreement
+
 
 @attr.s
 class ModelExtractionAttack(object):
@@ -90,11 +91,21 @@ class ModelExtractionAttack(object):
 
         self.substitute_model = self.get_substitute_model()
         if self.test_data is None:
-            self.label_agreement = label_agreement(self.seed_data_test, self.substitute_model, self.query, self.victim_input_shape, self.substitute_input_shape)
+            self.label_agreement = label_agreement(
+                self.seed_data_test,
+                self.substitute_model,
+                self.query,
+                self.victim_input_shape,
+                self.substitute_input_shape,
+            )
         else:
-            self.label_agreement = label_agreement(self.test_data, self.substitute_model, self.query, self.victim_input_shape, self.substitute_input_shape)
-
-        print(self.label_agreement)
+            self.label_agreement = label_agreement(
+                self.test_data,
+                self.substitute_model,
+                self.query,
+                self.victim_input_shape,
+                self.substitute_input_shape,
+            )
 
     def synthesize_data(self):
         return synthesize(
@@ -149,7 +160,7 @@ class ModelExtractionAttack(object):
             self.valid_dataloader,
             self.test_dataloader,
             self.hparams,
-            self.callback
+            self.callback,
         )
         # This may limit the attack to PyTorch Lightning substitutes
         model = convert_to_inference(model)

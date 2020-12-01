@@ -1,25 +1,25 @@
 from privacyraven.extraction.core import ModelExtractionAttack
+from functools import partial
+import attr
 
 
-def cloudleak(
-    query,
-    query_limit,
-    victim_input_shape,
-    victim_output_targets,
-    substitute_input_shape,
-    s,
-    substitute_model,
-    substitute_input_size,
-    seed_data_train,
-    seed_data_test,
-    transform,
-    batch_size,
-    num_workers,
-    gpus,
-    max_epochs,
-    learning_rate,
-):
+def get_extraction_args():
+    attributes = ModelExtractionAttack.__dict__["__attrs_attrs__"]
+    attr_names = (a.name for a in attributes)
+    return attr_names
 
+
+def copycat_attack(*args, **kwargs):
+    """Runs the CopyCat model extraction attack
+
+    Arxiv Paper: https://arxiv.org/abs/1806.05476
+
+    Presently, this function excludes subset sampling strategies"""
+    copy = partial(ModelExtractionAttack, synthesizer=copycat_attack)
+    return copy(*args, **kwargs)
+
+
+def cloudleak(*args, **kwargs):
     """Run CloudLeak model extraction attacks
 
     Returns an array of attacks that use synthesis functions
@@ -32,75 +32,9 @@ def cloudleak(
     attacks in order to comply with the threat model"""
 
     adv_synths = ["HopSkipJump"]
-
-    cloudleak_attacks = []
-
+    results = []
     for s in adv_synths:
-        attack = ModelExtractionAttack(
-            query,
-            query_limit,
-            victim_input_shape,
-            victim_output_targets,
-            substitute_input_shape,
-            s,
-            substitute_model,
-            substitute_input_size,
-            seed_data_train,
-            seed_data_test,
-            transform,
-            batch_size,
-            num_workers,
-            gpus,
-            max_epochs,
-            learning_rate,
-        )
-        cloudleak_attacks = cloudleak_attacks.append(attack)
-
-    return cloudleak_attacks
-
-
-def copycats(
-    query,
-    query_limit,
-    victim_input_shape,
-    victim_output_targets,
-    substitute_input_shape,
-    substitute_model,
-    substitute_input_size,
-    seed_data_train,
-    seed_data_test,
-    transform,
-    batch_size,
-    num_workers,
-    gpus,
-    max_epochs,
-    learning_rate,
-):
-    """Runs the CopyCat model extraction attack
-
-    Arxiv Paper: https://arxiv.org/abs/1806.05476
-
-    Presently, this function excludes subset sampling strategies"""
-
-    synthesizer = "copycat"
-
-    attack = ModelExtractionAttack(
-        query,
-        query_limit,
-        victim_input_shape,
-        victim_output_targets,
-        substitute_input_shape,
-        synthesizer,
-        substitute_model,
-        substitute_input_size,
-        seed_data_train,
-        seed_data_test,
-        transform,
-        batch_size,
-        num_workers,
-        gpus,
-        max_epochs,
-        learning_rate,
-    )
-
-    return attack
+        attack = partial(ModelExtractionAttack, synthesizer=s)
+        result = attack(*args, **kwargs)
+        results = results.append(result)
+    return results
