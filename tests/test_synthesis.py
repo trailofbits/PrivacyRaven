@@ -4,7 +4,6 @@
 import art.attacks.evasion.boundary
 import art.attacks.evasion.hop_skip_jump
 import privacyraven.extraction.synthesis
-import privacyraven.utils.data
 import privacyraven.utils.model_creation
 import privacyraven.utils.query
 from hypothesis import given, strategies as st
@@ -96,11 +95,6 @@ def test_fuzz_copycat(
     )
 
 
-@given(data=st.nothing(), combined=st.none())
-def test_fuzz_get_data_limit(data, combined):
-    privacyraven.extraction.synthesis.get_data_limit(data=data, combined=combined)
-
-
 @given(
     data=st.nothing(),
     query=st.nothing(),
@@ -118,32 +112,6 @@ def test_fuzz_hopskipjump(
     victim_input_targets,
 ):
     privacyraven.extraction.synthesis.hopskipjump(
-        data=data,
-        query=query,
-        query_limit=query_limit,
-        victim_input_shape=victim_input_shape,
-        substitute_input_shape=substitute_input_shape,
-        victim_input_targets=victim_input_targets,
-    )
-
-
-@given(
-    data=st.nothing(),
-    query=st.nothing(),
-    query_limit=st.nothing(),
-    victim_input_shape=st.nothing(),
-    substitute_input_shape=st.nothing(),
-    victim_input_targets=st.nothing(),
-)
-def test_fuzz_new_copycat(
-    data,
-    query,
-    query_limit,
-    victim_input_shape,
-    substitute_input_shape,
-    victim_input_targets,
-):
-    privacyraven.extraction.synthesis.new_copycat(
         data=data,
         query=query,
         query_limit=query_limit,
@@ -180,11 +148,6 @@ def test_fuzz_synthesize(
         query=query,
         query_limit=query_limit,
     )
-
-
-@given(data=st.nothing())
-def test_fuzz_is_combined(data):
-    privacyraven.utils.data.is_combined(data=data)
 
 
 @given(images=st.nothing(), targets=st.nothing(), transform=st.none())

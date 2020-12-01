@@ -5,7 +5,7 @@ import privacyraven.extraction.synthesis
 from privacyraven.utils import model_creation, query
 from privacyraven.models.pytorch import ImagenetTransferLearning
 from privacyraven.models.victim import train_mnist_victim
-from privacyraven.utils.data import get_emnist_data, is_combined
+from privacyraven.utils.data import get_emnist_data
 from privacyraven.utils.query import get_target
 
 from hypothesis import assume, given, strategies as st
@@ -22,7 +22,7 @@ model = train_mnist_victim(gpus=0)
 
 
 def query_mnist(input_data):
-    return get_target(model, input_data)
+    return get_target(model, input_data, (1, 28, 28, 1))
 
 
 def valid_query():
@@ -33,18 +33,18 @@ def valid_data():
     return arrays(np.float64, (10, 28, 28, 1), st.floats())
 
 
-emnist_train, emnist_test = get_emnist_data()
+# emnist_train, emnist_test = get_emnist_data()
 
 
 @given(
-    data=st.just(emnist_train),  # valid_data(),
-    query=valid_query(),
-    query_limit=st.just(100),
+    data=valid_data(),
+    query=st.just(query_mnist),
+    query_limit=st.integers(10, 25),
     victim_input_shape=st.just((1, 28, 28, 1)),
     substitute_input_shape=st.just((1, 3, 28, 28)),
     victim_input_targets=st.just(10),
 )
-def test_copycat(
+def test_fuzz_copycat(
     data,
     query,
     query_limit,
@@ -52,40 +52,83 @@ def test_copycat(
     substitute_input_shape,
     victim_input_targets,
 ):
-    try:
-        # See if the data is labeled regardless of specific representation
-        labeled = True
-        x, y = data[0]
-    except ValueError:
-        # A value error is raised if the data is not labeled
-        labeled = False
-        x_data = data.detach().clone().float()
-        y_data = None
-        bounded = False
-    # Labeled data can come in multiple data formats, including, but
-    # not limited to Torchvision datasets, lists of tuples, and
-    # tuple of tuples
-    if labeled:
-        try:
-            x_data, y_data = data.data.detach().clone().float(), data.targets.detach().clone().float()
-            bounded = False
-        except AttributeError:
-            bounded = True
-
-            data_limit = int(len(data))
-            limit = query_limit if data_limit > query_limit else data_limit
-            data = data[:limit]
-
-            x_data = torch.FloatTensor([x for x, y in data])
-            y_data = torch.FloatTensor([y for x, y in data])
+    # import pdb; pdb.set_trace()
+    data = torch.from_numpy(data).detach().clone().float()
+    data = privacyraven.extraction.synthesis.process_data(data, query_limit)
+    x_data, y_data = privacyraven.extraction.synthesis.copycat(
+        data=data,
+        query=query,
+        query_limit=query_limit,
+        victim_input_shape=victim_input_shape,
+        substitute_input_shape=substitute_input_shape,
+        victim_input_targets=victim_input_targets,
+    )
+    x_1 = x_data.size()
+    y_1 = y_data.size()
 
 
-    if not(bounded):
-        data_limit = int(x_data.size()[0])
-        limit = query_limit if data_limit > query_limit else data_limit
+# test_fuzz_copycat()
 
 
-            # return x, y
+@given(
+    data=valid_data(),
+    query=st.just(query_mnist),
+    query_limit=st.integers(10, 25),
+    victim_input_shape=st.just((1, 28, 28, 1)),
+    substitute_input_shape=st.just((1, 3, 28, 28)),
+    victim_input_targets=st.just(10),
+)
+def test_fuzz_hopskipjump(
+    data,
+    query,
+    query_limit,
+    victim_input_shape,
+    substitute_input_shape,
+    victim_input_targets,
+):
+    data = torch.from_numpy(data).detach().clone().float()
+    data = privacyraven.extraction.synthesis.process_data(data, query_limit)
+    device = torch.device("cpu")
+    # import pdb; pdb.set_trace()
+    x_data, y_data = privacyraven.extraction.synthesis.hopskipjump(
+        data=data,
+        query=query,
+        query_limit=query_limit,
+        victim_input_shape=victim_input_shape,
+        substitute_input_shape=substitute_input_shape,
+        victim_input_targets=victim_input_targets,
+    )
+    print(x_data.size())
+    print(y_data.size())
 
 
-test_copycat()
+test_fuzz_hopskipjump()
+
+
+@given(data=st.nothing(), query_limit=st.nothing())
+def test_fuzz_process_data(data, query_limit):
+    privacyraven.extraction.synthesis.process_data(data=data, query_limit=query_limit)
+
+
+@given(func=st.nothing())
+def test_fuzz_register_synth(func):
+    privacyraven.extraction.synthesis.register_synth(func=func)
+
+
+@given(
+    func_name=st.nothing(),
+    seed_data_train=st.nothing(),
+    seed_data_test=st.nothing(),
+    query=st.nothing(),
+    query_limit=st.nothing(),
+)
+def test_fuzz_synthesize(
+    func_name, seed_data_train, seed_data_test, query, query_limit
+):
+    privacyraven.extraction.synthesis.synthesize(
+        func_name=func_name,
+        seed_data_train=seed_data_train,
+        seed_data_test=seed_data_test,
+        query=query,
+        query_limit=query_limit,
+    )

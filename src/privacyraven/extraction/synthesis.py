@@ -32,7 +32,7 @@ def synthesize(
     Returns:
         Three NewDatasets containing synthetic data"""
     func = synths[func_name]
-    print("Time to synthesize")
+    # print("Time to synthesize")
 
     # We split the query limit in half to account for two datasets.
     query_limit = int(0.5 * query_limit)
@@ -42,7 +42,7 @@ def synthesize(
 
     x_train, y_train = func(seed_data_train, query, query_limit, *args, **kwargs)
     x_test, y_test = func(seed_data_test, query, query_limit, *args, **kwargs)
-    print("Synthesis complete")
+    # print("Synthesis complete")
 
     # Presently, we have hard-coded specific values for the test-train split.
     # In the future, this should be automated and/or optimized in some form.
@@ -106,7 +106,7 @@ def process_data(data, query_limit):
         # torch.narrow is more efficient than indexing and splicing
         x_data = x_data.narrow(0, 0, int(limit))
 
-    print("Data has been processed")
+    # print("Data has been processed")
     processed_data = (x_data, y_data)
     return processed_data
 
@@ -141,14 +141,22 @@ def hopskipjump(
     config = set_evasion_model(query, victim_input_shape, victim_input_targets)
     internal_limit = int(query_limit * 0.5)
     evasion_limit = int(query_limit * 0.5)
+
+    lower_bound = .01 * evasion_limit
+
+    init_eval = int(lower_bound if lower_bound > 1 else 1)
+
+    import pdb; pdb.set_trace()
+
     attack = HopSkipJump(
         config,
         False,
         norm="inf",
         max_iter=evasion_limit,
         max_eval=evasion_limit,
-        init_eval=10,
+        init_eval=init_eval,
     )
+
     X, y = copycat(
         data,
         query,
@@ -158,7 +166,9 @@ def hopskipjump(
         victim_input_targets,
     )
     # print(X.shape)
-    result = torch.from_numpy(attack.generate(X)).detach().clone().float()
+    X_np = X.detach().clone().numpy()
+
+    result = torch.from_numpy(attack.generate(X_np)).detach().clone().float()
     # result = torch.as_tensor(result)
     # result = result.clone().detach()
 
