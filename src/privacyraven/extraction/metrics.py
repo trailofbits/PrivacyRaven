@@ -11,6 +11,9 @@ def label_agreement(
     victim_input_shape,
     substitute_input_shape,
 ):
+    """Returns the number of agreed upon data points between victim and substitute,
+    thereby measuring the fidelity of an extraction attack"""
+
     x_data, y_data = process_data(test_data, 100)
 
     substitute_result = get_target(substitute_model, x_data, substitute_input_shape)

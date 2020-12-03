@@ -4,6 +4,7 @@ import attr
 
 
 def get_extraction_args():
+    """Returns all the arguments for a Model Extraction Attack"""
     attributes = ModelExtractionAttack.__dict__["__attrs_attrs__"]
     attr_names = (a.name for a in attributes)
     return attr_names
@@ -20,7 +21,7 @@ def copycat_attack(*args, **kwargs):
 
 
 def cloudleak(*args, **kwargs):
-    """Run CloudLeak model extraction attacks
+    """Runs CloudLeak model extraction attacks
 
     Returns an array of attacks that use synthesis functions
     based on adversarial/evasion attacks

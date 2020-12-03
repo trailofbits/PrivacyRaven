@@ -67,6 +67,9 @@ class ModelExtractionAttack(object):
     learning_rate = attr.ib(default=1e-3)
     callback = attr.ib(default=None)
 
+    # The following attributes are created during class creation
+    # and are not taken as arguments
+
     synth_train = attr.ib(init=False)
     synth_valid = attr.ib(init=False)
     synth_test = attr.ib(init=False)
@@ -77,7 +80,7 @@ class ModelExtractionAttack(object):
     substitute_model = attr.ib(init=False)
 
     def __attrs_post_init__(self):
-        """The attack is executed here"""
+        """The attack itself is executed here"""
         self.query = establish_query(self.query, self.victim_input_shape)
         self.synth_train, self.synth_valid, self.synth_test = self.synthesize_data()
         print("Synthetic Data Generated")
@@ -90,6 +93,9 @@ class ModelExtractionAttack(object):
         ) = self.set_dataloaders()
 
         self.substitute_model = self.get_substitute_model()
+
+        # If seperate data is not provided, seed data is used for testing
+
         if self.test_data is None:
             self.label_agreement = label_agreement(
                 self.seed_data_test,

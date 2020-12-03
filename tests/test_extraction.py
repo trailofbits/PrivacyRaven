@@ -21,7 +21,7 @@ def test_extraction():
 
         print("Launching model extraction attack")
 
-        #This is a CPU-only attack
+        # This is a CPU-only attack
         attack = ModelExtractionAttack(
             query=query_mnist,
             query_limit=100,

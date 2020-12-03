@@ -24,6 +24,8 @@ isort = "^5.5.3"
 adversarial-robustness-toolbox = "^1.4.1"
 pytorch-lightning-bolts = "^0.2.5"
 hypothesis = "^5.41.1"
+jupyter = "^1.0.0"
+jupyterlab = "^2.2.9"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"

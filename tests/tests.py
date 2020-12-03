@@ -1,3 +1,7 @@
+import os
+os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+
+
 import pytest
 import numpy as np
 import torch
@@ -34,6 +38,7 @@ def valid_data():
 
 
 # emnist_train, emnist_test = get_emnist_data()
+# CUDA_LAUNCH_BLOCKING=1
 
 
 @given(
@@ -88,8 +93,9 @@ def test_fuzz_hopskipjump(
 ):
     data = torch.from_numpy(data).detach().clone().float()
     data = privacyraven.extraction.synthesis.process_data(data, query_limit)
-    device = torch.device("cpu")
+    # device = torch.device("cpu")
     # import pdb; pdb.set_trace()
+    # print(data.size())
     x_data, y_data = privacyraven.extraction.synthesis.hopskipjump(
         data=data,
         query=query,

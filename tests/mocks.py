@@ -1,4 +1,3 @@
-
 """
 The synthesis tests rely on sampling data from a model.
 We will be training one and returning a query function here
@@ -22,5 +21,3 @@ def valid_data():
 
 
 emnist_train, emnist_test = get_emnist_data()
-
-
