@@ -49,7 +49,7 @@ def valid_data():
     substitute_input_shape=st.just((1, 3, 28, 28)),
     victim_input_targets=st.just(10),
 )
-def test_fuzz_copycat(
+def test_copycat_preserves_shapes(
     data,
     query,
     query_limit,
@@ -70,9 +70,10 @@ def test_fuzz_copycat(
     )
     x_1 = x_data.size()
     y_1 = y_data.size()
+    # print(x_1)
+    assert x_1 == torch.Size([10, 3, 28, 28])
 
-
-# test_fuzz_copycat()
+test_copycat_preserves_shapes()
 
 
 @given(
@@ -108,7 +109,7 @@ def test_fuzz_hopskipjump(
     print(y_data.size())
 
 
-test_fuzz_hopskipjump()
+# test_fuzz_hopskipjump()
 
 
 @given(data=st.nothing(), query_limit=st.nothing())

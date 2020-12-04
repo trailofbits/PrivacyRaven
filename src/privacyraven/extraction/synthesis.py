@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 from art.attacks.evasion import BoundaryAttack, HopSkipJump
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
