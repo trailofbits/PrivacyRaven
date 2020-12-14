@@ -8,10 +8,16 @@ from hypothesis import given, strategies as st
 
 
 def valid_data():
-    return arrays(np.float64, (st.integers(), st.integers(), st.integers(), st.integers()), st.floats())
+    return arrays(
+        np.float64,
+        (st.integers(), st.integers(), st.integers(), st.integers()),
+        st.floats(),
+    )
+
 
 def valid_sizes():
     return tuples(integers(), integers(), integers(), integers())
+
 
 @given(query_func=st.nothing(), input_size=st.nothing())
 def test_fuzz_establish_query(query_func, input_size):

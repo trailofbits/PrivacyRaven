@@ -23,5 +23,3 @@ def test_fuzz_get_mnist_data(hparams):
 @given(hparams=st.nothing())
 def test_fuzz_get_mnist_loaders(hparams):
     privacyraven.utils.data.get_mnist_loaders(hparams=hparams)
-
-

@@ -14,10 +14,10 @@ def set_evasion_model(query, victim_input_shape, victim_input_targets):
         predict=query,
         input_shape=victim_input_shape,
         nb_classes=victim_input_targets,
-        clip_values=(0, 255),
+        clip_values=None, #(0, 255),
         preprocessing_defences=None,
         postprocessing_defences=None,
-        preprocessing=None,
+        preprocessing=(0, 1) #None,
     )
     return config
 

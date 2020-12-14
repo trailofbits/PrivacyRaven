@@ -1,4 +1,5 @@
 import attr
+import os
 import torch
 from torch.utils.data import DataLoader
 
@@ -81,6 +82,14 @@ class ModelExtractionAttack(object):
 
     def __attrs_post_init__(self):
         """The attack itself is executed here"""
+        global device
+        if self.gpus == 0:
+            device = torch.device("cpu")
+            #os.environ['CUDA_VISIBLE_DEVICES'] =""
+            #import torch
+        device = torch.device("cuda:0")
+        # print(device)
+        #device
         self.query = establish_query(self.query, self.victim_input_shape)
         self.synth_train, self.synth_valid, self.synth_test = self.synthesize_data()
         print("Synthetic Data Generated")

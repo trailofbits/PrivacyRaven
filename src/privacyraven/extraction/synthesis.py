@@ -4,7 +4,6 @@ from art.attacks.evasion import BoundaryAttack, HopSkipJump
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
-# from privacyraven.utils.data import is_combined
 from privacyraven.utils.model_creation import NewDataset, set_evasion_model
 from privacyraven.utils.query import reshape_input
 
@@ -32,6 +31,8 @@ def synthesize(
 
     Returns:
         Three NewDatasets containing synthetic data"""
+    import pdb; pdb.set_trace()
+
     func = synths[func_name]
     # print("Time to synthesize")
 
@@ -61,6 +62,8 @@ def synthesize(
 def process_data(data, query_limit):
     """Returns x and (if given labeled data) y tensors that are shortened
     to the length of the query_limit if applicable"""
+    #device =
+
     try:
         # See if the data is labeled regardless of specific representation
         labeled = True
@@ -70,7 +73,7 @@ def process_data(data, query_limit):
         labeled = False
         if isinstance(data, np.ndarray) is True:
             data = torch.from_numpy(data)
-        x_data = data.detach().clone().float()
+        x_data = data.detach().clone().float() #.to(device)
         y_data = None
         bounded = False
     # Labeled data can come in multiple data formats, including, but
@@ -128,10 +131,12 @@ def copycat(
     victim_input_shape,
     substitute_input_shape,
     victim_input_targets,
+    reshape=True
 ):
     (x_data, y_data) = data
     y_data = query(x_data)
-    x_data = reshape_input(x_data, substitute_input_shape)
+    if reshape:
+        x_data = reshape_input(x_data, substitute_input_shape)
     return x_data, y_data
 
 
@@ -147,8 +152,36 @@ def hopskipjump(
     """Runs the HopSkipJump evasion attack
 
     Arxiv Paper: https://arxiv.org/abs/1904.02144"""
+    '''
     config = set_evasion_model(query, victim_input_shape, victim_input_targets)
+
     internal_limit = int(query_limit * 0.5)
+    evasion_limit = int(query_limit * 0.5)
+
+    # The initial evaluation number must be lower than the maximum
+
+    lower_bound = 0.01 * evasion_limit
+
+    init_eval = int(lower_bound if lower_bound > 1 else 1)
+
+    # import pdb; pdb.set_trace()
+    '''
+ 
+    internal_limit = int(query_limit * 0.5)
+    X, y = copycat(
+        data,
+        query,
+        internal_limit,
+        victim_input_shape,
+        substitute_input_shape,
+        victim_input_targets,
+        False
+    )
+
+    X_np = X.detach().clone().numpy()
+
+    config = set_evasion_model(query, victim_input_shape, victim_input_targets)
+
     evasion_limit = int(query_limit * 0.5)
 
     # The initial evaluation number must be lower than the maximum
@@ -168,16 +201,7 @@ def hopskipjump(
         init_eval=init_eval,
     )
 
-    X, y = copycat(
-        data,
-        query,
-        internal_limit,
-        victim_input_shape,
-        substitute_input_shape,
-        victim_input_targets,
-    )
-
-    X_np = X.detach().clone().numpy()
+    print(attack)
 
     result = torch.from_numpy(attack.generate(X_np)).detach().clone().float()
 
