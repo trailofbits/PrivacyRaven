@@ -82,14 +82,10 @@ class ModelExtractionAttack(object):
 
     def __attrs_post_init__(self):
         """The attack itself is executed here"""
-        global device
-        if self.gpus == 0:
-            device = torch.device("cpu")
-            #os.environ['CUDA_VISIBLE_DEVICES'] =""
-            #import torch
-        device = torch.device("cuda:0")
-        # print(device)
-        #device
+        # global device
+        # if self.gpus == 0:
+        #    device = torch.device("cpu")
+        # device = torch.device("cuda:0")
         self.query = establish_query(self.query, self.victim_input_shape)
         self.synth_train, self.synth_valid, self.synth_test = self.synthesize_data()
         print("Synthetic Data Generated")
@@ -135,19 +131,16 @@ class ModelExtractionAttack(object):
         )
 
     def set_substitute_hparams(self):
-        # print("Setting substitute hyperparameters")
         hparams = set_hparams(
             self.transform,
             self.batch_size,
             self.num_workers,
-            # None,
             self.gpus,
             self.max_epochs,
             self.learning_rate,
             self.substitute_input_size,
             self.victim_output_targets,
         )
-        print(hparams)
         return hparams
 
     def set_dataloaders(self):
@@ -166,7 +159,6 @@ class ModelExtractionAttack(object):
             batch_size=self.hparams["batch_size"],
             num_workers=self.hparams["num_workers"],
         )
-        # print(train_dataloader, valid_dataloader, test_dataloader)
         return train_dataloader, valid_dataloader, test_dataloader
 
     def get_substitute_model(self):

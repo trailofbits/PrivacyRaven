@@ -3,8 +3,8 @@ from functools import partial
 import attr
 
 
-def get_extraction_args():
-    """Returns all the arguments for a Model Extraction Attack"""
+def get_extraction_attrs():
+    """Returns all the attributes of a Model Extraction Attack"""
     attributes = ModelExtractionAttack.__dict__["__attrs_attrs__"]
     attr_names = (a.name for a in attributes)
     return attr_names

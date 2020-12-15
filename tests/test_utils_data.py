@@ -1,13 +1,10 @@
 # This test code was written by the `hypothesis.extra.ghostwriter` module
 # and is provided under the Creative Commons Zero public domain dedication.
-
 import privacyraven.utils.data
 import torch.utils.data.dataloader
 import torch.utils.data.dataset
 import torchvision.datasets.mnist
 from hypothesis import given, strategies as st
-
-# TODO: replace st.nothing() with appropriate strategies
 
 
 def valid_hparams():

@@ -1,3 +1,6 @@
+# This test code was modified from code written by the `hypothesis.extra.ghostwriter` module
+# and is provided under the Creative Commons Zero public domain dedication.
+
 import pytest
 import numpy as np
 import torch
@@ -104,5 +107,3 @@ def process_data_preserves_shape_and_type(data, query_limit):
     (x, y) = processed_data
     assert x.size() == torch.Size([10, 28, 28, 1])
     assert x.type() == torch.FloatTensor
-
-

@@ -35,6 +35,5 @@ def test_extraction():
             seed_data_test=emnist_test,
             gpus=0,
         )
-        print(attack)
     except Exception:
         pytest.fail("Unexpected Error")

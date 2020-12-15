@@ -1,3 +1,8 @@
+"""
+This is an example script of how to generate
+boilerplate for hypothesis tests
+"""
+
 import privacyraven.extraction.metrics as metrics
 from hypothesis.extra import ghostwriter
 

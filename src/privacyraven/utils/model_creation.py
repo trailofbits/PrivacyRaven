@@ -14,17 +14,16 @@ def set_evasion_model(query, victim_input_shape, victim_input_targets):
         predict=query,
         input_shape=victim_input_shape,
         nb_classes=victim_input_targets,
-        clip_values=None, #(0, 255),
+        clip_values=None,  # (0, 255),
         preprocessing_defences=None,
         postprocessing_defences=None,
-        preprocessing=(0, 1) #None,
+        preprocessing=(0, 1),  # None,
     )
     return config
 
 
 class NewDataset(Dataset):
     """Creates a Dataset class for PyTorch"""
-
     def __init__(self, images, targets, transform=None):
         self.images = images
         self.targets = targets
@@ -46,7 +45,6 @@ def set_hparams(
     transform=None,
     batch_size=100,
     num_workers=4,
-    # rand_split_val=None,
     gpus=1,
     max_epochs=8,
     learning_rate=1e-3,
@@ -54,7 +52,7 @@ def set_hparams(
     targets=None,
 ):
     """Creates a dictionary of hyperparameters"""
-    # if rand_split_val is None:
+    # This should be optimized
     rand_split_val = [55000, 5000]
 
     if (input_size is None) or (targets is None):

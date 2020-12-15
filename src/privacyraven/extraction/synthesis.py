@@ -31,10 +31,8 @@ def synthesize(
 
     Returns:
         Three NewDatasets containing synthetic data"""
-    import pdb; pdb.set_trace()
 
     func = synths[func_name]
-    # print("Time to synthesize")
 
     # We split the query limit in half to account for two datasets.
     query_limit = int(0.5 * query_limit)
@@ -44,7 +42,7 @@ def synthesize(
 
     x_train, y_train = func(seed_data_train, query, query_limit, *args, **kwargs)
     x_test, y_test = func(seed_data_test, query, query_limit, *args, **kwargs)
-    # print("Synthesis complete")
+    print("Synthesis complete")
 
     # Presently, we have hard-coded specific values for the test-train split.
     # In the future, this should be automated and/or optimized in some form.
@@ -62,7 +60,6 @@ def synthesize(
 def process_data(data, query_limit):
     """Returns x and (if given labeled data) y tensors that are shortened
     to the length of the query_limit if applicable"""
-    #device =
 
     try:
         # See if the data is labeled regardless of specific representation
@@ -73,7 +70,7 @@ def process_data(data, query_limit):
         labeled = False
         if isinstance(data, np.ndarray) is True:
             data = torch.from_numpy(data)
-        x_data = data.detach().clone().float() #.to(device)
+        x_data = data.detach().clone().float()
         y_data = None
         bounded = False
     # Labeled data can come in multiple data formats, including, but
@@ -131,8 +128,11 @@ def copycat(
     victim_input_shape,
     substitute_input_shape,
     victim_input_targets,
-    reshape=True
+    reshape=True,
 ):
+    """Creates a synthetic dataset by labeling seed data
+    
+    Arxiv Paper: https://ieeexplore.ieee.org/document/8489592"""
     (x_data, y_data) = data
     y_data = query(x_data)
     if reshape:
@@ -152,21 +152,7 @@ def hopskipjump(
     """Runs the HopSkipJump evasion attack
 
     Arxiv Paper: https://arxiv.org/abs/1904.02144"""
-    '''
-    config = set_evasion_model(query, victim_input_shape, victim_input_targets)
 
-    internal_limit = int(query_limit * 0.5)
-    evasion_limit = int(query_limit * 0.5)
-
-    # The initial evaluation number must be lower than the maximum
-
-    lower_bound = 0.01 * evasion_limit
-
-    init_eval = int(lower_bound if lower_bound > 1 else 1)
-
-    # import pdb; pdb.set_trace()
-    '''
- 
     internal_limit = int(query_limit * 0.5)
     X, y = copycat(
         data,
@@ -175,7 +161,7 @@ def hopskipjump(
         victim_input_shape,
         substitute_input_shape,
         victim_input_targets,
-        False
+        False,
     )
 
     X_np = X.detach().clone().numpy()
@@ -189,8 +175,6 @@ def hopskipjump(
     lower_bound = 0.01 * evasion_limit
 
     init_eval = int(lower_bound if lower_bound > 1 else 1)
-
-    # import pdb; pdb.set_trace()
 
     attack = HopSkipJump(
         config,

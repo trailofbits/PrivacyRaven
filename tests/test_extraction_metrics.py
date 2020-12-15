@@ -1,4 +1,4 @@
-# This test code was written by the `hypothesis.extra.ghostwriter` module
+# This test code was modified from code written by the `hypothesis.extra.ghostwriter` module
 # and is provided under the Creative Commons Zero public domain dedication.
 
 import privacyraven.extraction.metrics
@@ -15,6 +15,8 @@ from privacyraven.utils.data import get_emnist_data
 from privacyraven.utils.query import get_target
 from hypothesis import assume, given, strategies as st
 from hypothesis.extra.numpy import arrays
+
+# Establish strategies
 
 device = torch.device("cpu")
 
@@ -40,7 +42,7 @@ def valid_data():
     victim_input_shape=st.just((1, 28, 28, 1)),
     substitute_input_shape=st.just((1, 28, 28, 1)),
 )
-def test_fuzz_label_agreement(
+def label_agreement_returns_agreed(
     test_data,
     substitute_model,
     query_victim,
@@ -54,7 +56,8 @@ def test_fuzz_label_agreement(
         victim_input_shape=victim_input_shape,
         substitute_input_shape=substitute_input_shape,
     )
+    # Technically, x should be 10, but that may fail on
+    # a less faulty NN- an invariant we should not be
+    # testing here
+
     assert x > 8
-
-
-test_fuzz_label_agreement()
