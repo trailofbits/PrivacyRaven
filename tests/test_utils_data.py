@@ -10,16 +10,30 @@ from hypothesis import given, strategies as st
 # TODO: replace st.nothing() with appropriate strategies
 
 
-@given(transform=st.none(), RGB=st.booleans())
-def test_fuzz_get_emnist_data(transform, RGB):
-    privacyraven.utils.data.get_emnist_data(transform=transform, RGB=RGB)
+def valid_hparams():
+    hparams = {
+        "transform": None,
+        "batch_size": 100,
+        "num_workers": 4,
+        "rand_split_val": [55000, 5000],
+        "gpus": 1,
+        "max_epochs": 10,
+        "learning_rate": 0.001,
+        "input_size": 1000,
+        "targets": 10,
+    }
+    return hparams
 
 
-@given(hparams=st.nothing())
-def test_fuzz_get_mnist_data(hparams):
-    privacyraven.utils.data.get_mnist_data(hparams=hparams)
+@given(transform=st.just(None), RGB=st.booleans())
+def get_emnist_data_returns_data(transform, RGB):
+    emnist_train, emnist_test = privacyraven.utils.data.get_emnist_data(
+        transform=transform, RGB=RGB
+    )
+    x, y = emnist_train.data, emnist_train.targets
+    assert x.size() == torch.Size([240000, 28, 28])
 
 
-@given(hparams=st.nothing())
-def test_fuzz_get_mnist_loaders(hparams):
-    privacyraven.utils.data.get_mnist_loaders(hparams=hparams)
+@given(hparams=valid_hparams())
+def get_mnist_loaders(hparams):
+    x, y, z = privacyraven.utils.data.get_mnist_loaders(hparams=hparams)

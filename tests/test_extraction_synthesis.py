@@ -106,4 +106,3 @@ def process_data_preserves_shape_and_type(data, query_limit):
     assert x.type() == torch.FloatTensor
 
 
-test_fuzz_process_data()

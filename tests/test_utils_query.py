@@ -1,52 +1,64 @@
 # This test code was written by the `hypothesis.extra.ghostwriter` module
 # and is provided under the Creative Commons Zero public domain dedication.
 
+import torch
 import privacyraven.utils.query
-from hypothesis import given, strategies as st
+import pytest
+import numpy as np
+import torch
+import privacyraven.extraction.synthesis
+from privacyraven.utils import model_creation
+from privacyraven.models.pytorch import ImagenetTransferLearning
+from privacyraven.models.victim import train_mnist_victim
+from hypothesis import assume, given, strategies as st
+from hypothesis.extra.numpy import arrays
 
-# TODO: replace st.nothing() with appropriate strategies
+
+device = torch.device("cpu")
+
+model = train_mnist_victim(gpus=0)
+
+
+def query_mnist(input_data):
+    return get_target(model, input_data, (1, 28, 28, 1))
+
+
+def valid_query():
+    return st.just(query_mnist)
 
 
 def valid_data():
-    return arrays(
-        np.float64,
-        (st.integers(), st.integers(), st.integers(), st.integers()),
-        st.floats(),
-    )
+    return arrays(np.float64, (10, 28, 28, 1), st.floats())
 
 
-def valid_sizes():
-    return tuples(integers(), integers(), integers(), integers())
-
-
-@given(query_func=st.nothing(), input_size=st.nothing())
+@given(query_func=valid_query(), input_size=st.just((1, 28, 28, 1)))
 def test_fuzz_establish_query(query_func, input_size):
-    privacyraven.utils.query.establish_query(
+    x = privacyraven.utils.query.establish_query(
         query_func=query_func, input_size=input_size
     )
 
+    assert callable(x) == True
 
-@given(model=st.nothing(), input_data=st.nothing(), input_size=st.none())
+
+@given(
+    model=st.just(model), input_data=valid_data(), input_size=st.just((1, 28, 28, 1))
+)
 def test_fuzz_get_target(model, input_data, input_size):
-    privacyraven.utils.query.get_target(
+    target = privacyraven.utils.query.get_target(
         model=model, input_data=input_data, input_size=input_size
     )
-
-
-@given(model=st.nothing(), input_data=st.nothing(), input_size=st.none())
-def test_fuzz_query_model(model, input_data, input_size):
-    privacyraven.utils.query.query_model(
-        model=model, input_data=input_data, input_size=input_size
-    )
+    assert torch.argmax(target) >= 0
+    assert torch.argmax(target) < 10
 
 
 @given(
     input_data=valid_data(),
-    input_size=st.tuples(),
-    single=st.booleans(),
-    warning=st.booleans(),
+    input_size=st.just((1, 28, 28, 1)),
+    single=st.just(False),
+    warning=st.just(False),
 )
 def test_fuzz_reshape_input(input_data, input_size, single, warning):
-    privacyraven.utils.query.reshape_input(
+    x = privacyraven.utils.query.reshape_input(
         input_data=input_data, input_size=input_size, single=single, warning=warning
     )
+    assert x.size() == torch.Size([1, 28, 28, 1])

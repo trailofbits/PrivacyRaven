@@ -147,6 +147,7 @@ class ModelExtractionAttack(object):
             self.substitute_input_size,
             self.victim_output_targets,
         )
+        print(hparams)
         return hparams
 
     def set_dataloaders(self):

@@ -67,15 +67,13 @@ def query_model(model, input_data, input_size=None):
         target: An integer displaying the predicted label
     """
     with suppress(Exception):
+        input_data = torch.from_numpy(input_data)
+    with suppress(Exception):
         input_data = input_data.cuda()
+    input_data = input_data.float()
     if input_size is not None:
         input_data = reshape_input(input_data, input_size)
     prediction = model(input_data)
-    # prediction_as_np = prediction_as_torch.cpu().numpy()
-    # target = int(np.argmax(prediction_as_np))
-    # target = torch.argmax(prediction_as_torch)
-
-    # Find out why optional size doesn't work
     target = torch.tensor([torch.argmax(row) for row in torch.unbind(prediction)])
     return prediction, target
 
