@@ -23,6 +23,12 @@ flake8 = "^3.8.3"
 isort = "^5.5.3"
 adversarial-robustness-toolbox = "^1.4.1"
 pytorch-lightning-bolts = "^0.2.5"
+<<<<<<< HEAD
+=======
+hypothesis = "^5.41.1"
+jupyter = "^1.0.0"
+jupyterlab = "^2.2.9"
+>>>>>>> 2de4429191530689135d601fcc1202648e8e88ff
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"

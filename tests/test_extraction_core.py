@@ -14,13 +14,14 @@ def test_extraction():
         model = train_mnist_victim(gpus=0)
 
         def query_mnist(input_data):
-            return get_target(model, input_data)
+            return get_target(model, input_data, (1, 28, 28, 1))
 
         print("Downloading EMNIST data")
         emnist_train, emnist_test = get_emnist_data()
 
         print("Launching model extraction attack")
-        # A single GPU is assumed
+
+        # This is a CPU-only attack
         attack = ModelExtractionAttack(
             query=query_mnist,
             query_limit=100,
@@ -34,6 +35,5 @@ def test_extraction():
             seed_data_test=emnist_test,
             gpus=0,
         )
-        print(attack)
     except Exception:
         pytest.fail("Unexpected Error")

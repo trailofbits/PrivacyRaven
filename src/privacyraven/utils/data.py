@@ -20,8 +20,7 @@ def get_emnist_data(transform=None, RGB=True):
         RGB: A boolean value that decides if the images are RGB
 
     Returns:
-        Two Torchvision datasets with the EMNIST train and test sets
-    """
+        Two Torchvision datasets with the EMNIST train and test sets"""
 
     if transform is None and (RGB is True):
         transform = transforms.Compose(
