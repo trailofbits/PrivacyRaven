@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 from art.attacks.evasion import BoundaryAttack, HopSkipJump
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
@@ -6,6 +7,7 @@ from tqdm import tqdm
 from privacyraven.utils.model_creation import NewDataset, set_evasion_model
 from privacyraven.utils.query import reshape_input
 
+# Creates an empty dictionary for synthesis functions
 synths = dict()
 
 
@@ -15,8 +17,12 @@ def register_synth(func):
     return func
 
 
-def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
-    """Synthesize training and testing data for a substitute model
+def synthesize(
+    func_name, seed_data_train, seed_data_test, query, query_limit, *args, **kwargs
+):
+    """Synthesizes training and testing data for a substitute model
+
+    First, the data is processed. Then, the synthesizer function is called.
 
     Parameters:
         func_name: String of the function name
@@ -25,33 +31,93 @@ def synthesize(func_name, seed_data_train, seed_data_test, *args, **kwargs):
 
     Returns:
         Three NewDatasets containing synthetic data"""
+
     func = synths[func_name]
-    print("Time to synthesize")
-    x_train, y_train = func(seed_data_train, *args, **kwargs)
-    x_test, y_test = func(seed_data_test, *args, **kwargs)
+
+    # We split the query limit in half to account for two datasets.
+    query_limit = int(0.5 * query_limit)
+
+    seed_data_train = process_data(seed_data_train, query_limit)
+    seed_data_test = process_data(seed_data_test, query_limit)
+
+    x_train, y_train = func(seed_data_train, query, query_limit, *args, **kwargs)
+    x_test, y_test = func(seed_data_test, query, query_limit, *args, **kwargs)
     print("Synthesis complete")
 
+    # Presently, we have hard-coded specific values for the test-train split.
+    # In the future, this should be automated and/or optimized in some form.
     x_train, x_valid, y_train, y_valid = train_test_split(
         x_train, y_train, test_size=0.4, random_state=42
     )
 
+    # The NewDataset ensures the synthesized data is a valid PL network input.
     synth_train = NewDataset(x_train, y_train)
     synth_valid = NewDataset(x_valid, y_valid)
     synth_test = NewDataset(x_test, y_test)
     return synth_train, synth_valid, synth_test
 
 
-def get_data_limit(data):
-    """Uses the size of the data to establish a synthesis restriction"""
+def process_data(data, query_limit):
+    """Returns x and (if given labeled data) y tensors that are shortened
+    to the length of the query_limit if applicable"""
+
     try:
-        # Differentiate between labeled and unlabeled data
-        x_i, y_i = data.data, data.targets
-        data_limit = x_i.size()
-    except Exception:
-        # This requires data to have a size attribute
-        data_limit = data.size()
-    data_limit = int(data_limit[0])
-    return data_limit
+        # See if the data is labeled regardless of specific representation
+        labeled = True
+        x, y = data[0]
+    except ValueError:
+        # A value error is raised if the data is not labeled
+        labeled = False
+        if isinstance(data, np.ndarray) is True:
+            data = torch.from_numpy(data)
+        x_data = data.detach().clone().float()
+        y_data = None
+        bounded = False
+    # Labeled data can come in multiple data formats, including, but
+    # not limited to Torchvision datasets, lists of tuples, and
+    # tuple of tuples. We attempt to address these edge cases
+    # through the exception of an AttributeError
+    if labeled:
+        try:
+            if isinstance(data.data, np.ndarray) is True:
+                x_data, y_data = (
+                    torch.from_numpy(data.data).detach().clone().float(),
+                    torch.from_numpy(data.targets).detach().clone().float(),
+                )
+            else:
+                x_data, y_data = (
+                    data.data.detach().clone().float(),
+                    data.targets.detach().clone().float(),
+                )
+            bounded = False
+        except AttributeError:
+            # Setting 'bounded' increases efficiency as data that
+            # will be ignored due to the query limit will not be
+            # included in the initial x and y data tensors
+            bounded = True
+
+            data_limit = int(len(data))
+            if query_limit is None:
+                data_limit = query_limit
+            limit = query_limit if data_limit > query_limit else data_limit
+
+            data = data[:limit]
+
+            x_data = torch.Tensor([x for x, y in data]).float()
+            y_data = torch.Tensor([y for x, y in data]).float()
+
+    if bounded is False:
+        data_limit = int(x_data.size()[0])
+        if query_limit is None:
+            data_limit = query_limit
+        limit = query_limit if data_limit > query_limit else data_limit
+
+        # torch.narrow is more efficient than indexing and splicing
+        x_data = x_data.narrow(0, 0, int(limit))
+
+    # print("Data has been processed")
+    processed_data = (x_data, y_data)
+    return processed_data
 
 
 @register_synth
@@ -62,45 +128,16 @@ def copycat(
     victim_input_shape,
     substitute_input_shape,
     victim_input_targets,
+    reshape=True,
 ):
-    """Creates a synthetic dataset by labeling unlabeled seed data
-
-    Arix Paper: https://ieeexplore.ieee.org/document/8489592"""
-    data_limit = get_data_limit(data)
-
-    # The limit must be lower than or equal to the number of queries
-    if data_limit > query_limit:
-        limit = query_limit
-    else:
-        limit = data_limit
-
-    # print(limit)
-
-    for i in tqdm(range(0, limit)):
-        if i == 0:
-            # First assume that the data is in a tuple-like format
-            try:
-                x, y0 = data[0]
-            except Exception:
-                x = data[0]
-            # Creates new tensors
-            y = torch.tensor([query(x)])
-            x = reshape_input(x, substitute_input_shape)
-        else:
-            try:
-                xi, y0 = data[i]
-            except Exception:
-                xi = data[i]
-            # Concatenates current data to new tensors
-            xi = reshape_input(xi, substitute_input_shape)
-            x = torch.cat((x, xi))
-            yi = torch.tensor([query(xi)])
-            y = torch.cat((y, yi))
-
-    # print(f"Dataset Created: {x.shape}; {y.shape}")
-    print(x.dtype)
-    print(y.dtype)
-    return x, y
+    """Creates a synthetic dataset by labeling seed data
+    
+    Arxiv Paper: https://ieeexplore.ieee.org/document/8489592"""
+    (x_data, y_data) = data
+    y_data = query(x_data)
+    if reshape:
+        x_data = reshape_input(x_data, substitute_input_shape)
+    return x_data, y_data
 
 
 @register_synth
@@ -115,17 +152,8 @@ def hopskipjump(
     """Runs the HopSkipJump evasion attack
 
     Arxiv Paper: https://arxiv.org/abs/1904.02144"""
-    config = set_evasion_model(query, victim_input_shape, victim_input_targets)
+
     internal_limit = int(query_limit * 0.5)
-    evasion_limit = int(query_limit * 0.5)
-    attack = HopSkipJump(
-        config,
-        False,
-        norm="inf",
-        max_iter=evasion_limit,
-        max_eval=evasion_limit,
-        init_eval=10,
-    )
     X, y = copycat(
         data,
         query,
@@ -133,12 +161,35 @@ def hopskipjump(
         victim_input_shape,
         substitute_input_shape,
         victim_input_targets,
+        False,
     )
-    print(X.shape)
-    result = attack.generate(X)
-    result = torch.as_tensor(result)
-    result = result.clone().detach()
-    print(result.shape)
-    y = torch.Tensor([query(x) for x in result])
-    y = y.long()
+
+    X_np = X.detach().clone().numpy()
+
+    config = set_evasion_model(query, victim_input_shape, victim_input_targets)
+
+    evasion_limit = int(query_limit * 0.5)
+
+    # The initial evaluation number must be lower than the maximum
+
+    lower_bound = 0.01 * evasion_limit
+
+    init_eval = int(lower_bound if lower_bound > 1 else 1)
+
+    attack = HopSkipJump(
+        config,
+        False,
+        norm="inf",
+        max_iter=evasion_limit,
+        max_eval=evasion_limit,
+        init_eval=init_eval,
+    )
+
+    print(attack)
+
+    result = torch.from_numpy(attack.generate(X_np)).detach().clone().float()
+
+    y = query(result)
+
+    result = reshape_input(result, substitute_input_shape)
     return result, y

@@ -72,6 +72,8 @@ The other classes of attacks can be launched in a similar fashion. See the `exam
 2. Git clone this repository.
 3. Run `poetry install`.
 
+If you'd like to use a Jupyter Notebook environment, run `poetry shell` followed by `jupyter notebook`.
+
 Feel free to join our #privacyraven channel in [Empire Hacking](https://empireslacking.herokuapp.com/) if you need help using or extending PrivacyRaven.
 The official pip release will arrive soon.
 
