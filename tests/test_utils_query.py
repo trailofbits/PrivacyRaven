@@ -1,17 +1,17 @@
 # This test code was written by the `hypothesis.extra.ghostwriter` module
 # and is provided under the Creative Commons Zero public domain dedication.
-import torch
-import privacyraven.utils.query
-import pytest
 import numpy as np
+import pytest
 import torch
-import privacyraven.extraction.synthesis
-from privacyraven.utils import model_creation
-from privacyraven.models.pytorch import ImagenetTransferLearning
-from privacyraven.models.victim import train_mnist_victim
-from hypothesis import assume, given, strategies as st
+from hypothesis import assume, given
+from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
 
+import privacyraven.extraction.synthesis
+import privacyraven.utils.query
+from privacyraven.models.pytorch import ImagenetTransferLearning
+from privacyraven.models.victim import train_mnist_victim
+from privacyraven.utils import model_creation
 
 device = torch.device("cpu")
 
@@ -43,6 +43,7 @@ def test_fuzz_establish_query(query_func, input_size):
     model=st.just(model), input_data=valid_data(), input_size=st.just((1, 28, 28, 1))
 )
 def test_fuzz_get_target(model, input_data, input_size):
+    input_data = torch.from_numpy(input_data)
     target = privacyraven.utils.query.get_target(
         model=model, input_data=input_data, input_size=input_size
     )

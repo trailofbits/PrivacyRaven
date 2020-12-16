@@ -1,7 +1,8 @@
 import torch
 import tqdm
-from privacyraven.utils.query import query_model, get_target
+
 from privacyraven.extraction.synthesis import process_data
+from privacyraven.utils.query import get_target, query_model
 
 
 def label_agreement(

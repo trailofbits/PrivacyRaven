@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytorch_lightning as pl
 import torch
-from torch.utils.data import Dataset
 from art.estimators.classification import BlackBoxClassifier
+from torch.utils.data import Dataset
 
 
 def set_evasion_model(query, victim_input_shape, victim_input_targets):
@@ -24,6 +24,7 @@ def set_evasion_model(query, victim_input_shape, victim_input_targets):
 
 class NewDataset(Dataset):
     """Creates a Dataset class for PyTorch"""
+
     def __init__(self, images, targets, transform=None):
         self.images = images
         self.targets = targets
@@ -69,6 +70,7 @@ def set_hparams(
     hparams["targets"] = targets
     return hparams
 
+
 def train_and_test(
     classifier,
     train_dataloader,
@@ -88,6 +90,7 @@ def train_and_test(
     trainer.fit(model, train_dataloader, val_dataloader)
     trainer.test(model, test_dataloaders=test_dataloader)
     return model
+
 
 def convert_to_inference(model):
     """Allows a model to be used in an inference setting"""

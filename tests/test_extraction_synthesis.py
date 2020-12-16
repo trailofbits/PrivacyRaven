@@ -1,17 +1,19 @@
 # This test code was modified from code written by the `hypothesis.extra.ghostwriter` module
 # and is provided under the Creative Commons Zero public domain dedication.
 
-import pytest
 import numpy as np
+import pytest
 import torch
+from hypothesis import assume, given
+from hypothesis import strategies as st
+from hypothesis.extra.numpy import arrays
+
 import privacyraven.extraction.synthesis
-from privacyraven.utils import model_creation, query
 from privacyraven.models.pytorch import ImagenetTransferLearning
 from privacyraven.models.victim import train_mnist_victim
+from privacyraven.utils import model_creation, query
 from privacyraven.utils.data import get_emnist_data
 from privacyraven.utils.query import get_target
-from hypothesis import assume, given, strategies as st
-from hypothesis.extra.numpy import arrays
 
 """
 The synthesis tests rely on sampling data from a model.

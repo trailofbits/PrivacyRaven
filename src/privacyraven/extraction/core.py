@@ -1,17 +1,15 @@
-import attr
 import os
+
+import attr
 import torch
 from torch.utils.data import DataLoader
 
+from privacyraven.extraction.metrics import label_agreement
 from privacyraven.extraction.synthesis import synthesize, synths
 from privacyraven.models.pytorch import ImagenetTransferLearning
-from privacyraven.utils.model_creation import (
-    convert_to_inference,
-    set_hparams,
-    train_and_test,
-)
+from privacyraven.utils.model_creation import (convert_to_inference,
+                                               set_hparams, train_and_test)
 from privacyraven.utils.query import establish_query
-from privacyraven.extraction.metrics import label_agreement
 
 
 @attr.s
@@ -47,6 +45,7 @@ class ModelExtractionAttack(object):
         max_epochs: Int of the maximum number of epochs used to train the model
         learning_rate: Float of the learning rate of the model
         callback: A PytorchLightning CallBack"""
+
     query = attr.ib()
     query_limit = attr.ib(default=100)
     victim_input_shape = attr.ib(default=None)

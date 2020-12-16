@@ -1,6 +1,8 @@
-from privacyraven.extraction.core import ModelExtractionAttack
 from functools import partial
+
 import attr
+
+from privacyraven.extraction.core import ModelExtractionAttack
 
 
 def get_extraction_attrs():

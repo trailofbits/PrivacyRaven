@@ -66,15 +66,15 @@ def query_model(model, input_data, input_size=None):
         prediction_as_np: A Numpy array of the predicton probabilities
         target: An integer displaying the predicted label
     """
-    #with suppress(Exception):
-        #input_data = torch.from_numpy(input_data)
+    # with suppress(Exception):
+    # input_data = torch.from_numpy(input_data)
     with suppress(Exception):
         input_data = input_data.cuda()
     input_data = input_data.float()
     if input_size is not None:
         input_data = reshape_input(input_data, input_size)
     prediction = model(input_data)
-    target = torch.tensor([torch.argmax(row) for row in torch.unbind(prediction)]) 
+    target = torch.tensor([torch.argmax(row) for row in torch.unbind(prediction)])
     return prediction, target
 
 
