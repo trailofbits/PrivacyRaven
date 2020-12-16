@@ -131,7 +131,7 @@ def copycat(
     reshape=True,
 ):
     """Creates a synthetic dataset by labeling seed data
-    
+
     Arxiv Paper: https://ieeexplore.ieee.org/document/8489592"""
     (x_data, y_data) = data
     y_data = query(x_data)

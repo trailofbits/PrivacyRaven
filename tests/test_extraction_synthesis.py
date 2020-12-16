@@ -8,6 +8,7 @@ from hypothesis import assume, given
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
 
+import privacyraven.utils.query
 import privacyraven.extraction.synthesis
 from privacyraven.models.pytorch import ImagenetTransferLearning
 from privacyraven.models.victim import train_mnist_victim
@@ -28,7 +29,7 @@ model = train_mnist_victim(gpus=0)
 
 
 def query_mnist(input_data):
-    return get_target(model, input_data, (1, 28, 28, 1))
+    return privacyraven.utils.query.get_target(model, input_data, (1, 28, 28, 1))
 
 
 def valid_query():
@@ -69,7 +70,19 @@ def test_copycat_preserves_shapes(
     y_1 = y_data.size()
 
 
+@given(data=valid_data(), query_limit=st.integers(10, 25))
+def process_data_preserves_shape_and_type(data, query_limit):
+    processed_data = privacyraven.extraction.synthesis.process_data(
+        data=data, query_limit=query_limit
+    )
+    (x, y) = processed_data
+    assert x.size() == torch.Size([10, 28, 28, 1])
+    assert x.type() == torch.FloatTensor
+
+
 """
+This is error-prone, but should be fixed eventually
+
 @given(
     data=valid_data(),
     query=st.just(query_mnist),
@@ -99,13 +112,3 @@ def test_fuzz_hopskipjump(
     print(x_data.size())
     print(y_data.size())
 """
-
-
-@given(data=valid_data(), query_limit=st.integers(10, 25))
-def process_data_preserves_shape_and_type(data, query_limit):
-    processed_data = privacyraven.extraction.synthesis.process_data(
-        data=data, query_limit=query_limit
-    )
-    (x, y) = processed_data
-    assert x.size() == torch.Size([10, 28, 28, 1])
-    assert x.type() == torch.FloatTensor

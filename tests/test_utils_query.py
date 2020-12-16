@@ -19,7 +19,7 @@ model = train_mnist_victim(gpus=0)
 
 
 def query_mnist(input_data):
-    return get_target(model, input_data, (1, 28, 28, 1))
+    return privacyraven.utils.query.get_target(model, input_data, (1, 28, 28, 1))
 
 
 def valid_query():
@@ -36,7 +36,7 @@ def test_fuzz_establish_query(query_func, input_size):
         query_func=query_func, input_size=input_size
     )
 
-    assert callable(x) == True
+    assert callable(x) is True
 
 
 @given(
