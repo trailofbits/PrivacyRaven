@@ -15,6 +15,8 @@ def label_agreement(
     thereby measuring the fidelity of an extraction attack"""
 
     l = int(len(test_data))
+    if l >= 100:
+        l = 100
     x_data, y_data = process_data(test_data, l)
 
     substitute_result = get_target(substitute_model, x_data, substitute_input_shape)

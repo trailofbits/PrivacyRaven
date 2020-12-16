@@ -46,13 +46,7 @@ class ModelExtractionAttack(object):
         num_workers: Int of the number of workers used in training
         max_epochs: Int of the maximum number of epochs used to train the model
         learning_rate: Float of the learning rate of the model
-<<<<<<< HEAD
-        callback: A PytorchLightning CallBack
-    """
-=======
         callback: A PytorchLightning CallBack"""
->>>>>>> 2de4429191530689135d601fcc1202648e8e88ff
-
     query = attr.ib()
     query_limit = attr.ib(default=100)
     victim_input_shape = attr.ib(default=None)
@@ -72,13 +66,9 @@ class ModelExtractionAttack(object):
     max_epochs = attr.ib(default=10)
     learning_rate = attr.ib(default=1e-3)
     callback = attr.ib(default=None)
-<<<<<<< HEAD
-=======
 
     # The following attributes are created during class creation
     # and are not taken as arguments
->>>>>>> 2de4429191530689135d601fcc1202648e8e88ff
-
     synth_train = attr.ib(init=False)
     synth_valid = attr.ib(init=False)
     synth_test = attr.ib(init=False)

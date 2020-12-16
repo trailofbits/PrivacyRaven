@@ -69,15 +69,7 @@ def set_hparams(
     hparams["targets"] = targets
     return hparams
 
-
 def train_and_test(
-<<<<<<< HEAD
-    classifier, train_dataloader, val_dataloader, test_dataloader, hparams, callback=None
-):
-    model = classifier(hparams)
-    if callback is not None:
-        trainer = pl.Trainer(gpus=hparams["gpus"], max_epochs=hparams["max_epochs"], callbacks=[callback])
-=======
     classifier,
     train_dataloader,
     val_dataloader,
@@ -90,14 +82,12 @@ def train_and_test(
         trainer = pl.Trainer(
             gpus=hparams["gpus"], max_epochs=hparams["max_epochs"], callbacks=[callback]
         )
->>>>>>> 2de4429191530689135d601fcc1202648e8e88ff
     else:
         trainer = pl.Trainer(gpus=hparams["gpus"], max_epochs=hparams["max_epochs"])
 
     trainer.fit(model, train_dataloader, val_dataloader)
     trainer.test(model, test_dataloaders=test_dataloader)
     return model
-
 
 def convert_to_inference(model):
     """Allows a model to be used in an inference setting"""

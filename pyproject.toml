@@ -9,26 +9,24 @@ authors = ["suhacker1 <suhashussain1@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-torch = "^1.6.0"
-torchvision = "^0.7.0"
+torch = "1.6.0"
+torchvision = "0.7.0"
 click = "^7.1.2"
 tqdm = "^4.46.1"
 matplotlib = "^3.2.1"
-pytorch_lightning = "^1.0.0"
+pytorch_lightning = "1.0.0"
 ipykernel = "^5.3.0"
 attrs = "^19.3.0"
 sklearn = "^0.0"
 pytest = "^6.0.2"
 flake8 = "^3.8.3"
 isort = "^5.5.3"
-adversarial-robustness-toolbox = "^1.4.1"
-pytorch-lightning-bolts = "^0.2.5"
-<<<<<<< HEAD
-=======
+adversarial-robustness-toolbox = "1.4.1"
+pytorch-lightning-bolts = "0.2.5"
+
 hypothesis = "^5.41.1"
 jupyter = "^1.0.0"
 jupyterlab = "^2.2.9"
->>>>>>> 2de4429191530689135d601fcc1202648e8e88ff
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
