@@ -19,6 +19,7 @@ def install_with_constraints(session, *args, **kwargs):
         )
         session.install(f"--constraint={requirements.name}", *args, **kwargs)
 
+
 @nox.session(python=["3.7"])
 def tests(session):
     args = session.posargs  # or ["--cov"]
