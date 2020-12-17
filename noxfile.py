@@ -13,11 +13,11 @@ def install_with_constraints(session, *args, **kwargs):
             "export",
             "--dev",
             "--format=requirements.txt",
+            "--without-hashes",
             f"--output={requirements.name}",
             external=True,
         )
         session.install(f"--constraint={requirements.name}", *args, **kwargs)
-
 
 @nox.session(python=["3.7"])
 def tests(session):
@@ -70,8 +70,8 @@ def safety(session):
             "export",
             "--dev",
             "--format=requirements.txt",
-            "--without-hashes",
             f"--output={requirements.name}",
+            "--without-hashes",
             external=True,
         )
         session.install("safety")
