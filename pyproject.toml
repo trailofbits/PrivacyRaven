@@ -20,7 +20,7 @@ attrs = "^19.3.0"
 sklearn = "^0.0"
 pytest = "^6.0.2"
 flake8 = "^3.8.3"
-isort = "^5.5.3"
+isort = "5.5.3"
 adversarial-robustness-toolbox = "1.4.1"
 pytorch-lightning-bolts = "0.2.5"
 
@@ -30,10 +30,10 @@ jupyterlab = "^2.2.9"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
-coverage = {extras = ["toml"], version = "^5.1"}
+coverage = {extras = ["toml"], version = "5.1"}
 pytest-cov = "^2.9.0"
 pytest-mock = "^3.1.1"
-black = "^19.10b0"
+black = "19.10b0"
 flake8 = "^3.8.2"
 flake8-bandit = "^2.1.2"
 flake8-black = "^0.2.0"
