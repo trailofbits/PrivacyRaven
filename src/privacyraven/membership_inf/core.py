@@ -3,7 +3,7 @@ import pytorch_lightning as pl
 from sklearn.neural_network import MLPClassifier
 
 from privacyraven.extraction.core import ModelExtractionAttack
-from privacyraven.m_inference.robustness import find_robustness
+from privacyraven.membership_inf.robustness import find_robustness
 
 
 @attr.s
@@ -27,7 +27,7 @@ class MembershipInferenceAttack(object):
     max_epochs = attr.ib(default=10)
     learning_rate = attr.ib(default=1e-3)
     extracted_model = attr.ib(init=False)
-    robust = attr.ib(default="m_inf_hopskipjump")
+    robust = attr.ib(default="mmembership_inf_hopskipjump")
     X = attr.ib(init=False)
     y = attr.ib(init=False)
     shadow = attr.ib(init=False)

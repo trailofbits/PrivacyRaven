@@ -35,7 +35,7 @@ def find_robustness(
 
 
 @register_robust
-def m_inf_hopskipjump(
+def membership_inf_hopskipjump(
     data,
     query,
     query_limit,
