@@ -73,10 +73,18 @@ def query_model(model, input_data, input_size=None):
     input_data = input_data.float()
     if input_size is not None:
         input_data = reshape_input(input_data, input_size)
+        #print(input_size)
+    print(input_data.size())
     prediction = model(input_data)
-    target = torch.tensor([torch.argmax(row) for row in torch.unbind(prediction)])
+    print(prediction.size())
+    #print(target)
+    if prediction.size()[0] == 1:
+        print("Single")
+        target = torch.argmax(prediction, dim=0, keepdim=True)
+    else:
+        target = torch.tensor([torch.argmax(row, dim=0, keepdim=True) for row in torch.unbind(prediction)])
+    #target = torch.tensor([int(torch.argmax(prediction, dim=0, keepdim=True))])
     return prediction, target
-
 
 def get_target(model, input_data, input_size=None):
     """Returns the predicted target of a Pytorch model
