@@ -16,7 +16,9 @@ def label_agreement(
     thereby measuring the fidelity of an extraction attack"""
 
     limit = int(len(test_data))
+
     if limit >= 100:
+        # Test data should be limited to 100 samples for efficiency and readibility
         limit = 100
     x_data, y_data = process_data(test_data, limit)
 
