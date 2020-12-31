@@ -27,6 +27,7 @@ pytorch-lightning-bolts = "0.2.5"
 hypothesis = "^5.41.1"
 jupyter = "^1.0.0"
 jupyterlab = "^2.2.9"
+wheel = "^0.36.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
@@ -55,5 +56,7 @@ source = ["privacyraven"]
 show_missing = true
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+# requires = ["poetry>=0.12"]
+# build-backend = "poetry.masonry.api"
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -3,6 +3,8 @@ import tempfile
 
 import nox
 
+package = "privacyraven"
+nox.options.sessions = "tests", "lint", "black", "isort"
 locations = "src", "tests", "noxfile.py"
 
 
@@ -20,7 +22,7 @@ def install_with_constraints(session, *args, **kwargs):
         session.install(f"--constraint={requirements.name}", *args, **kwargs)
 
 
-@nox.session(python=["3.7"])
+@nox.session(python=["3.8"])
 def tests(session):
     args = session.posargs  # or ["--cov"]
     session.run("poetry", "install", external=True)
