@@ -28,6 +28,8 @@ hypothesis = "^5.41.1"
 jupyter = "^1.0.0"
 jupyterlab = "^2.2.9"
 wheel = "^0.36.2"
+scalene = "^1.1.12"
+memory_profiler = "^0.58.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
