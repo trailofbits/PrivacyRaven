@@ -8,8 +8,8 @@ from hypothesis import assume, given
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
 
-import privacyraven.utils.query
 import privacyraven.extraction.synthesis
+import privacyraven.utils.query
 from privacyraven.models.pytorch import ImagenetTransferLearning
 from privacyraven.models.victim import train_mnist_victim
 from privacyraven.utils import model_creation, query

@@ -109,11 +109,15 @@ def process_data(data, query_limit):
     if bounded is False:
         data_limit = int(x_data.size()[0])
         if query_limit is None:
-            data_limit = query_limit
+            # data_limit = query_limit
+            query_limit = data_limit
+
         limit = query_limit if data_limit > query_limit else data_limit
 
         # torch.narrow is more efficient than indexing and splicing
         x_data = x_data.narrow(0, 0, int(limit))
+        if y_data is not None:
+            y_data = y_data.narrow(0, 0, int(limit))
 
     # print("Data has been processed")
     processed_data = (x_data, y_data)
