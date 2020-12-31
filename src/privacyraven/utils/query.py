@@ -17,8 +17,7 @@ def reshape_input(input_data, input_size, single=True, warning=False):
         warning: A Boolean that turns warnings on or off
 
     Returns:
-        Data of new shape
-    """
+        Data of new shape"""
     with suppress(Exception):
         input_data = torch.from_numpy(input_data)
 
@@ -73,18 +72,25 @@ def query_model(model, input_data, input_size=None):
     input_data = input_data.float()
     if input_size is not None:
         input_data = reshape_input(input_data, input_size)
-        #print(input_size)
-    print(input_data.size())
+        # print(input_size)
+
+    # print(input_data.size())
+
     prediction = model(input_data)
-    print(prediction.size())
-    #print(target)
+    # print(prediction.size())
+    # print(target)
     if prediction.size()[0] == 1:
         print("Single")
         target = torch.argmax(prediction, dim=0, keepdim=True)
     else:
-        target = torch.tensor([torch.argmax(row, dim=0, keepdim=True) for row in torch.unbind(prediction)])
-    #target = torch.tensor([int(torch.argmax(prediction, dim=0, keepdim=True))])
+        target = torch.tensor(
+            [torch.argmax(row, dim=0, keepdim=True) for row in torch.unbind(prediction)]
+        )
+
+    # target = torch.tensor([int(torch.argmax(prediction, dim=0, keepdim=True))])
+
     return prediction, target
+
 
 def get_target(model, input_data, input_size=None):
     """Returns the predicted target of a Pytorch model

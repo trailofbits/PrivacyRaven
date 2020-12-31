@@ -117,7 +117,7 @@ def process_data(data, query_limit):
         # torch.narrow is more efficient than indexing and splicing
         x_data = x_data.narrow(0, 0, int(limit))
         y_data = y_data.narrow(0, 0, int(limit))
-    
+
     # print("Data has been processed")
     processed_data = (x_data, y_data)
     return processed_data

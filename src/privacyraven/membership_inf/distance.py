@@ -9,8 +9,3 @@ from privacyraven.utils.model_creation import NewDataset
 from privacyraven.utils.query import reshape_input
 
 dist = dict()
-
-def determine_distance():
-
-def gap_not_distance():
-
