@@ -3,6 +3,7 @@ import torch
 from art.attacks.evasion import BoundaryAttack, HopSkipJump
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
+from pytorch_lightning.metrics.utils import to_onehot
 
 from privacyraven.utils.model_creation import NewDataset, set_evasion_model
 from privacyraven.utils.query import reshape_input
@@ -118,7 +119,7 @@ def process_data(data, query_limit):
         x_data = x_data.narrow(0, 0, int(limit))
         if y_data is not None:
             y_data = y_data.narrow(0, 0, int(limit))
-
+            # y_data = to_onehot(y_data)
     # print("Data has been processed")
     processed_data = (x_data, y_data)
     return processed_data
@@ -139,6 +140,7 @@ def copycat(
     Arxiv Paper: https://ieeexplore.ieee.org/document/8489592"""
     (x_data, y_data) = data
     y_data = query(x_data)
+    # y_data = to_onehot(y_data, victim_input_targets)
     if reshape:
         x_data = reshape_input(x_data, substitute_input_shape)
     return x_data, y_data
