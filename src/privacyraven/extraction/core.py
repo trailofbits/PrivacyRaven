@@ -49,8 +49,7 @@ class ModelExtractionAttack(object):
         learning_rate: Float of the learning rate of the model
         callback: A PytorchLightning CallBack
         trainer_args: A list of tuples with keyword arguments for the Trainer
-                      e.g.: [("deterministic", True), ("profiler", "simple")]
-        """
+                      e.g.: [("deterministic", True), ("profiler", "simple")] """
 
     query = attr.ib()
     query_limit = attr.ib(default=100)
