@@ -90,7 +90,8 @@ class ModelExtractionAttack(object):
         #    device = torch.device("cpu")
         # device = torch.device("cuda:0")
         self.query = establish_query(self.query, self.victim_input_shape)
-        self.trainer_args = dict(self.trainer_args)
+        if self.trainer_args is not None:
+            self.trainer_args = dict(self.trainer_args)
         self.synth_train, self.synth_valid, self.synth_test = self.synthesize_data()
         print("Synthetic Data Generated")
 
