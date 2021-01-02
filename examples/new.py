@@ -1,7 +1,7 @@
 """
 This model extraction attack steals a model trained on MNIST by
 using the copycat synthesizer and the EMNIST dataset to train a
-FourLayerClassifier. A single GPU is assumed.
+FourLayerClassifier substitute. A single GPU is assumed.
 """
 import privacyraven as pr
 
@@ -19,6 +19,7 @@ def query_mnist(input_data):
     # PrivacyRaven provides built-in query functions
     return get_target(new_model, input_data, (1, 28, 28, 1))
 
+
 # Obtain seed (or public) data to be used in extraction
 emnist_train, emnist_test = get_emnist_data()
 
@@ -28,10 +29,10 @@ attack = ModelExtractionAttack(
     100,
     (1, 28, 28, 1),
     10,
-    (3, 1, 28, 28), # Shape of an EMNIST data point
+    (3, 1, 28, 28),  # Shape of an EMNIST data point
     "copycat",
     FourLayerClassifier,
-    784, # 28 * 28 or the size of a single image
+    784,  # 28 * 28 or the size of a single image
     emnist_train,
-    emnist_test
+    emnist_test,
 )
