@@ -1,3 +1,6 @@
+"""
+These models will be depreciated soon. Use at your own risk.
+"""
 import os
 
 import numpy as np
