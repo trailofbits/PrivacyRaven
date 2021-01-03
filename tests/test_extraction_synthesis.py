@@ -38,6 +38,7 @@ def valid_query():
 def valid_data():
     return arrays(np.float64, (10, 28, 28, 1), st.floats())
 
+
 @settings(deadline=None)
 @given(
     data=valid_data(),

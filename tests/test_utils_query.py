@@ -39,6 +39,7 @@ def test_fuzz_establish_query(query_func, input_size):
 
     assert callable(x) is True
 
+
 @settings(deadline=None)
 @given(
     model=st.just(model), input_data=valid_data(), input_size=st.just((1, 28, 28, 1))
@@ -50,6 +51,7 @@ def test_fuzz_get_target(model, input_data, input_size):
     )
     assert torch.argmax(target) >= 0
     assert torch.argmax(target) < 10
+
 
 @settings(deadline=None)
 @given(
