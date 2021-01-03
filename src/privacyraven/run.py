@@ -19,7 +19,9 @@ def run_all_extraction(
     max_epochs=10,
     learning_rate=1e-3,
 ):
-    """Run all extraction attacks"""
+    """Run all extraction attacks.
+
+    This needs to be updated with the class signature."""
 
     for s in synths:
         ModelExtractionAttack(

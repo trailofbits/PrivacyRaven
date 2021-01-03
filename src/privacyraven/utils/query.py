@@ -26,6 +26,7 @@ def reshape_input(input_data, input_size, single=True, warning=False):
             print("No size was given and no reshaping can occur")
         return input_data
 
+    # Reshape the data regardless of batch size
     start = len(input_data)
 
     alternate = list(input_size)
@@ -62,33 +63,31 @@ def query_model(model, input_data, input_size=None):
 
     Returns:
         prediction_as_torch: A Torch tensor of the predicton probabilities
-        prediction_as_np: A Numpy array of the predicton probabilities
-        target: An integer displaying the predicted label
-    """
-    # with suppress(Exception):
-    # input_data = torch.from_numpy(input_data)
+        target: A Torch tensor displaying the predicted label"""
+    # Transform to Torch tensor
+    if isinstance(input_data, np.ndarray) is True:
+        input_data = torch.from_numpy(input_data)
+
+    # If the model uses a GPU, the data may need to be shifted
     with suppress(Exception):
         input_data = input_data.cuda()
+
+    # Transform and validate input data
     input_data = input_data.float()
     if input_size is not None:
         input_data = reshape_input(input_data, input_size)
-        # print(input_size)
 
-    # print(input_data.size())
-
+    # Generate predictions and targets
     prediction = model(input_data)
-    # print(prediction.size())
-    # print(target)
     if prediction.size()[0] == 1:
-        print("Single")
+        # Sometimes, the model may not output [1, num_of_targets], resulting in
+        # a possible loss of data during the prediction to target conversion
         target = torch.argmax(prediction, dim=0, keepdim=True)
     else:
         target = torch.tensor(
             [torch.argmax(row, dim=0, keepdim=True) for row in torch.unbind(prediction)]
         )
-
     # target = torch.tensor([int(torch.argmax(prediction, dim=0, keepdim=True))])
-
     return prediction, target
 
 
@@ -101,7 +100,6 @@ def get_target(model, input_data, input_size=None):
         input_size: A tuple of ints describes the shape of x
 
     Returns:
-        target: An integer displaying the predicted label
-    """
+        target: An Torch tensor displaying the predicted target"""
     prediction, target = query_model(model, input_data, input_size)
     return target

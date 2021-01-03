@@ -18,7 +18,7 @@ def label_agreement(
     limit = int(len(test_data))
 
     if limit >= 100:
-        # Test data should be limited to 100 samples for efficiency and readibility
+        # We limit test data to 100 samples for efficiency
         limit = 100
     x_data, y_data = process_data(test_data, limit)
 
@@ -27,5 +27,5 @@ def label_agreement(
 
     agreed = torch.sum(torch.eq(victim_result, substitute_result)).item()
 
-    print(f"Out of {limit} data points, the models agreed upon {agreed}.")
+    print(f"Fidelity: Out of {limit} data points, the models agreed upon {agreed}.")
     return agreed

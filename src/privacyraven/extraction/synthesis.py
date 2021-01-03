@@ -43,7 +43,6 @@ def synthesize(
 
     x_train, y_train = func(seed_data_train, query, query_limit, *args, **kwargs)
     x_test, y_test = func(seed_data_test, query, query_limit, *args, **kwargs)
-    print("Synthesis complete")
 
     # Presently, we have hard-coded specific values for the test-train split.
     # In the future, this should be automated and/or optimized in some form.
@@ -110,7 +109,6 @@ def process_data(data, query_limit):
     if bounded is False:
         data_limit = int(x_data.size()[0])
         if query_limit is None:
-            # data_limit = query_limit
             query_limit = data_limit
 
         limit = query_limit if data_limit > query_limit else data_limit
@@ -119,8 +117,6 @@ def process_data(data, query_limit):
         x_data = x_data.narrow(0, 0, int(limit))
         if y_data is not None:
             y_data = y_data.narrow(0, 0, int(limit))
-            # y_data = to_onehot(y_data)
-    # print("Data has been processed")
     processed_data = (x_data, y_data)
     return processed_data
 
@@ -140,7 +136,6 @@ def copycat(
     Arxiv Paper: https://ieeexplore.ieee.org/document/8489592"""
     (x_data, y_data) = data
     y_data = query(x_data)
-    # y_data = to_onehot(y_data, victim_input_targets)
     if reshape:
         x_data = reshape_input(x_data, substitute_input_shape)
     return x_data, y_data
@@ -171,17 +166,14 @@ def hopskipjump(
     )
 
     X_np = X.detach().clone().numpy()
-
     config = set_evasion_model(query, victim_input_shape, victim_input_targets)
-
     evasion_limit = int(query_limit * 0.5)
 
     # The initial evaluation number must be lower than the maximum
-
     lower_bound = 0.01 * evasion_limit
-
     init_eval = int(lower_bound if lower_bound > 1 else 1)
 
+    # Run attack and process results
     attack = HopSkipJump(
         config,
         False,
@@ -190,12 +182,7 @@ def hopskipjump(
         max_eval=evasion_limit,
         init_eval=init_eval,
     )
-
-    print(attack)
-
     result = torch.from_numpy(attack.generate(X_np)).detach().clone().float()
-
     y = query(result)
-
     result = reshape_input(result, substitute_input_shape)
     return result, y

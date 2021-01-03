@@ -85,10 +85,6 @@ class ModelExtractionAttack(object):
 
     def __attrs_post_init__(self):
         """The attack itself is executed here"""
-        # global device
-        # if self.gpus == 0:
-        #    device = torch.device("cpu")
-        # device = torch.device("cuda:0")
         self.query = establish_query(self.query, self.victim_input_shape)
         if self.trainer_args is not None:
             self.trainer_args = dict(self.trainer_args)
@@ -105,7 +101,6 @@ class ModelExtractionAttack(object):
         self.substitute_model = self.get_substitute_model()
 
         # If seperate data is not provided, seed data is used for testing
-
         if self.test_data is None:
             self.label_agreement = label_agreement(
                 self.seed_data_test,
@@ -149,6 +144,7 @@ class ModelExtractionAttack(object):
         return hparams
 
     def set_dataloaders(self):
+        print("Creating synthetic dataloaders")
         train_dataloader = DataLoader(
             self.synth_train,
             batch_size=self.hparams["batch_size"],
@@ -167,6 +163,7 @@ class ModelExtractionAttack(object):
         return train_dataloader, valid_dataloader, test_dataloader
 
     def get_substitute_model(self):
+        print("Training the substitute_model")
         model = train_and_test(
             self.substitute_model_arch,
             self.train_dataloader,

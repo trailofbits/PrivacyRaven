@@ -26,7 +26,7 @@ emnist_train, emnist_test = get_emnist_data()
 # Run a model extraction attack
 attack = ModelExtractionAttack(
     query_mnist,
-    2000,
+    200,  # Less than the number of MNIST data points: 60000
     (1, 28, 28, 1),
     10,
     (3, 1, 28, 28),  # Shape of an EMNIST data point
