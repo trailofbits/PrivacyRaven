@@ -1,14 +1,16 @@
 import pytest
-import privacyraven as pr
 
-from privacyraven.utils.data import get_emnist_data
+import privacyraven as pr
 from privacyraven.extraction.core import ModelExtractionAttack
-from privacyraven.utils.query import get_target
-from privacyraven.models.victim import train_four_layer_mnist_victim
 from privacyraven.models.four_layer import FourLayerClassifier
+from privacyraven.models.victim import train_four_layer_mnist_victim
+from privacyraven.utils.data import get_emnist_data
+from privacyraven.utils.query import get_target
 
 
 def test_extraction():
+    """End-to-end test of a model extraction attack"""
+
     # Create a query function for a target PyTorch Lightning model
     model = train_four_layer_mnist_victim(gpus=0)
 
@@ -33,5 +35,3 @@ def test_extraction():
         seed_data_test=emnist_test,
         gpus=0,
     )
-
-test_extraction()
