@@ -38,13 +38,12 @@ def valid_query():
 def valid_data():
     return arrays(np.float64, (10, 28, 28, 1), st.floats())
 
-
 @given(
     data=valid_data(),
     query=st.just(query_mnist),
     query_limit=st.integers(10, 25),
     victim_input_shape=st.just((1, 28, 28, 1)),
-    substitute_input_shape=st.just((1, 3, 28, 28)),
+    substitute_input_shape=st.just((3, 1, 28, 28)),
     victim_input_targets=st.just(10),
 )
 def test_copycat_preserves_shapes(
@@ -55,7 +54,7 @@ def test_copycat_preserves_shapes(
     substitute_input_shape,
     victim_input_targets,
 ):
-    data = torch.from_numpy(data).detach().clone().float()
+    # data = torch.from_numpy(data).detach().clone().float()
     data = privacyraven.extraction.synthesis.process_data(data, query_limit)
     x_data, y_data = privacyraven.extraction.synthesis.copycat(
         data=data,
@@ -67,6 +66,8 @@ def test_copycat_preserves_shapes(
     )
     x_1 = x_data.size()
     y_1 = y_data.size()
+    assert x_1 == torch.Size([10, 1, 28, 28])
+    assert y_1 == torch.Size([10])
 
 
 @given(data=valid_data(), query_limit=st.integers(10, 25))
