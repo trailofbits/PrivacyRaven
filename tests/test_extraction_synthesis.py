@@ -4,7 +4,7 @@
 import numpy as np
 import pytest
 import torch
-from hypothesis import assume, given
+from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
 
@@ -38,6 +38,7 @@ def valid_query():
 def valid_data():
     return arrays(np.float64, (10, 28, 28, 1), st.floats())
 
+@settings(deadline=None)
 @given(
     data=valid_data(),
     query=st.just(query_mnist),
