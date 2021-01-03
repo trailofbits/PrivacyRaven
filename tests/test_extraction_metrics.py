@@ -11,10 +11,10 @@ from hypothesis.extra.numpy import arrays
 import privacyraven.extraction.metrics
 import privacyraven.extraction.synthesis
 import privacyraven.utils.query
+from privacyraven.models.victim import train_four_layer_mnist_victim
 from privacyraven.utils import model_creation
 from privacyraven.utils.data import get_emnist_data
 from privacyraven.utils.query import get_target
-from privacyraven.models.victim import train_four_layer_mnist_victim
 
 # Establish strategies
 
