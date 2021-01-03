@@ -1,4 +1,4 @@
-# This test code was written by the `hypothesis.extra.ghostwriter` module
+# This was modified from code written by the `hypothesis.extra.ghostwriter` module
 # and is provided under the Creative Commons Zero public domain dedication.
 import torch.utils.data.dataloader
 import torch.utils.data.dataset

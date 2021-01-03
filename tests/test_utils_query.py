@@ -9,14 +9,14 @@ from hypothesis.extra.numpy import arrays
 
 import privacyraven.extraction.synthesis
 import privacyraven.utils.query
-from privacyraven.models.pytorch import ImagenetTransferLearning
-from privacyraven.models.victim import train_mnist_victim
 from privacyraven.utils import model_creation
+from privacyraven.models.victim import train_four_layer_mnist_victim
+
+# Establish strategies
 
 device = torch.device("cpu")
 
-model = train_mnist_victim(gpus=0)
-
+model = train_four_layer_mnist_victim(gpus=0)
 
 def query_mnist(input_data):
     return privacyraven.utils.query.get_target(model, input_data, (1, 28, 28, 1))
