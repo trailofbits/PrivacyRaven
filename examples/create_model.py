@@ -7,7 +7,8 @@ from privacyraven.utils.model_creation import *
 from privacyraven.utils.data import get_emnist_data
 from privacyraven.extraction.core import ModelExtractionAttack
 from privacyraven.utils.query import get_target
-from privacyraven.models.victim import train_mnist_victim
+from privacyraven.models.victim import train_four_layer_mnist_victim
+from privacyraven.models.four_layer import FourLayerClassifier
 from privacyraven.models.pytorch import ImagenetTransferLearning
 
 # User-defined query function
@@ -17,7 +18,7 @@ def query_mnist(input_data):
 emnist_train, emnist_test = get_emnist_data()
 
 # Trains a victim model
-model = train_mnist_victim(gpus=1)
+model = train_four_layer_mnist_victim(gpus=1)
 
 # Gets name of synthesizer function.
 attack = ModelExtractionAttack(
