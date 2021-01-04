@@ -19,6 +19,8 @@ def query_mnist(input_data):
 emnist_train, emnist_test = get_emnist_data()
 
 # Trains a victim model
+# Users can define custom model architectures and training functions to be used in the model extraction attack.
+# The only precondition is that the user provides a query function to attack the model with. 
 model = train_four_layer_mnist_victim(gpus=1)
 
 # Gets name of synthesizer function.
