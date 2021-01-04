@@ -15,6 +15,7 @@ from privacyraven.models.pytorch import ImagenetTransferLearning
 def query_mnist(input_data):
     return get_target(model, input_data)
 
+# Obtrains EMNIST training and test data
 emnist_train, emnist_test = get_emnist_data()
 
 # Trains a victim model
