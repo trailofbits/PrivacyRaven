@@ -13,14 +13,14 @@ from privacyraven.models.pytorch import ImagenetTransferLearning
 
 # User-defined query function
 def query_mnist(input_data):
-    return get_target(model, input_data)
+    return get_target(model, input_data, (1, 28, 28, 1))
 
 # Obtrains EMNIST training and test data
 emnist_train, emnist_test = get_emnist_data()
 
 # Trains a victim model
 # Users can define custom model architectures and training functions to be used in the model extraction attack.
-# The only precondition is that the user provides a query function to attack the model with. 
+# The only precondition is that the user provides a query function to attack the model 
 model = train_four_layer_mnist_victim(gpus=1)
 
 # Gets name of synthesizer function.
