@@ -4,14 +4,13 @@
 import numpy as np
 import pytest
 import torch
-from hypothesis import assume, given
+from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
 
 import privacyraven.extraction.synthesis
 import privacyraven.utils.query
-from privacyraven.models.pytorch import ImagenetTransferLearning
-from privacyraven.models.victim import train_mnist_victim
+from privacyraven.models.victim import train_four_layer_mnist_victim
 from privacyraven.utils import model_creation, query
 from privacyraven.utils.data import get_emnist_data
 from privacyraven.utils.query import get_target
@@ -25,7 +24,7 @@ the cycles dedicated for training this model.
 
 device = torch.device("cpu")
 
-model = train_mnist_victim(gpus=0)
+model = train_four_layer_mnist_victim(gpus=0)
 
 
 def query_mnist(input_data):
@@ -40,12 +39,13 @@ def valid_data():
     return arrays(np.float64, (10, 28, 28, 1), st.floats())
 
 
+@settings(deadline=None)
 @given(
     data=valid_data(),
     query=st.just(query_mnist),
     query_limit=st.integers(10, 25),
     victim_input_shape=st.just((1, 28, 28, 1)),
-    substitute_input_shape=st.just((1, 3, 28, 28)),
+    substitute_input_shape=st.just((3, 1, 28, 28)),
     victim_input_targets=st.just(10),
 )
 def test_copycat_preserves_shapes(
@@ -56,7 +56,7 @@ def test_copycat_preserves_shapes(
     substitute_input_shape,
     victim_input_targets,
 ):
-    data = torch.from_numpy(data).detach().clone().float()
+    # data = torch.from_numpy(data).detach().clone().float()
     data = privacyraven.extraction.synthesis.process_data(data, query_limit)
     x_data, y_data = privacyraven.extraction.synthesis.copycat(
         data=data,
@@ -68,6 +68,8 @@ def test_copycat_preserves_shapes(
     )
     x_1 = x_data.size()
     y_1 = y_data.size()
+    assert x_1 == torch.Size([10, 1, 28, 28])
+    assert y_1 == torch.Size([10])
 
 
 @given(data=valid_data(), query_limit=st.integers(10, 25))

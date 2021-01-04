@@ -4,6 +4,7 @@ boilerplate for hypothesis tests
 """
 
 from hypothesis.extra import ghostwriter
+
 import privacyraven.extraction.metrics as metrics
 
 # The above line imports the source code

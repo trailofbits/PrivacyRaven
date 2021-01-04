@@ -11,8 +11,7 @@ from hypothesis.extra.numpy import arrays
 import privacyraven.extraction.metrics
 import privacyraven.extraction.synthesis
 import privacyraven.utils.query
-from privacyraven.models.pytorch import ImagenetTransferLearning
-from privacyraven.models.victim import train_mnist_victim
+from privacyraven.models.victim import train_four_layer_mnist_victim
 from privacyraven.utils import model_creation
 from privacyraven.utils.data import get_emnist_data
 from privacyraven.utils.query import get_target
@@ -21,7 +20,7 @@ from privacyraven.utils.query import get_target
 
 device = torch.device("cpu")
 
-model = train_mnist_victim(gpus=0)
+model = train_four_layer_mnist_victim(gpus=0)
 
 
 def query_mnist(input_data):

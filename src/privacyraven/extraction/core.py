@@ -44,7 +44,9 @@ class ModelExtractionAttack(object):
         num_workers: Int of the number of workers used in training
         max_epochs: Int of the maximum number of epochs used to train the model
         learning_rate: Float of the learning rate of the model
-        callback: A PytorchLightning CallBack"""
+        callback: A PytorchLightning CallBack
+        trainer_args: A list of tuples with keyword arguments for the Trainer
+                      e.g.: [("deterministic", True), ("profiler", "simple")] """
 
     query = attr.ib()
     query_limit = attr.ib(default=100)
@@ -65,6 +67,7 @@ class ModelExtractionAttack(object):
     max_epochs = attr.ib(default=10)
     learning_rate = attr.ib(default=1e-3)
     callback = attr.ib(default=None)
+    trainer_args = attr.ib(default=None)
 
     # The following attributes are created during class creation
     # and are not taken as arguments
@@ -79,11 +82,9 @@ class ModelExtractionAttack(object):
 
     def __attrs_post_init__(self):
         """The attack itself is executed here"""
-        # global device
-        # if self.gpus == 0:
-        #    device = torch.device("cpu")
-        # device = torch.device("cuda:0")
         self.query = establish_query(self.query, self.victim_input_shape)
+        if self.trainer_args is not None:
+            self.trainer_args = dict(self.trainer_args)
         self.synth_train, self.synth_valid, self.synth_test = self.synthesize_data()
         print("Synthetic Data Generated")
 
@@ -97,7 +98,6 @@ class ModelExtractionAttack(object):
         self.substitute_model = self.get_substitute_model()
 
         # If seperate data is not provided, seed data is used for testing
-
         if self.test_data is None:
             self.label_agreement = label_agreement(
                 self.seed_data_test,
@@ -141,6 +141,7 @@ class ModelExtractionAttack(object):
         return hparams
 
     def set_dataloaders(self):
+        print("Creating synthetic dataloaders")
         train_dataloader = DataLoader(
             self.synth_train,
             batch_size=self.hparams["batch_size"],
@@ -159,6 +160,7 @@ class ModelExtractionAttack(object):
         return train_dataloader, valid_dataloader, test_dataloader
 
     def get_substitute_model(self):
+        print("Training the substitute_model")
         model = train_and_test(
             self.substitute_model_arch,
             self.train_dataloader,
@@ -166,6 +168,7 @@ class ModelExtractionAttack(object):
             self.test_dataloader,
             self.hparams,
             self.callback,
+            self.trainer_args,
         )
         # This may limit the attack to PyTorch Lightning substitutes
         model = convert_to_inference(model)

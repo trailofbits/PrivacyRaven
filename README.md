@@ -31,36 +31,38 @@ PrivacyRaven also provides wrappers around specific attack configurations found 
 Here is how you would launch a model extraction attack in PrivacyRaven:
 
 ```python
-#examples/extract_mnist.py
+#examples/extract_mnist_gpu.py
 import privacyraven as pr
 from privacyraven.utils.data import get_emnist_data
 from privacyraven.extraction.core import ModelExtractionAttack
 from privacyraven.utils.query import get_target
-from privacyraven.models.victim import train_mnist_victim
-from privacyraven.models.pytorch import ImagenetTransferLearning
+from privacyraven.models.victim import train_four_layer_mnist_victim
+from privacyraven.models.four_layer import FourLayerClassifier
 
-# Create a query function for a PyTorch Lightning model
-model = train_mnist_victim()
+# Create a query function for a target PyTorch Lightning model
+model = train_four_layer_mnist_victim()
+
 
 def query_mnist(input_data):
-    return get_target(model, input_data)
+    # PrivacyRaven provides built-in query functions
+    return get_target(model, input_data, (1, 28, 28, 1))
+
 
 # Obtain seed (or public) data to be used in extraction
 emnist_train, emnist_test = get_emnist_data()
 
-# Run a Model Extraction Attack
-
+# Run a model extraction attack
 attack = ModelExtractionAttack(
     query_mnist, # query function
-    100, # query limit
+    200,  # query limit
     (1, 28, 28, 1), # victim input shape
-    10, # target classes
-    (1, 3, 28, 28), # substitute input shape
-    "copycat", # name of synthesizer
-    ImagenetTransferLearning, # substitute model
-    1000, # substitute input size
-    emnist_train, # seed training data
-    emnist_test # seed testing data
+    10, # number of targets
+    (3, 1, 28, 28),  # substitute input shape
+    "copycat", # synthesizer name
+    FourLayerClassifier, # substitute model architecture
+    784,  # substitute input size
+    emnist_train, # seed train data
+    emnist_test, # seed test data
 )
 ```
 Since the only main requirement from the victim model is a query function, PrivacyRaven can be used to attack a wide range of models regardless of the framework and distribution method.

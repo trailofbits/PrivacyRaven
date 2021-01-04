@@ -1,3 +1,6 @@
+"""
+These models will be depreciated soon. Use at your own risk.
+"""
 import os
 
 import numpy as np
@@ -173,8 +176,7 @@ class ImagenetTransferLearning(pl.LightningModule):
             labels: A Torch tensor of the true values for predictions
 
         Returns:
-            Loss
-        """
+            Loss"""
         return F.nll_loss(logits, labels)
 
     def training_step(self, train_batch, batch_idx):
@@ -185,8 +187,7 @@ class ImagenetTransferLearning(pl.LightningModule):
             batch_idx: An integer of the index of batch in contention
 
         Returns:
-            Formatted string with cross entropy loss and training logs
-        """
+            Formatted string with cross entropy loss and training logs"""
         x, y = train_batch
         logits = self.forward(x)
         loss = self.nll_loss(logits, y)
@@ -201,8 +202,7 @@ class ImagenetTransferLearning(pl.LightningModule):
             batch_idx: An integer of the index of batch in contention
 
         Returns:
-            Formatted string with resultant cross entropy loss
-        """
+            Formatted string with resultant cross entropy loss"""
         x, y = val_batch
         logits = self.forward(x)
         loss = self.nll_loss(logits, y)

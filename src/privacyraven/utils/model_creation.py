@@ -78,15 +78,31 @@ def train_and_test(
     test_dataloader,
     hparams,
     callback=None,
+    trainer_args=None,
 ):
+    """Trains, validates, and tests a PyTorch Lightning model"""
     model = classifier(hparams)
-    if callback is not None:
+    # We need to configure how the Trainer interprets callbacks and extra arguments.
+    # This should be refactored to be more dynamic and priorize the most common cases.
+    if callback is not None and trainer_args is not None:
+        trainer = pl.Trainer(
+            gpus=hparams["gpus"],
+            max_epochs=hparams["max_epochs"],
+            callbacks=[callback],
+            **trainer_args
+        )
+    elif callback is not None and trainer_args is None:
         trainer = pl.Trainer(
             gpus=hparams["gpus"], max_epochs=hparams["max_epochs"], callbacks=[callback]
         )
-    else:
+    elif callback is None and trainer_args is None:
         trainer = pl.Trainer(gpus=hparams["gpus"], max_epochs=hparams["max_epochs"])
+    elif callback is None and trainer_args is not None:
+        trainer = pl.Trainer(
+            gpus=hparams["gpus"], max_epochs=hparams["max_epochs"], **trainer_args
+        )
 
+    # Runs training, validation, and testing
     trainer.fit(model, train_dataloader, val_dataloader)
     trainer.test(model, test_dataloaders=test_dataloader)
     return model
@@ -110,8 +126,7 @@ def show_test_image(dataset, idx, cmap="gray"):
         cmap: An optional string defining the color map for image
 
     Returns:
-        data sampled and displayed
-    """
+        data sampled and displayed"""
     x, y = dataset[idx]
     plt.imshow(x.numpy()[0], cmap=cmap)
     return x
