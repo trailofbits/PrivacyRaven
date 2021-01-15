@@ -22,7 +22,7 @@ def install_with_constraints(session, *args, **kwargs):
         session.install(f"--constraint={requirements.name}", *args, **kwargs)
 
 
-@nox.session(python=["3.6"])
+@nox.session(python=["3.7"])
 def tests(session):
     args = session.posargs  # or ["--cov"]
     session.run("poetry", "update", external=True)
@@ -34,7 +34,7 @@ def tests(session):
     session.run("poetry", "run", "pytest", "-s", *args, external=True)
 
 
-@nox.session(python=["3.6"])
+@nox.session(python=["3.7"])
 def lint(session):
     args = session.posargs or locations
     # session.install("flake8", "flake8-bugbear", "flake8-bandit", "flake8-import-order")
@@ -49,7 +49,7 @@ def lint(session):
     session.run("flake8", *args)
 
 
-@nox.session(python="3.6")
+@nox.session(python="3.7")
 def black(session):
     args = session.posargs or locations
     # session.install("black")
@@ -57,7 +57,7 @@ def black(session):
     session.run("black", *args)
 
 
-@nox.session(python="3.6")
+@nox.session(python="3.7")
 def isort(session):
     args = session.posargs or locations
     # session.install("black")
