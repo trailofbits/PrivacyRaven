@@ -1,6 +1,8 @@
 # This test code was modified from code written by the `hypothesis.extra.ghostwriter` module
 # and is provided under the Creative Commons Zero public domain dedication.
 
+import argparse
+
 import numpy as np
 import pytest
 import torch
@@ -20,7 +22,7 @@ from privacyraven.utils.query import get_target
 
 device = torch.device("cpu")
 
-model = train_four_layer_mnist_victim(gpus=0)
+model = train_four_layer_mnist_victim(gpus=torch.cuda.device_count())
 
 
 def query_mnist(input_data):
