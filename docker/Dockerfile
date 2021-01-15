@@ -2,7 +2,7 @@ FROM python:3.6
 
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 
-ADD ../PrivacyRaven ~/PrivacyRaven
+ADD ../../PrivacyRaven ~/PrivacyRaven
 WORKDIR ~/PrivacyRaven
 
 ENV PATH="${PATH}:/root/.poetry/bin"
