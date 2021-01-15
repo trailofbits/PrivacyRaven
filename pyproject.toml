@@ -8,8 +8,8 @@ repository = "https://github.com/trailofbits/PrivacyRaven"
 authors = ["suhacker1 <suhashussain1@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
-torch = "1.6.0"
+python = "3.6.8"
+torch = "1.6"
 torchvision = "0.7.0"
 click = "^7.1.2"
 tqdm = "^4.46.1"
@@ -26,7 +26,7 @@ pytorch-lightning-bolts = "0.2.5"
 
 hypothesis = "^5.41.1"
 jupyter = "^1.0.0"
-jupyterlab = "^2.2.9"
+jupyterlab = "^1.2.0"
 wheel = "^0.36.2"
 scalene = "^1.1.12"
 memory_profiler = "^0.58.0"
