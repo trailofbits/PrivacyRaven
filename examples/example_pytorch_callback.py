@@ -19,7 +19,7 @@ from pytorch_lightning.callbacks import Callback
 
 
 # Trains victim model
-model = train_four_layer_mnist_victim(gpus=1)
+model = train_four_layer_mnist_victim(gpus=torch.cuda.device_count())
 
 # Create a query function for a target PyTorch Lightning model
 def query_mnist(input_data):

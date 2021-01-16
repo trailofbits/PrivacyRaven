@@ -9,7 +9,7 @@ from privacyraven.models.four_layer import FourLayerClassifier
 
 
 # Create a query function for a target PyTorch Lightning model
-model = train_four_layer_mnist_victim(gpus=1)
+model = train_four_layer_mnist_victim(gpus=torch.cuda.device_count())
 
 # User-defined query function
 def query_mnist(input_data):

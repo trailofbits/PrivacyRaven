@@ -12,7 +12,7 @@ from privacyraven.models.victim import train_four_layer_mnist_victim
 from privacyraven.models.four_layer import FourLayerClassifier
 
 # Create a query function for a target PyTorch Lightning model
-model = train_four_layer_mnist_victim()
+model = train_four_layer_mnist_victim(gpus=1)
 
 
 def query_mnist(input_data):
