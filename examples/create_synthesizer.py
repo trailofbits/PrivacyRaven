@@ -8,14 +8,8 @@ from privacyraven.models.victim import train_four_layer_mnist_victim
 from privacyraven.models.four_layer import FourLayerClassifier
 
 
-# PrivacyRaven's builtin victim functions allow the user to specify the number of GPUs
-# to use during computation via the `gpus` keyword argument.  By default, this is 1, but 
-# setting gpus=torch.cuda.device_count() will let PrivacyRaven / Pytorch use all available GPUs.
-# if torch.cuda.device_count() returns 0, then PrivacyRaven will run in CPU-only mode.
-
-# train_four_layer_mnist_victim() is a PrivacyRaven builtin function that 
-# trains a 4-layer fully connected neural network on MNIST data.  See 
-# src/privacyraven/models/victims.py for a full set of supported parameters.
+# Trains a 4-layer fully connected neural network on MNIST data using all of the GPUs
+# available to the user, or CPU if no GPUs are available (torch.cuda.device_count handles this).
 
 model = train_four_layer_mnist_victim(gpus=torch.cuda.device_count())
 
