@@ -1,7 +1,7 @@
 import attr
 import pytorch_lightning as pl
 from sklearn.neural_network import MLPClassifier
-
+from torch.cuda import device_count
 from privacyraven.extraction.core import ModelExtractionAttack
 from privacyraven.membership_inf.robustness import find_robustness
 
@@ -10,6 +10,7 @@ from privacyraven.membership_inf.robustness import find_robustness
 class MembershipInferenceAttack(object):
     """Launches a membership inference attack"""
 
+    gpu_availability = device_count()
     query = attr.ib()
     query_limit = attr.ib(default=100)
     victim_input_shape = attr.ib(default=None)
@@ -23,7 +24,7 @@ class MembershipInferenceAttack(object):
     transform = attr.ib(default=None)
     batch_size = attr.ib(default=100)
     num_workers = attr.ib(default=4)
-    gpus = attr.ib(default=torch.cuda.device_count())
+    gpus = attr.ib(default=gpu_availability)
     max_epochs = attr.ib(default=10)
     learning_rate = attr.ib(default=1e-3)
     extracted_model = attr.ib(init=False)

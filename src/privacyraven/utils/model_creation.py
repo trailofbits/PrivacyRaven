@@ -46,7 +46,7 @@ def set_hparams(
     transform=None,
     batch_size=100,
     num_workers=4,
-    gpus=torch.cuda.device_count(),
+    gpus=None,
     max_epochs=8,
     learning_rate=1e-3,
     input_size=None,
@@ -55,6 +55,9 @@ def set_hparams(
     """Creates a dictionary of hyperparameters"""
     # This should be optimized
     rand_split_val = [55000, 5000]
+
+    if gpus is None:
+        gpus = torch.cuda.device_count()
 
     if (input_size is None) or (targets is None):
         return "Input size and number of targets need to be defined"

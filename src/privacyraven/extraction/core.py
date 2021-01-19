@@ -7,8 +7,11 @@ from torch.utils.data import DataLoader
 from privacyraven.extraction.metrics import label_agreement
 from privacyraven.extraction.synthesis import synthesize, synths
 from privacyraven.models.pytorch import ImagenetTransferLearning
-from privacyraven.utils.model_creation import (convert_to_inference,
-                                               set_hparams, train_and_test)
+from privacyraven.utils.model_creation import (
+    convert_to_inference,
+    set_hparams,
+    train_and_test,
+)
 from privacyraven.utils.query import establish_query
 
 
@@ -48,6 +51,7 @@ class ModelExtractionAttack(object):
         trainer_args: A list of tuples with keyword arguments for the Trainer
                       e.g.: [("deterministic", True), ("profiler", "simple")] """
 
+    gpu_availability = torch.cuda.device_count()
     query = attr.ib()
     query_limit = attr.ib(default=100)
     victim_input_shape = attr.ib(default=None)
@@ -63,7 +67,7 @@ class ModelExtractionAttack(object):
     transform = attr.ib(default=None)
     batch_size = attr.ib(default=100)
     num_workers = attr.ib(default=4)
-    gpus = attr.ib(default=torch.cuda.device_count())
+    gpus = attr.ib(default=gpu_availability)
     max_epochs = attr.ib(default=10)
     learning_rate = attr.ib(default=1e-3)
     callback = attr.ib(default=None)
