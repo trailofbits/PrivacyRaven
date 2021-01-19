@@ -24,7 +24,7 @@ the cycles dedicated for training this model.
 
 device = torch.device("cpu")
 
-model = train_four_layer_mnist_victim(gpus=0)
+model = train_four_layer_mnist_victim(gpus=torch.cuda.device_count())
 
 
 def query_mnist(input_data):

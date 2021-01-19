@@ -18,8 +18,10 @@ from privacyraven.models.four_layer import FourLayerClassifier
 from pytorch_lightning.callbacks import Callback
 
 
-# Trains victim model
-model = train_four_layer_mnist_victim(gpus=1)
+# Trains a 4-layer fully connected neural network on MNIST data using all of the GPUs
+# available to the user, or CPU if no GPUs are available (torch.cuda.device_count handles this).
+
+model = train_four_layer_mnist_victim(gpus=torch.cuda.device_count())
 
 # Create a query function for a target PyTorch Lightning model
 def query_mnist(input_data):

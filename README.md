@@ -76,6 +76,8 @@ The other classes of attacks can be launched in a similar fashion. See the `exam
 
 If you'd like to use a Jupyter Notebook environment, run `poetry shell` followed by `jupyter notebook`.
 
+Additionally, if you'd like to run PrivacyRaven in a Docker container, run `chmod +x build.sh` followed by `./build.sh`.  Note that depending on the amount of resources you allocate to Docker, PrivacyRaven's performance may be drastically impacted.
+
 Feel free to join our #privacyraven channel in [Empire Hacking](https://empireslacking.herokuapp.com/) if you need help using or extending PrivacyRaven.
 The official pip release will arrive soon.
 

@@ -1,4 +1,5 @@
 import pytest
+import torch
 
 import privacyraven as pr
 from privacyraven.extraction.core import ModelExtractionAttack
@@ -12,7 +13,7 @@ def test_extraction():
     """End-to-end test of a model extraction attack"""
 
     # Create a query function for a target PyTorch Lightning model
-    model = train_four_layer_mnist_victim(gpus=0)
+    model = train_four_layer_mnist_victim(gpus=torch.cuda.device_count())
 
     def query_mnist(input_data):
         # PrivacyRaven provides built-in query functions
