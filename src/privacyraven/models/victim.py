@@ -20,7 +20,7 @@ def train_four_layer_mnist_victim(
     batch_size=100,
     num_workers=4,
     rand_split_val=None,
-    gpus=1,
+    gpus=torch.cuda.device_count(),
     max_epochs=8,
     learning_rate=1e-3,
 ):
@@ -74,7 +74,7 @@ def train_mnist_victim(
     batch_size=100,
     num_workers=4,
     rand_split_val=None,
-    gpus=1,
+    gpus=torch.cuda.device_count(),
     max_epochs=8,
     learning_rate=1e-3,
 ):

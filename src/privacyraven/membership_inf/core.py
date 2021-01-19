@@ -23,7 +23,7 @@ class MembershipInferenceAttack(object):
     transform = attr.ib(default=None)
     batch_size = attr.ib(default=100)
     num_workers = attr.ib(default=4)
-    gpus = attr.ib(default=1)
+    gpus = attr.ib(default=torch.cuda.device_count())
     max_epochs = attr.ib(default=10)
     learning_rate = attr.ib(default=1e-3)
     extracted_model = attr.ib(init=False)

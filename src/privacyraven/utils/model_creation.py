@@ -46,7 +46,7 @@ def set_hparams(
     transform=None,
     batch_size=100,
     num_workers=4,
-    gpus=1,
+    gpus=torch.cuda.device_count(),
     max_epochs=8,
     learning_rate=1e-3,
     input_size=None,
