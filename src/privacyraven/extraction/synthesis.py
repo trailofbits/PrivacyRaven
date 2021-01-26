@@ -1,10 +1,10 @@
 import numpy as np
 import torch
 from art.attacks.evasion import BoundaryAttack, HopSkipJump
+from art.estimators.classification import BlackBoxClassifier
 from pytorch_lightning.metrics.utils import to_onehot
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
-from art.estimators.classification import BlackBoxClassifier
 
 from privacyraven.utils.model_creation import NewDataset  # , set_evasion_model
 from privacyraven.utils.query import reshape_input
@@ -62,11 +62,22 @@ def synthesize(
     seed_data_test = process_data(seed_data_test, query_limit)
 
     x_train, y_train = func(
-        seed_data_train, query, query_limit, art_model, victim_input_shape,
-        substitute_input_shape, victim_output_targets
+        seed_data_train,
+        query,
+        query_limit,
+        art_model,
+        victim_input_shape,
+        substitute_input_shape,
+        victim_output_targets,
     )
     x_test, y_test = func(
-        seed_data_test, query, query_limit, art_model, victim_input_shape, substitute_input_shape, victim_output_targets
+        seed_data_test,
+        query,
+        query_limit,
+        art_model,
+        victim_input_shape,
+        substitute_input_shape,
+        victim_output_targets,
     )
 
     # Presently, we have hard-coded specific values for the test-train split.
@@ -190,10 +201,10 @@ def hopskipjump(
         victim_input_shape,
         substitute_input_shape,
         victim_output_targets,
-        reshape=False
+        reshape=False,
     )
 
-    # import pdb; pdb.set_trace() 
+    # import pdb; pdb.set_trace()
     X_np = X.detach().clone().numpy()
     # config = set_evasion_model(query, victim_input_shape, victim_input_targets)
     evasion_limit = int(query_limit * 0.5)
@@ -212,7 +223,9 @@ def hopskipjump(
         init_eval=init_eval,
     )
     result = attack.generate(X_np)
-    result = torch.from_numpy(attack.generate(X_np)).clone().detach().float() #.detach().clone().float()
+    result = (
+        torch.from_numpy(attack.generate(X_np)).clone().detach().float()
+    )  # .detach().clone().float()
     y = query(result)
     result = reshape_input(result, substitute_input_shape)
     return result, y

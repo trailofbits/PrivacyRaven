@@ -11,11 +11,8 @@ from torchvision.datasets import MNIST
 from privacyraven.models.four_layer import FourLayerClassifier
 from privacyraven.models.pytorch import ThreeLayerClassifier
 from privacyraven.utils.data import get_mnist_loaders
-from privacyraven.utils.model_creation import (
-    convert_to_inference,
-    set_hparams,
-    train_and_test,
-)
+from privacyraven.utils.model_creation import (convert_to_inference,
+                                               set_hparams, train_and_test)
 
 
 def train_four_layer_mnist_victim(
