@@ -44,7 +44,7 @@ class ModelExtractionAttack(object):
         num_workers: Int of the number of workers used in training
         max_epochs: Int of the maximum number of epochs used to train the model
         learning_rate: Float of the learning rate of the model
-        art_model: A representation of the classifier for IBM ART 
+        art_model: A representation of the classifier for IBM ART
         callback: A PytorchLightning CallBack
         trainer_args: A list of tuples with keyword arguments for the Trainer
                       e.g.: [("deterministic", True), ("profiler", "simple")] """

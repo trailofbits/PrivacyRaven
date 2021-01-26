@@ -7,6 +7,7 @@ import torch
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
+from art.estimators.classification import BlackBoxClassifier
 
 import privacyraven.extraction.synthesis
 import privacyraven.utils.query
@@ -27,14 +28,14 @@ device = torch.device("cpu")
 model = train_four_layer_mnist_victim(gpus=torch.cuda.device_count())
 
 art_model = BlackBoxClassifier(
-            predict=query,
-            input_shape=victim_input_shape,
-            nb_classes=victim_output_targets,
-            clip_values=None,  # (0, 255),
-            preprocessing_defences=None,
-            postprocessing_defences=None,
-            preprocessing=(0, 1),  # None,
-        )
+    predict=query,
+    input_shape=(1, 28, 28, 1),
+    nb_classes=10,
+    clip_values=None,  # (0, 255),
+    preprocessing_defences=None,
+    postprocessing_defences=None,
+    preprocessing=(0, 1),  # None,
+)
 
 
 def query_mnist(input_data):
@@ -54,10 +55,10 @@ def valid_data():
     data=valid_data(),
     query=st.just(query_mnist),
     query_limit=st.integers(10, 25),
-    art_model=st.just(art_model)
+    art_model=st.just(art_model),
     victim_input_shape=st.just((1, 28, 28, 1)),
     substitute_input_shape=st.just((3, 1, 28, 28)),
-    victim_input_targets=st.just(10),
+    victim_output_targets=st.just(10),
 )
 def test_copycat_preserves_shapes(
     data,
@@ -66,7 +67,7 @@ def test_copycat_preserves_shapes(
     art_model,
     victim_input_shape,
     substitute_input_shape,
-    victim_input_targets,
+    victim_output_targets,
 ):
     # data = torch.from_numpy(data).detach().clone().float()
     data = privacyraven.extraction.synthesis.process_data(data, query_limit)
@@ -77,7 +78,7 @@ def test_copycat_preserves_shapes(
         art_model=art_model,
         victim_input_shape=victim_input_shape,
         substitute_input_shape=substitute_input_shape,
-        victim_input_targets=victim_input_targets,
+        victim_output_targets=victim_output_targets,
     )
     x_1 = x_data.size()
     y_1 = y_data.size()
