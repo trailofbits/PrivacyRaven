@@ -4,10 +4,10 @@
 import numpy as np
 import pytest
 import torch
+from art.estimators.classification import BlackBoxClassifier
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 from hypothesis.extra.numpy import arrays
-from art.estimators.classification import BlackBoxClassifier
 
 import privacyraven.extraction.synthesis
 import privacyraven.utils.query
