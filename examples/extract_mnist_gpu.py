@@ -32,7 +32,7 @@ attack = ModelExtractionAttack(
     (1, 28, 28, 1),
     10,
     (3, 1, 28, 28),  # Shape of an EMNIST data point
-    "copycat",
+    "hopskipjump", # "copycat",
     FourLayerClassifier,
     784,  # 28 * 28 or the size of a single image
     emnist_train,

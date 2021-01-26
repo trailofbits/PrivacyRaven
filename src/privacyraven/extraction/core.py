@@ -7,11 +7,8 @@ from torch.utils.data import DataLoader
 from privacyraven.extraction.metrics import label_agreement
 from privacyraven.extraction.synthesis import synthesize, synths
 from privacyraven.models.pytorch import ImagenetTransferLearning
-from privacyraven.utils.model_creation import (
-    convert_to_inference,
-    set_hparams,
-    train_and_test,
-)
+from privacyraven.utils.model_creation import (convert_to_inference,
+                                               set_hparams, train_and_test)
 from privacyraven.utils.query import establish_query
 
 
@@ -47,6 +44,7 @@ class ModelExtractionAttack(object):
         num_workers: Int of the number of workers used in training
         max_epochs: Int of the maximum number of epochs used to train the model
         learning_rate: Float of the learning rate of the model
+        art_model: A representation of the classifier for IBM ART
         callback: A PytorchLightning CallBack
         trainer_args: A list of tuples with keyword arguments for the Trainer
                       e.g.: [("deterministic", True), ("profiler", "simple")] """
@@ -70,6 +68,7 @@ class ModelExtractionAttack(object):
     gpus = attr.ib(default=gpu_availability)
     max_epochs = attr.ib(default=10)
     learning_rate = attr.ib(default=1e-3)
+    art_model = attr.ib(default=None)
     callback = attr.ib(default=None)
     trainer_args = attr.ib(default=None)
 
@@ -126,6 +125,7 @@ class ModelExtractionAttack(object):
             self.seed_data_test,
             self.query,
             self.query_limit,
+            self.art_model,
             self.victim_input_shape,
             self.substitute_input_shape,
             self.victim_output_targets,
