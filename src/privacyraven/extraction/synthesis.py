@@ -4,8 +4,9 @@ from art.attacks.evasion import BoundaryAttack, HopSkipJump
 from pytorch_lightning.metrics.utils import to_onehot
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
+from art.estimators.classification import BlackBoxClassifier
 
-from privacyraven.utils.model_creation import NewDataset, set_evasion_model
+from privacyraven.utils.model_creation import NewDataset  # , set_evasion_model
 from privacyraven.utils.query import reshape_input
 
 # Creates an empty dictionary for synthesis functions
@@ -19,7 +20,15 @@ def register_synth(func):
 
 
 def synthesize(
-    func_name, seed_data_train, seed_data_test, query, query_limit, *args, **kwargs
+    func_name,
+    seed_data_train,
+    seed_data_test,
+    query,
+    query_limit,
+    art_model,
+    victim_input_shape,
+    substitute_input_shape,
+    victim_output_targets,
 ):
     """Synthesizes training and testing data for a substitute model
 
@@ -33,6 +42,17 @@ def synthesize(
     Returns:
         Three NewDatasets containing synthetic data"""
 
+    if art_model is None:
+        art_model = BlackBoxClassifier(
+            predict=query,
+            input_shape=victim_input_shape,
+            nb_classes=victim_output_targets,
+            clip_values=None,  # (0, 255),
+            preprocessing_defences=None,
+            postprocessing_defences=None,
+            preprocessing=(0, 1),  # None,
+        )
+
     func = synths[func_name]
 
     # We split the query limit in half to account for two datasets.
@@ -41,8 +61,13 @@ def synthesize(
     seed_data_train = process_data(seed_data_train, query_limit)
     seed_data_test = process_data(seed_data_test, query_limit)
 
-    x_train, y_train = func(seed_data_train, query, query_limit, *args, **kwargs)
-    x_test, y_test = func(seed_data_test, query, query_limit, *args, **kwargs)
+    x_train, y_train = func(
+        seed_data_train, query, query_limit, art_model, victim_input_shape,
+        substitute_input_shape, victim_output_targets
+    )
+    x_test, y_test = func(
+        seed_data_test, query, query_limit, art_model, victim_input_shape, substitute_input_shape, victim_output_targets
+    )
 
     # Presently, we have hard-coded specific values for the test-train split.
     # In the future, this should be automated and/or optimized in some form.
@@ -126,9 +151,10 @@ def copycat(
     data,
     query,
     query_limit,
+    art_model,
     victim_input_shape,
     substitute_input_shape,
-    victim_input_targets,
+    victim_output_targets,
     reshape=True,
 ):
     """Creates a synthetic dataset by labeling seed data
@@ -136,7 +162,7 @@ def copycat(
     Arxiv Paper: https://ieeexplore.ieee.org/document/8489592"""
     (x_data, y_data) = data
     y_data = query(x_data)
-    if reshape:
+    if reshape is True:
         x_data = reshape_input(x_data, substitute_input_shape)
     return x_data, y_data
 
@@ -146,9 +172,10 @@ def hopskipjump(
     data,
     query,
     query_limit,
+    art_model,
     victim_input_shape,
     substitute_input_shape,
-    victim_input_targets,
+    victim_output_targets,
 ):
     """Runs the HopSkipJump evasion attack
 
@@ -159,14 +186,16 @@ def hopskipjump(
         data,
         query,
         internal_limit,
+        art_model,
         victim_input_shape,
         substitute_input_shape,
-        victim_input_targets,
-        False,
+        victim_output_targets,
+        reshape=False
     )
 
+    # import pdb; pdb.set_trace() 
     X_np = X.detach().clone().numpy()
-    config = set_evasion_model(query, victim_input_shape, victim_input_targets)
+    # config = set_evasion_model(query, victim_input_shape, victim_input_targets)
     evasion_limit = int(query_limit * 0.5)
 
     # The initial evaluation number must be lower than the maximum
@@ -175,14 +204,15 @@ def hopskipjump(
 
     # Run attack and process results
     attack = HopSkipJump(
-        config,
+        art_model,
         False,
         norm="inf",
         max_iter=evasion_limit,
         max_eval=evasion_limit,
         init_eval=init_eval,
     )
-    result = torch.from_numpy(attack.generate(X_np)).detach().clone().float()
+    result = attack.generate(X_np)
+    result = torch.from_numpy(attack.generate(X_np)).clone().detach().float() #.detach().clone().float()
     y = query(result)
     result = reshape_input(result, substitute_input_shape)
     return result, y
