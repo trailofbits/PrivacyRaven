@@ -97,6 +97,7 @@ Naturally, we named the tool PrivacyRaven because it is designed to provide insi
 
 The core maintainers are:
 + [Suha S. Hussain](https://github.com/suhacker1)
++ [Philip Wang](https://github.com/pwang00) 
 + [Jim Miller](https://github.com/james-miller-93)
 
 ## License

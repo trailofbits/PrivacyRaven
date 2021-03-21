@@ -2,6 +2,7 @@ import attr
 import pytorch_lightning as pl
 from sklearn.neural_network import MLPClassifier
 from torch.cuda import device_count
+
 from privacyraven.extraction.core import ModelExtractionAttack
 from privacyraven.membership_inf.robustness import find_robustness
 
