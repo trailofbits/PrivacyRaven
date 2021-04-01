@@ -72,7 +72,8 @@ The other classes of attacks can be launched in a similar fashion. See the `exam
 
 1. Install [poetry](https://python-poetry.org/docs/).
 2. Git clone this repository.
-3. Run `poetry install`.
+3. Run `poetry update`
+4. Run `poetry install`.
 
 If you'd like to use a Jupyter Notebook environment, run `poetry shell` followed by `jupyter notebook`.
 

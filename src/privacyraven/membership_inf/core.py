@@ -37,6 +37,10 @@ class TransferMembershipInferenceAttack(object):
     trainer_args = attr.ib(default=None)
 
 
+<<<<<<< HEAD
+    def train_shadow_model(self):
+        return MLPClassifier(random_state=1, max_iter=300).fit(self.X, self.y)
+=======
     def __attrs_post_init__(self):
         self.query = establish_query(self.query, self.victim_input_shape)
 
@@ -46,3 +50,4 @@ class TransferMembershipInferenceAttack(object):
         config = attr.asdict(self)
         extract_args = config.values()
         extraction = ModelExtractionAttack(*extract_args)
+>>>>>>> 04904505fa8bf32ae3218c3e879da517be210e3b
