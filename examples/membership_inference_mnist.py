@@ -6,7 +6,8 @@ FourLayerClassifier substitute. A single GPU is assumed.
 import privacyraven as pr
 
 from privacyraven.utils.data import get_emnist_data
-from privacyraven.extraction.core import ModelExtractionAttack
+#from privacyraven.extraction.core import ModelExtractionAttack
+from privacyraven.membership_inf.core import TransferMembershipInferenceAttack
 from privacyraven.utils.query import get_target
 from privacyraven.models.victim import train_four_layer_mnist_victim
 from privacyraven.models.four_layer import FourLayerClassifier
@@ -26,7 +27,7 @@ def query_mnist(input_data):
 emnist_train, emnist_test = get_emnist_data()
 
 # Run a model extraction attack
-attack = ModelExtractionAttack(
+attack = TransferMembershipInferenceAttack(
     query_mnist,
     200,  # Less than the number of MNIST data points: 60000
     (1, 28, 28, 1),
