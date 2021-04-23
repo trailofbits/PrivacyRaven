@@ -63,13 +63,24 @@ def get_mnist_loaders(hparams):
     return train_dataloader, val_dataloader, test_dataloader
 
 
-def get_mnist_data(hparams):
+def get_mnist_data(hparams=None):
     """Returns MNIST train and test sets from hyperparams in a dict"""
+    if hparams is None:
+        transform = transforms.Compose(
+            [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+        )
+
+        hparams = {"rand_split_val": [55000, 5000],
+                   "transform": transform
+                  }
+
     mnist_train = MNIST(
         os.getcwd(), train=True, download=True, transform=hparams["transform"]
     )
     mnist_test = MNIST(
         os.getcwd(), train=False, download=True, transform=hparams["transform"]
     )
+
     mnist_train, mnist_val = random_split(mnist_train, hparams["rand_split_val"])
+
     return mnist_train, mnist_val, mnist_test
