@@ -82,12 +82,11 @@ def query_model(model, input_data, input_size=None):
     if prediction.size()[0] == 1:
         # Sometimes, the model may not output [1, num_of_targets], resulting in
         # a possible loss of data during the prediction to target conversion
-        target = torch.argmax(prediction, dim=0, keepdim=True)
+        target = torch.argmax(prediction)
     else:
         target = torch.tensor(
-            [torch.argmax(row, dim=0, keepdim=True) for row in torch.unbind(prediction)]
+            [torch.argmax(row) for row in torch.unbind(prediction)]
         )
-    # target = torch.tensor([int(torch.argmax(prediction, dim=0, keepdim=True))])
     return prediction, target
 
 
