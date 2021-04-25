@@ -20,6 +20,7 @@ from privacyraven.utils.model_creation import (
 # Trains MNIST inversion model
 def train_four_layer_mnist_inversion(
     transform=None,
+    datapoints=None,
     batch_size=100,
     num_workers=4,
     rand_split_val=None,
@@ -41,8 +42,8 @@ def train_four_layer_mnist_inversion(
     Returns:
         Trained model ready for inference"""
 
-    input_size = 10  # 28*28 or the size of a single image
-    targets = 784  # the number of digits any image can possibly represent
+    input_size = 10  # Prediction vector
+    targets = 784  # Reconstructed image 
 
     # Uses all available GPUs for computation by default
     if gpus is None:
@@ -67,7 +68,7 @@ def train_four_layer_mnist_inversion(
         targets,
     )
 
-    train_dataloader, val_dataloader, test_dataloader = get_mnist_loaders(hparams)
+    train_dataloader, val_dataloader, test_dataloader = get_prob_loaders(hparams, datapoints)
 
     # Train, test, and convert the model to inference
     mnist_model = train_and_test(

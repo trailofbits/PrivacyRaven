@@ -36,6 +36,7 @@ class FourLayerClassifier(pl.LightningModule):
         x = self.dropout(x)
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
+        # Add softmax to obtain probability vector
         x = self.dropout(x)
         x = self.fc4(x)
         return x

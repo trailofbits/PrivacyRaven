@@ -39,5 +39,4 @@ attack = ModelExtractionAttack(
     emnist_test,
 )
 
-print(get_target(attack, emnist_test[1]))
 # print(attack.__dict__)

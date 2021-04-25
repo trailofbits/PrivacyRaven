@@ -43,6 +43,20 @@ def get_emnist_data(transform=None, RGB=True):
     )
     return emnist_train, emnist_test
 
+def get_prob_loaders(hparams, datapoints):
+    prob_train, prob_val, prob_test = random_split(datapoints, hparams["rand_split_val"])
+
+    train_dataloader = DataLoader(
+        prob_train, batch_size=hparams["batch_size"], num_workers=hparams["num_workers"]
+    )
+    val_dataloader = DataLoader(
+        prob_val, batch_size=hparams["batch_size"], num_workers=hparams["num_workers"]
+    )
+    test_dataloader = DataLoader(
+        prob_test, batch_size=hparams["batch_size"], num_workers=hparams["num_workers"]
+    )
+
+    return train_dataloader, val_dataloader, test_dataloader
 
 def get_mnist_loaders(hparams):
     """Returns MNIST DataLoaders from hyperparams in a dict"""
