@@ -1,27 +1,43 @@
 import torch.nn.functional as nnf
+from tqdm import tqdm
+from torch.cuda import device_count
 from privacyraven.models.four_layer import FourLayerClassifier
-from privacyraven.models.victim import FourLayerClassifier
+from privacyraven.models.victim import *
 from privacyraven.utils.data import get_emnist_data
-from privacyraven.utils.query import query_model
+from privacyraven.utils.query import query_model, get_target
 from privacyraven.extraction.core import ModelExtractionAttack
 from privacyraven.extraction.synthesis import process_data
-from torch import topk, add, log as vlog, tensor
-
+from privacyraven.utils.model_creation import  NewDataset
+from torch import topk, add, log as vlog, tensor, sort
 
 # Create a query function for a target PyTorch Lightning model
-def query_mnist(model, input_data, emnist_dimensions=(1, 28, 28, 1)):
+def get_prediction(model, input_data, emnist_dimensions=(1, 28, 28, 1)):
     # PrivacyRaven provides built-in query functions
     prediction, target = query_model(model, input_data, emnist_dimensions)
     return prediction
 
 # Relabels (E)MNIST data via the mapping (784, 10) -> (10, 784)
-def relabel_emnist_datapoint(img, Fwx_t):
-    return (Fwx_t, img)
+# Takes in a tensor of all
+def relabel_emnist_data(img_tensor, Fwx_t_tensor):
+    return NewDataset(Fwx_t_tensor, img_tensor)
+
+def trunc(k, v):
+
+    # kth smallest element
+    b = sorted(v)[-k - 1]
+    nonzero = 0
+
+    for (i, vi) in enumerate(v):
+        if vi < b or (vi != 0 and nonzero > k): v[i] = 0    
+        nonzero += 1
+
+    return v
+    
 
 # Trains the forward and inversion models
 def joint_train_inversion_model(
     input_size = 784,
-    output_size = 10,
+    output_size = 784,
     dataset_train = None,
     dataset_test = None,
     data_dimensions = (1, 28, 28, 1),
@@ -34,12 +50,15 @@ def joint_train_inversion_model(
     # We first train a classifier on a dataset to output a prediction vector 
 
 
+    dataset_len = 200# len(dataset_train)
     # Classifier to assign prediction vector and target based on (E)MNIST training data
     temp_model = train_four_layer_mnist_victim(
-        gpus=1, 
-        input_size = input_size, 
-        output_size = output_size
+        gpus=1
     )
+
+    def query_mnist(input_data):
+        # PrivacyRaven provides built-in query functions
+        return get_target(temp_model, input_data, (1, 28, 28, 1))
 
     forward_model = ModelExtractionAttack(
         query_mnist,
@@ -52,39 +71,41 @@ def joint_train_inversion_model(
         784,  # 28 * 28 or the size of a single image
         emnist_train,
         emnist_test,
-    ).get_substitute_model()
+    ).substitute_model
 
     # This is nowhere near complete but 
     # The idea here is that we query the model each time 
 
-    training_batch = torch.Tensor(0, 28, 28)
+    training_batch = torch.Tensor(dataset_len, 28, 28)
+    labels = torch.Tensor(dataset_len, 10)
+    # We use NewDataset to synthesize the training and test data, to ensure compatibility with Pytorch Lightning NNs.
+    device = "cuda:0" if device_count() else None
 
-    for k in range(len(dataset_train)):
+    for k in tqdm(range(dataset_len)):
 
         # (image tensor, label tensor)
-        img_tensor, label = process_data(emnist_train)
 
         # Fwx is the training vector outputted by our model Fw
-        # We couple 
-        Fwx = add(vlog(torch.nnf(query_mnist(img_tensor), dim=1), c))
+        # We convert hte 
+        Fwx = add(vlog(nnf.softmax(get_prediction(forward_model, emnist_train.data[k]), dim=1)), c)[0]
+    
+        #print(Fwx, Fwx.size())
         
         # Let Fw_t denote the truncated vector with the top k highest classes.
-        Fwx_t = topk(t, Fwx)
+        Fwx_t = torch.zeros(10, device=device).scatter_(0, sort(Fwx.topk(t).indices).values, Fwx)
 
-        relabeled_datapoint = relabel_emnist_datapoint(img_tensor, Fwx_t)
+        labels[k] = Fwx_t
 
-        training_batch.cat(relabeled_datapoint)
+    relabeled_data = relabel_emnist_data(emnist_train.data[:k], labels)
 
+    # Intermediate tensor dimensions are (2, 10)
     inversion_model = train_four_layer_mnist_inversion(
-            gpus=1,
-            input_size = input_size,
-            output_size = output_size
+        gpus=1,
+        datapoints = relabeled_data,
     )
 
     return inversion_model
     
-
-
 if __name__ == "__main__":
     emnist_train, emnist_test = get_emnist_data()
 
@@ -92,6 +113,3 @@ if __name__ == "__main__":
         dataset_train=emnist_train,
         dataset_test=emnist_test
     )
-
-    # 
-
