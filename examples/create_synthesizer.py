@@ -51,7 +51,7 @@ attack = ModelExtractionAttack(
     substitute_input_size=784,
     seed_data_train=emnist_train,
     seed_data_test=emnist_test,
-    gpus=z1,
+    gpus=1,
 )
 
 
