@@ -4,7 +4,7 @@ from sklearn.neural_network import MLPClassifier
 import torch
 from torch.cuda import device_count
 import copy
-# from sklearn.metrics import log_loss
+from sklearn.metrics import roc_auc_score
 from privacyraven.extraction.core import ModelExtractionAttack
 from privacyraven.membership_inf.robustness import find_robustness
 from privacyraven.utils.query import establish_query, get_target, query_model
@@ -55,6 +55,8 @@ class TransferMembershipInferenceAttack(object):
 
         query_substitute = lambda x: query_model(substitute, x, self.substitute_input_shape)
         pred, target = query_substitute(self.data_point)
+        # import pdb; pdb.set_trace()
+        """
         print("Generating")
         print(pred.shape)
         print(target.shape)
@@ -64,14 +66,36 @@ class TransferMembershipInferenceAttack(object):
         loss = torch.nn.BCELoss()
         pred = torch.transpose(pred, 0, 1)
         target = target.unsqueeze(1)
-        
+
         pred = pred.float().cpu()
         target = target.float().cpu()
         print(pred.shape)
         print(target.shape)
         output = loss(pred, target)
-
+        """
+        #loss = torch.nn.Cross
 
         # output = log_loss(target, pred)
-        print(output)
+
+        print(pred.shape)
+        target = target.unsqueeze(0)
+        # target = torch.nn.functional.one_hot(target, self.victim_output_targets)
+        print(target.shape)
+        #loss = torch.nn.functional.cross_entropy()
+        output = torch.nn.functional.cross_entropy(pred, target)
+        softmax_pred = torch.nn.functional.softmax(pred, dim=1)
+        one_hot_target = torch.nn.functional.one_hot(target,
+                                                     self.victim_output_targets)
+        import pdb; pdb.set_trace()
+
+        auroc = roc_auc_score(target.cpu(), softmax_pred.cpu(), average='macro',
+                              multi_class='ovr')
+
+        # auroc = pl.metrics.functional.multiclass_auroc(softmax_pred, target, 10)
+        #import pdb; pdb.set_trace()
+        #auroc = pl.metrics.functional.classification.multiclass_auroc(torch.nn.functional.log_softmax(pred, dim=0), target, self.victim_output_targets)
+        #auroc = calculate_auroc(pred, target)
+        print("Cross Entropy Loss is: " + output)
+        print("AUROC is: " + auroc)
+
 
