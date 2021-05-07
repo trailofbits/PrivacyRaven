@@ -19,7 +19,7 @@ def get_prediction(model, input_data, emnist_dimensions=(1, 28, 28, 1)):
 # Relabels (E)MNIST data via the mapping (784, 10) -> (10, 784)
 # Takes in a tensor of all
 def relabel_emnist_data(img_tensor, Fwx_t_tensor):
-    return NewDataset(Fwx_t_tensor, img_tensor)
+    return NewDataset(Fwx_t_tensor.float(), img_tensor.long())
 
 def trunc(k, v):
 
@@ -41,7 +41,7 @@ def joint_train_inversion_model(
     dataset_train = None,
     dataset_test = None,
     data_dimensions = (1, 28, 28, 1),
-    t = 2,
+    t = 10,
     c = 10,
     ):
     
@@ -50,7 +50,7 @@ def joint_train_inversion_model(
     # We first train a classifier on a dataset to output a prediction vector 
 
 
-    dataset_len = 200# len(dataset_train)
+    dataset_len = len(dataset_train)
     # Classifier to assign prediction vector and target based on (E)MNIST training data
     temp_model = train_four_layer_mnist_victim(
         gpus=1
@@ -76,32 +76,23 @@ def joint_train_inversion_model(
     # This is nowhere near complete but 
     # The idea here is that we query the model each time 
 
+    forward_model.eval()
+
     training_batch = torch.Tensor(dataset_len, 28, 28)
     labels = torch.Tensor(dataset_len, 10)
+   
+
     # We use NewDataset to synthesize the training and test data, to ensure compatibility with Pytorch Lightning NNs.
     device = "cuda:0" if device_count() else None
 
-    for k in tqdm(range(dataset_len)):
 
-        # (image tensor, label tensor)
-
-        # Fwx is the training vector outputted by our model Fw
-        # We convert hte 
-        Fwx = add(vlog(nnf.softmax(get_prediction(forward_model, emnist_train.data[k]), dim=1)), c)[0]
+    relabeled_data = relabel_emnist_data(emnist_train.data[:dataset_len], labels)
     
-        #print(Fwx, Fwx.size())
-        
-        # Let Fw_t denote the truncated vector with the top k highest classes.
-        Fwx_t = torch.zeros(10, device=device).scatter_(0, sort(Fwx.topk(t).indices).values, Fwx)
-
-        labels[k] = Fwx_t
-
-    relabeled_data = relabel_emnist_data(emnist_train.data[:k], labels)
-
     # Intermediate tensor dimensions are (2, 10)
     inversion_model = train_four_layer_mnist_inversion(
         gpus=1,
         datapoints = relabeled_data,
+        rand_split_val=[100, 50, 50]
     )
 
     return inversion_model

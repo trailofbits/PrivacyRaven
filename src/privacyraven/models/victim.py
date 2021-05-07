@@ -11,6 +11,7 @@ from torchvision.datasets import MNIST
 from privacyraven.models.four_layer import FourLayerClassifier
 from privacyraven.models.pytorch import ThreeLayerClassifier
 from privacyraven.utils.data import get_mnist_loaders
+from privacyraven.utils.data import get_prob_loaders
 from privacyraven.utils.model_creation import (
     convert_to_inference,
     set_hparams,
@@ -68,8 +69,12 @@ def train_four_layer_mnist_inversion(
         targets,
     )
 
-    train_dataloader, val_dataloader, test_dataloader = get_prob_loaders(hparams, datapoints)
+    hparams["rand_split_val"] = rand_split_val
+    
+    print("Random split: ", rand_split_val)
 
+    train_dataloader, val_dataloader, test_dataloader = get_prob_loaders(hparams, datapoints)
+    print("INVERSION:", type(train_dataloader), type(val_dataloader), type(test_dataloader))
     # Train, test, and convert the model to inference
     mnist_model = train_and_test(
         FourLayerClassifier, train_dataloader, val_dataloader, test_dataloader, hparams
@@ -129,7 +134,7 @@ def train_four_layer_mnist_victim(
     )
 
     train_dataloader, val_dataloader, test_dataloader = get_mnist_loaders(hparams)
-
+    print("VICTIM:", type(train_dataloader), type(val_dataloader), type(test_dataloader))
     # Train, test, and convert the model to inference
     mnist_model = train_and_test(
         FourLayerClassifier, train_dataloader, val_dataloader, test_dataloader, hparams
