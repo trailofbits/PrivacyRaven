@@ -9,6 +9,7 @@ from torchvision import datasets, models, transforms
 from torchvision.datasets import MNIST
 
 from privacyraven.models.four_layer import FourLayerClassifier
+from privacyraven.models.inversion_model import InversionModel
 from privacyraven.models.pytorch import ThreeLayerClassifier
 from privacyraven.utils.data import get_mnist_loaders
 from privacyraven.utils.data import get_prob_loaders
@@ -19,7 +20,7 @@ from privacyraven.utils.model_creation import (
 )
 
 # Trains MNIST inversion model
-def train_four_layer_mnist_inversion(
+def train_mnist_inversion(
     transform=None,
     datapoints=None,
     batch_size=100,
@@ -77,8 +78,8 @@ def train_four_layer_mnist_inversion(
     train_dataloader, val_dataloader, test_dataloader = get_prob_loaders(hparams, datapoints)
     print("INVERSION:", type(train_dataloader), type(val_dataloader), type(test_dataloader))
     # Train, test, and convert the model to inference
-    mnist_model = train_and_test(
-        FourLayerClassifier, train_dataloader, val_dataloader, test_dataloader, hparams
+    inversion_model = train_and_test(
+        InversionModel, train_dataloader, val_dataloader, test_dataloader, hparams
     )
     mnist_model = convert_to_inference(mnist_model)
     return mnist_model

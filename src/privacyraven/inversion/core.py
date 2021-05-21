@@ -78,7 +78,7 @@ def joint_train_inversion_model(
     relabeled_data = relabel_emnist_data(emnist_train.data[:dataset_len], labels)
     
     # Intermediate tensor dimensions are (2, 10)
-    inversion_model = train_four_layer_mnist_inversion(
+    inversion_model = train_mnist_inversion(
         gpus=1,
         datapoints = relabeled_data,
         forward_model = forward_model,
