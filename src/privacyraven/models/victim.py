@@ -23,6 +23,7 @@ def train_four_layer_mnist_inversion(
     transform=None,
     datapoints=None,
     batch_size=100,
+    forward_model=None,
     num_workers=4,
     rand_split_val=None,
     gpus=None,

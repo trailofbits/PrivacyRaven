@@ -21,19 +21,6 @@ def get_prediction(model, input_data, emnist_dimensions=(1, 28, 28, 1)):
 def relabel_emnist_data(img_tensor, Fwx_t_tensor):
     return NewDataset(Fwx_t_tensor.float(), img_tensor.long())
 
-def trunc(k, v):
-
-    # kth smallest element
-    b = sorted(v)[-k - 1]
-    nonzero = 0
-
-    for (i, vi) in enumerate(v):
-        if vi < b or (vi != 0 and nonzero > k): v[i] = 0    
-        nonzero += 1
-
-    return v
-    
-
 # Trains the forward and inversion models
 def joint_train_inversion_model(
     input_size = 784,
@@ -73,7 +60,9 @@ def joint_train_inversion_model(
         emnist_test,
     ).substitute_model
 
-    # This is nowhere near complete but 
+    # Due to PrivacyRaven's black box nature, we first run a model extraction attack 
+    # Given a set of queries to a black box model.  From this, we construct a fully-trained substitute model
+    # that approximates 
     # The idea here is that we query the model each time 
 
     forward_model.eval()
@@ -92,6 +81,7 @@ def joint_train_inversion_model(
     inversion_model = train_four_layer_mnist_inversion(
         gpus=1,
         datapoints = relabeled_data,
+        forward_model = forward_model,
         rand_split_val=[100, 50, 50]
     )
 
