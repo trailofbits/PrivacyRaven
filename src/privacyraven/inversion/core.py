@@ -40,7 +40,7 @@ def joint_train_inversion_model(
     dataset_len = 200
     # Classifier to assign prediction vector and target based on (E)MNIST training data
     temp_model = train_four_layer_mnist_victim(
-        gpus=1
+        gpus=0
     )
 
     def query_mnist(input_data):
