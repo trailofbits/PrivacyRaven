@@ -5,13 +5,14 @@ from torch.nn import functional as nnf
 from tqdm import tqdm
 
 class InversionModel(pl.LightningModule):
-    def __init__(self, hparams, nz, ngf, classifier):
+    def __init__(self, hparams, inversion_params, classifier):
         super().__init__()
 
         self.save_hyperparameters()
-        self.nz = nz
-        self.ngf = ngf
+        self.nz = inversion_params["nz"]
+        self.ngf = inversion_params["ngf"]
         self.mse_loss = 0
+        self.classifier.eval()
         self.decoder = nn.Sequential(
             nn.ConvTranspose2d(
                 nz,
@@ -46,7 +47,7 @@ class InversionModel(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
 
-        self.classifier.eval()
+        
         self.train()
 
         for k, (data, target) in tqdm(range(batch)):

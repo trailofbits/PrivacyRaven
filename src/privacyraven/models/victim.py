@@ -29,6 +29,7 @@ def train_mnist_inversion(
     rand_split_val=None,
     gpus=None,
     max_epochs=8,
+    inversion_params={"nz": 0, "ngf": 3},
     learning_rate=1e-3,
 ):
     """Trains a 4-layer fully connected neural network on MNIST data
@@ -81,8 +82,8 @@ def train_mnist_inversion(
     inversion_model = train_and_test(
         InversionModel, train_dataloader, val_dataloader, test_dataloader, hparams
     )
-    mnist_model = convert_to_inference(mnist_model)
-    return mnist_model
+    inversion_model = convert_to_inference(inversion_model)
+    return inversion_model
 
 
 

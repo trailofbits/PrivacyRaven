@@ -37,7 +37,7 @@ def joint_train_inversion_model(
     # We first train a classifier on a dataset to output a prediction vector 
 
 
-    dataset_len = len(dataset_train)
+    dataset_len = 200
     # Classifier to assign prediction vector and target based on (E)MNIST training data
     temp_model = train_four_layer_mnist_victim(
         gpus=1
@@ -78,6 +78,7 @@ def joint_train_inversion_model(
     relabeled_data = relabel_emnist_data(emnist_train.data[:dataset_len], labels)
     
     # Intermediate tensor dimensions are (2, 10)
+    
     inversion_model = train_mnist_inversion(
         gpus=1,
         datapoints = relabeled_data,
