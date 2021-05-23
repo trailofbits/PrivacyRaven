@@ -7,7 +7,7 @@ from privacyraven.utils.data import get_emnist_data
 from privacyraven.utils.query import query_model, get_target
 from privacyraven.extraction.core import ModelExtractionAttack
 from privacyraven.extraction.synthesis import process_data
-from privacyraven.utils.model_creation import  NewDataset
+from privacyraven.utils.model_creation import  NewDataset, set_hparams
 from torch import topk, add, log as vlog, tensor, sort
 
 # Create a query function for a target PyTorch Lightning model
@@ -40,7 +40,7 @@ def joint_train_inversion_model(
     dataset_len = 200
     # Classifier to assign prediction vector and target based on (E)MNIST training data
     temp_model = train_four_layer_mnist_victim(
-        gpus=1
+        gpus=0
     )
 
     def query_mnist(input_data):
@@ -80,9 +80,10 @@ def joint_train_inversion_model(
     # Intermediate tensor dimensions are (2, 10)
     
     inversion_model = train_mnist_inversion(
-        gpus=1,
-        datapoints = relabeled_data,
-        forward_model = forward_model,
+        forward_model,
+        gpus=0,
+        datapoints=relabeled_data,
+        forward_model=forward_model,
         rand_split_val=[100, 50, 50],
         inversion_params={"nz": 0, "ngf": 3}
     )

@@ -82,7 +82,7 @@ def train_mnist_inversion(
     print("INVERSION:", type(train_dataloader), type(val_dataloader), type(test_dataloader))
     # Train, test, and convert the model to inference
     inversion_model = train_and_test_inversion(
-        InversionModel, train_dataloader, val_dataloader, test_dataloader, hparams, inversion_params
+        classifier, InversionModel, train_dataloader, val_dataloader, test_dataloader, hparams, inversion_params
     )
     inversion_model = convert_to_inference(inversion_model)
     return inversion_model

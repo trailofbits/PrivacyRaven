@@ -8,38 +8,53 @@ class InversionModel(pl.LightningModule):
     def __init__(self, hparams, inversion_params, classifier):
         super().__init__()
 
-        self.save_hyperparameters()
+        self.classifier = classifier
+        self.hparams = hparams
+        #self.save_hyperparameters()
         self.nz = inversion_params["nz"]
         self.ngf = inversion_params["ngf"]
         self.mse_loss = 0
+
         self.classifier.eval()
+        self.train()
+        
         self.decoder = nn.Sequential(
             nn.ConvTranspose2d(
-                nz,
+                10,
+                512,
                 stride=(1, 1), 
                 padding=(1, 1),
-                kernel_size=(4, 4)
+                kernel_size=(4, 4),
             ),
-            nn.BatchNorm2d(ngf),
+            nn.BatchNorm2d(self.ngf),
             nn.Tanh(),
 
             nn.ConvTranspose2d(
-                nz,
+                512,
+                256,
                 stride=(1, 1), 
                 padding=(1, 1),
-                kernel_size=(4, 4)
+                kernel_size=(4, 4),
             ),
 
-            nn.BatchNorm2d(ngf),
+            nn.BatchNorm2d(self.ngf),
             nn.Tanh(),
             
             nn.ConvTranspose2d(
-                nz,
+                256,
+                128,
                 stride=(2, 2), 
                 padding=(1, 1),
-                kernel_size=(4, 4)
+                kernel_size=(4, 4),
             ),
-            nn.BatchNorm2d(ngf),
+            nn.Tanh(),
+            nn.ConvTranspose2d(
+                128,
+                1,
+                stride=(2, 2), 
+                padding=(1, 1),
+                kernel_size=(4, 4),
+            ),
 
             nn.Sigmoid()
 
@@ -47,10 +62,8 @@ class InversionModel(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
 
-        
-        self.train()
 
-        for k, (data, target) in tqdm(range(batch)):
+        for (data, target) in enumerate(tqdm(batch)):
 
             # (image tensor, label tensor)
 
@@ -58,12 +71,14 @@ class InversionModel(pl.LightningModule):
             # reconstructed is the reconstructed image outputted by the inversion model
             # data is the ground truth image
 
-            Fwx = forward_model(data)
-            recontructed = inversion(Fwx)
+            Fwx = self.classifier(data)
+            recontructed = self(Fwx)
             loss = nnf.mse_loss(recontructed, data)
+            
+        return loss
 
     def test_step(self, batch, batch_idx):
-        for k, (data, target) in tqdm(range(batch)):
+        for (data, target) in enumerate(tqdm(batch)):
 
             # (image tensor, label tensor)
 
@@ -71,8 +86,8 @@ class InversionModel(pl.LightningModule):
             # reconstructed is the reconstructed image outputted by the inversion model
             # data is the ground truth image
 
-            Fwx = forward_model(data)
-            recontructed = inversion(Fwx)
+            Fwx = self.classifier(data)
+            recontructed = self(Fwx)
             loss = nnf.mse_loss(recontructed, data)
             
     def forward(self, x):
@@ -85,7 +100,7 @@ class InversionModel(pl.LightningModule):
 
     def configure_optimizers(self):
         """Executes optimization for training and validation"""
-        return torch.optim.Adam(self.parameters(), self.hparams["learning_rate"])
+        return torch.optim.Adam(self.parameters(), 1e-3)
 
 
 
