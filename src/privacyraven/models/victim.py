@@ -31,7 +31,7 @@ def train_mnist_inversion(
     rand_split_val=None,
     gpus=None,
     max_epochs=8,
-    inversion_params={"nz": 0, "ngf": 3},
+    inversion_params={"nz": 0, "ngf": 3, "affine_shift": 7, "truncate": 3},
     learning_rate=1e-3,
 ):
     """Trains a 4-layer fully connected neural network on MNIST data
@@ -139,7 +139,6 @@ def train_four_layer_mnist_victim(
     )
 
     train_dataloader, val_dataloader, test_dataloader = get_mnist_loaders(hparams)
-    print("VICTIM:", type(train_dataloader), type(val_dataloader), type(test_dataloader))
     # Train, test, and convert the model to inference
     mnist_model = train_and_test(
         FourLayerClassifier, train_dataloader, val_dataloader, test_dataloader, hparams

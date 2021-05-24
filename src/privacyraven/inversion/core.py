@@ -1,6 +1,5 @@
 import torch.nn.functional as nnf
 from tqdm import tqdm
-from torch.cuda import device_count
 from privacyraven.models.four_layer import FourLayerClassifier
 from privacyraven.models.victim import *
 from privacyraven.utils.data import get_emnist_data
@@ -8,7 +7,6 @@ from privacyraven.utils.query import query_model, get_target
 from privacyraven.extraction.core import ModelExtractionAttack
 from privacyraven.extraction.synthesis import process_data
 from privacyraven.utils.model_creation import  NewDataset, set_hparams
-from torch import topk, add, log as vlog, tensor, sort
 
 # Create a query function for a target PyTorch Lightning model
 def get_prediction(model, input_data, emnist_dimensions=(1, 28, 28, 1)):
@@ -19,7 +17,7 @@ def get_prediction(model, input_data, emnist_dimensions=(1, 28, 28, 1)):
 # Relabels (E)MNIST data via the mapping (784, 10) -> (10, 784)
 # Takes in a tensor of all
 def relabel_emnist_data(img_tensor, Fwx_t_tensor):
-    return NewDataset(Fwx_t_tensor.float(), img_tensor.long())
+    return NewDataset(img_tensor.float(), Fwx_t_tensor.float())
 
 # Trains the forward and inversion models
 def joint_train_inversion_model(
@@ -47,6 +45,7 @@ def joint_train_inversion_model(
         # PrivacyRaven provides built-in query functions
         return get_target(temp_model, input_data, (1, 28, 28, 1))
 
+
     forward_model = ModelExtractionAttack(
         query_mnist,
         200,  # Less than the number of MNIST data points: 60000
@@ -67,16 +66,14 @@ def joint_train_inversion_model(
 
     forward_model.eval()
 
-    training_batch = torch.Tensor(dataset_len, 28, 28)
     labels = torch.Tensor(dataset_len, 10)
    
-
     # We use NewDataset to synthesize the training and test data, to ensure compatibility with Pytorch Lightning NNs.
-    device = "cuda:0" if device_count() else None
+    relabeled_data = relabel_emnist_data(emnist_train.data[:dataset_len], emnist_train.targets[:dataset_len])
 
+    prediction = get_prediction(forward_model, emnist_train.data[0].float())
+    print("Prediction: ", get_prediction(forward_model, emnist_train.data[0].float()), len(prediction))
 
-    relabeled_data = relabel_emnist_data(emnist_train.data[:dataset_len], labels)
-    
     # Intermediate tensor dimensions are (2, 10)
     
     inversion_model = train_mnist_inversion(
@@ -85,7 +82,7 @@ def joint_train_inversion_model(
         datapoints=relabeled_data,
         forward_model=forward_model,
         rand_split_val=[100, 50, 50],
-        inversion_params={"nz": 0, "ngf": 3}
+        inversion_params={"nz": 0, "ngf": 3, "affine_shift": 7, "truncate": 3}
     )
 
     return inversion_model
