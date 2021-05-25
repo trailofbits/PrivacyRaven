@@ -72,7 +72,7 @@ def joint_train_inversion_model(
     relabeled_data = relabel_emnist_data(emnist_train.data[:dataset_len], emnist_train.targets[:dataset_len])
 
     prediction = get_prediction(forward_model, emnist_train.data[0].float())
-    print("Prediction: ", get_prediction(forward_model, emnist_train.data[0].float()), len(prediction))
+    print("Prediction: ", prediction, prediction[0])
 
     # Intermediate tensor dimensions are (2, 10)
     
