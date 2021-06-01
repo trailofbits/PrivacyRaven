@@ -16,7 +16,7 @@ def get_prediction(model, input_data, emnist_dimensions=(1, 28, 28, 1)):
 
 # Relabels (E)MNIST data via the mapping (784, 10) -> (10, 784)
 # Takes in a tensor of all
-def relabel_emnist_data(img_tensor, Fwx_t_tensor):
+def generate_dataset(img_tensor, Fwx_t_tensor):
     return NewDataset(img_tensor.float(), Fwx_t_tensor.float())
 
 # Trains the forward and inversion models
@@ -66,14 +66,13 @@ def joint_train_inversion_model(
 
     forward_model.eval()
 
-    labels = torch.Tensor(dataset_len, 10)
-   
     # We use NewDataset to synthesize the training and test data, to ensure compatibility with Pytorch Lightning NNs.
-    relabeled_data = relabel_emnist_data(emnist_train.data[:dataset_len], emnist_train.targets[:dataset_len])
+    # print("EMNIST point 1: ", list(zip(*emnist_train))[0])
+    relabeled_data = generate_dataset(emnist_train.data[:dataset_len], emnist_train.targets[:dataset_len])
 
-    prediction = get_prediction(forward_model, emnist_train.data[0].float())
-    print("Prediction: ", prediction, prediction[0])
-
+    prediction = get_prediction(forward_model, emnist_train[0][0].float())
+    print("Prediction: ", prediction, prediction.size())
+    
     # Intermediate tensor dimensions are (2, 10)
     
     inversion_model = train_mnist_inversion(
@@ -82,7 +81,7 @@ def joint_train_inversion_model(
         datapoints=relabeled_data,
         forward_model=forward_model,
         rand_split_val=[100, 50, 50],
-        inversion_params={"nz": 0, "ngf": 3, "affine_shift": 7, "truncate": 3}
+        inversion_params={"nz": 10, "ngf": 128, "affine_shift": 7, "truncate": 3}
     )
 
     return inversion_model

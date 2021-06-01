@@ -23,71 +23,69 @@ class InversionModel(pl.LightningModule):
         #self.device = "cuda:0" if device_count() else None
 
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(
-                10,
-                512,
-                stride=(1, 1), 
-                padding=(1, 1),
-                kernel_size=(4, 4),
-            ),
-            nn.BatchNorm2d(self.ngf),
+            # input is Z
+            nn.ConvTranspose2d(10, 512, 4, 1, 0),
+            nn.BatchNorm2d(512),
             nn.Tanh(),
-
-            nn.ConvTranspose2d(
-                512,
-                256,
-                stride=(1, 1), 
-                padding=(1, 1),
-                kernel_size=(4, 4),
-            ),
-
-            nn.BatchNorm2d(self.ngf),
+            # state size. (ngf*8) x 4 x 4
+            nn.ConvTranspose2d(512, 256, 4, 2, 1),
+            nn.BatchNorm2d(256),
             nn.Tanh(),
-            
-            nn.ConvTranspose2d(
-                256,
-                128,
-                stride=(2, 2), 
-                padding=(1, 1),
-                kernel_size=(4, 4),
-            ),
+            # state size. (ngf*4) x 8 x 8
+            nn.ConvTranspose2d(256, 128, 4, 2, 1),
+            nn.BatchNorm2d(128),
             nn.Tanh(),
-            nn.ConvTranspose2d(
-                128,
-                1,
-                stride=(2, 2), 
-                padding=(1, 1),
-                kernel_size=(4, 4),
-            ),
-
+            # state size. (ngf) x 32 x 32
+            nn.ConvTranspose2d(128, 1, 4, 2, 1),
             nn.Sigmoid()
-
+            # state size. (nc) x 64 x 64
         )
 
     def training_step(self, batch, batch_idx):
         #print(len(batch))
-        data, _ = batch
-        Fwx = self.classifier(data)
-        print("Fwx vector: ", Fwx, len(Fwx))
-        recontructed = self(Fwx)
-        loss = nnf.mse_loss(recontructed, data)
+        images, _ = batch
+
+        for data in images:
+            augmented = torch.empty(1, 28, 28)
+            augmented[0] = data
+            #print("Augmented size:", augmented.size())
+            Fwx = self.classifier(augmented)
+            #print("Fwx vector: ", Fwx)
+            reconstructed = self(Fwx[0])
+            augmented = nnf.pad(input=augmented, pad=(2, 2, 2, 2))
+            loss = nnf.mse_loss(reconstructed, augmented)
 
         return loss
 
     def test_step(self, batch, batch_idx):
-        data, _ = batch
-        Fwx = self.classifier(data)
-        recontructed = self(Fwx)
-        loss = nnf.mse_loss(recontructed, data)
+        images, _ = batch
+
+        for data in images:
+            augmented = torch.empty(1, 28, 28)
+            augmented[0] = data
+            Fwx = self.classifier(augmented)
+            #print("Fwx vector: ", Fwx, len(Fwx))
+            reconstructed = self(Fwx[0])
+            augmented = nnf.pad(input=augmented, pad=(2, 2, 2, 2))
+            loss = nnf.mse_loss(reconstructed, augmented)
+
+        return loss
         
     def forward(self, Fwx):
-        Fwx = add(vlog(nnf.softmax(Fwx, dim=1)), self.c)
+        Fwx = add(vlog(nnf.softmax(Fwx, dim=0)), self.c)
         #print("Fwx: ", Fwx)
         Fwx = torch.zeros(len(Fwx)).scatter_(0, sort(Fwx.topk(self.t).indices).values, Fwx)
+        Fwx = torch.reshape(Fwx, (10, 1))
+        #print("Forward Fwx:", Fwx, Fwx.size())
         Fwx = Fwx.view(-1, self.nz, 1, 1)
-        Fwx = self.decoder(Fwx).view(-1, 1, 28, 28)
+        Fwx = self.decoder(Fwx)
+        #print("Old size: ", Fwx.size())
+        #Fwx = nnf.pad(input=Fwx, pad=(2, 2, 2, 2))
+        #print("New size: ", Fwx.size())
+        Fwx = Fwx.view(-1, 1, 32, 32)
 
         return Fwx
+        
 
     def configure_optimizers(self):
         """Executes optimization for training and validation"""
