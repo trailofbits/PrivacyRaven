@@ -20,7 +20,6 @@ class InversionModel(pl.LightningModule):
         self.mse_loss = 0
         self.classifier.eval()
         self.train()
-        #self.device = "cuda:0" if device_count() else None
 
         self.decoder = nn.Sequential(
             # input is Z
@@ -75,16 +74,14 @@ class InversionModel(pl.LightningModule):
         return loss
         
     def forward(self, Fwx):
+        
         Fwx = add(Fwx, self.c)
-        #print("Fwx: ", Fwx)
-        Fwx = torch.zeros(len(Fwx)).scatter_(0, sort(Fwx.topk(self.t).indices).values, Fwx)
+        z = torch.zeros(len(Fwx))
+        Fwx = z.scatter_(0, sort(Fwx.topk(self.t).indices).values, Fwx)
         Fwx = torch.reshape(Fwx, (10, 1))
-        #print("Forward Fwx:", Fwx, Fwx.size())
         Fwx = Fwx.view(-1, self.nz, 1, 1)
         Fwx = self.decoder(Fwx)
-        #print("Old size: ", Fwx.size())
-        #Fwx = nnf.pad(input=Fwx, pad=(2, 2, 2, 2))
-        #print("New size: ", Fwx.size())
+
         Fwx = Fwx.view(-1, 1, 32, 32)
 
         return Fwx

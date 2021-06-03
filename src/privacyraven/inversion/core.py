@@ -65,7 +65,6 @@ def joint_train_inversion_model(
     # Given a set of queries to a black box model.  From this, we construct a fully-trained substitute model
     # that approximates 
     # The idea here is that we query the model each time 
-
     forward_model.eval()
 
     # We use NewDataset to synthesize the training and test data, to ensure compatibility with Pytorch Lightning NNs.
@@ -73,8 +72,8 @@ def joint_train_inversion_model(
     relabeled_data = generate_dataset(emnist_train.data[:dataset_len], emnist_train.targets[:dataset_len])
 
     prediction = get_prediction(forward_model, emnist_train[0][0].float())
-    plt.imshow(emnist_train[0][0][0].reshape(28, 28), cmap="gray")
-    plt.show()
+    #plt.imshow(emnist_train[0][0][0].reshape(28, 28), cmap="gray")
+    #plt.show()
     print("Prediction: ", prediction, prediction.size())
     
     # Intermediate tensor dimensions are (1, 10)

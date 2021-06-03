@@ -153,8 +153,8 @@ def convert_to_inference(model):
     """Allows a model to be used in an inference setting"""
     model.freeze()
     model.eval()
-    with suppress(Exception):
-        model.cuda()
+    #with suppress(Exception):
+     #   model.cuda()
     return model
 
 
