@@ -78,7 +78,7 @@ def train_mnist_inversion(
     
     print("Random split: ", rand_split_val)
 
-    train_dataloader, val_dataloader, test_dataloader = get_prob_loaders(hparams, datapoints)
+    train_dataloader, val_dataloader, test_dataloader = get_mnist_loaders(hparams)
     print("INVERSION:", type(train_dataloader), type(val_dataloader), type(test_dataloader))
     # Train, test, and convert the model to inference
     inversion_model = train_and_test_inversion(

@@ -46,7 +46,7 @@ class InversionModel(pl.LightningModule):
         images, _ = batch
 
         for data in images:
-            augmented = torch.empty(1, 28, 28)
+            augmented = torch.empty(1, 1, 28, 28)
             augmented[0] = data
             #print("Augmented size:", augmented.size())
             Fwx = self.classifier(augmented)
@@ -54,6 +54,7 @@ class InversionModel(pl.LightningModule):
             reconstructed = self(Fwx[0])
             augmented = nnf.pad(input=augmented, pad=(2, 2, 2, 2))
             loss = nnf.mse_loss(reconstructed, augmented)
+            self.log("train_loss: ", loss)
 
         return loss
 
@@ -61,18 +62,20 @@ class InversionModel(pl.LightningModule):
         images, _ = batch
 
         for data in images:
-            augmented = torch.empty(1, 28, 28)
+            augmented = torch.empty(1, 1, 28, 28)
             augmented[0] = data
             Fwx = self.classifier(augmented)
             #print("Fwx vector: ", Fwx, len(Fwx))
             reconstructed = self(Fwx[0])
             augmented = nnf.pad(input=augmented, pad=(2, 2, 2, 2))
+            #print(reconstructed.size(), augmented.size())
             loss = nnf.mse_loss(reconstructed, augmented)
+            self.log("test_loss: ", loss)
 
         return loss
         
     def forward(self, Fwx):
-        Fwx = add(vlog(nnf.softmax(Fwx, dim=0)), self.c)
+        Fwx = add(Fwx, self.c)
         #print("Fwx: ", Fwx)
         Fwx = torch.zeros(len(Fwx)).scatter_(0, sort(Fwx.topk(self.t).indices).values, Fwx)
         Fwx = torch.reshape(Fwx, (10, 1))

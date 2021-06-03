@@ -7,6 +7,7 @@ from privacyraven.utils.query import query_model, get_target
 from privacyraven.extraction.core import ModelExtractionAttack
 from privacyraven.extraction.synthesis import process_data
 from privacyraven.utils.model_creation import  NewDataset, set_hparams
+import matplotlib.pyplot as plt
 
 # Create a query function for a target PyTorch Lightning model
 def get_prediction(model, input_data, emnist_dimensions=(1, 28, 28, 1)):
@@ -57,6 +58,7 @@ def joint_train_inversion_model(
         784,  # 28 * 28 or the size of a single image
         emnist_train,
         emnist_test,
+        gpus=0
     ).substitute_model
 
     # Due to PrivacyRaven's black box nature, we first run a model extraction attack 
@@ -71,25 +73,29 @@ def joint_train_inversion_model(
     relabeled_data = generate_dataset(emnist_train.data[:dataset_len], emnist_train.targets[:dataset_len])
 
     prediction = get_prediction(forward_model, emnist_train[0][0].float())
+    plt.imshow(emnist_train[0][0][0].reshape(28, 28), cmap="gray")
+    plt.show()
     print("Prediction: ", prediction, prediction.size())
     
-    # Intermediate tensor dimensions are (2, 10)
+    # Intermediate tensor dimensions are (1, 10)
     
     inversion_model = train_mnist_inversion(
         forward_model,
         gpus=0,
         datapoints=relabeled_data,
         forward_model=forward_model,
-        rand_split_val=[100, 50, 50],
         inversion_params={"nz": 10, "ngf": 128, "affine_shift": 7, "truncate": 3}
     )
 
+    reconstructed = inversion_model(prediction[0])
+    plt.imshow(reconstructed[0][0].reshape(32, 32), cmap="gray")
+    plt.show()
     return inversion_model
     
 if __name__ == "__main__":
     emnist_train, emnist_test = get_emnist_data()
 
-    joint_train_inversion_model(
+    model = joint_train_inversion_model(
         dataset_train=emnist_train,
         dataset_test=emnist_test
     )
