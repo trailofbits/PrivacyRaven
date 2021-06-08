@@ -15,11 +15,6 @@ def get_prediction(model, input_data, emnist_dimensions=(1, 28, 28, 1)):
     prediction, target = query_model(model, input_data, emnist_dimensions)
     return prediction
 
-# Relabels (E)MNIST data via the mapping (784, 10) -> (10, 784)
-# Takes in a tensor of all
-def generate_dataset(img_tensor, Fwx_t_tensor):
-    return NewDataset(img_tensor.float(), Fwx_t_tensor.float())
-
 # Trains the forward and inversion models
 def joint_train_inversion_model(
     input_size = 784,
@@ -27,8 +22,9 @@ def joint_train_inversion_model(
     dataset_train = None,
     dataset_test = None,
     data_dimensions = (1, 28, 28, 1),
-    t = 10,
-    c = 10,
+    t = 3,
+    c = 1,
+    plot=False
     ):
     
     # The following is a proof of concept of Figure 4 from the paper
@@ -39,7 +35,7 @@ def joint_train_inversion_model(
     dataset_len = 200
     # Classifier to assign prediction vector and target based on (E)MNIST training data
     temp_model = train_four_layer_mnist_victim(
-        gpus=0
+        gpus=1
     )
 
     def query_mnist(input_data):
@@ -58,32 +54,33 @@ def joint_train_inversion_model(
         784,  # 28 * 28 or the size of a single image
         emnist_train,
         emnist_test,
-        gpus=0
+        gpus=1
     ).substitute_model
 
-    # Due to PrivacyRaven's black box nature, we first run a model extraction attack 
-    # Given a set of queries to a black box model.  From this, we construct a fully-trained substitute model
-    # that approximates 
-    # The idea here is that we query the model each time 
-    forward_model.eval()
+    # Due to PrivacyRaven's black box threat model, we first run a model extraction attack on the
+    # target classifier to extract and train a fully-trained substitute model, which the user has white-box access to.
+    # Ideally, if the model extraction is successful, then this substitute model should approximate the target classifier
+    # to a reasonable degree of fidelity and accuracy.
+    # We then train the inversion model using the substitute model to query the auxiliary dataset on
+    # under the objective of minimizing the MSE loss between the reconstructed and auxiliary
+    # datapoints.  
 
-    # We use NewDataset to synthesize the training and test data, to ensure compatibility with Pytorch Lightning NNs.
-    # print("EMNIST point 1: ", list(zip(*emnist_train))[0])
-    relabeled_data = generate_dataset(emnist_train.data[:dataset_len], emnist_train.targets[:dataset_len])
 
     prediction = get_prediction(forward_model, emnist_train[0][0].float())
-    #plt.imshow(emnist_train[0][0][0].reshape(28, 28), cmap="gray")
-    #plt.show()
-    print("Prediction: ", prediction, prediction.size())
-    
-    # Intermediate tensor dimensions are (1, 10)
+
+    if plot:
+        plt.imshow(emnist_train[0][0][0].reshape(28, 28), cmap="gray")
+        plt.show()
+        print("Prediction: ", prediction, prediction.size())
+
+
+    # Inversion training process occurs here
     
     inversion_model = train_mnist_inversion(
         forward_model,
-        gpus=0,
-        datapoints=relabeled_data,
+        gpus=1,
         forward_model=forward_model,
-        inversion_params={"nz": 10, "ngf": 128, "affine_shift": 7, "truncate": 3}
+        inversion_params={"nz": 10, "ngf": 128, "affine_shift": c, "truncate": t}
     )
 
     reconstructed = inversion_model(prediction[0])

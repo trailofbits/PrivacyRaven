@@ -149,12 +149,14 @@ def train_and_test(
     return model
 
 
-def convert_to_inference(model):
+def convert_to_inference(model, gpus=0):
     """Allows a model to be used in an inference setting"""
     model.freeze()
     model.eval()
-    #with suppress(Exception):
-     #   model.cuda()
+    if gpus:
+        with suppress(Exception):
+            pass
+            model.cuda()
     return model
 
 

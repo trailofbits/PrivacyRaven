@@ -178,5 +178,5 @@ class ModelExtractionAttack(object):
             self.trainer_args,
         )
         # This may limit the attack to PyTorch Lightning substitutes
-        model = convert_to_inference(model)
+        model = convert_to_inference(model, self.gpus)
         return model

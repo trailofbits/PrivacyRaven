@@ -24,7 +24,6 @@ from privacyraven.utils.model_creation import (
 def train_mnist_inversion(
     classifier,
     transform=None,
-    datapoints=None,
     batch_size=100,
     forward_model=None,
     num_workers=4,
@@ -143,7 +142,7 @@ def train_four_layer_mnist_victim(
     mnist_model = train_and_test(
         FourLayerClassifier, train_dataloader, val_dataloader, test_dataloader, hparams
     )
-    mnist_model = convert_to_inference(mnist_model)
+    mnist_model = convert_to_inference(mnist_model, gpus=gpus)
     return mnist_model
 
 

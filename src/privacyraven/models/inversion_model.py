@@ -18,7 +18,14 @@ class InversionModel(pl.LightningModule):
         self.c = inversion_params["affine_shift"]
         self.t = inversion_params["truncate"]
         self.mse_loss = 0
+
+        # Forces the classifier into evaluation mode
         self.classifier.eval()
+
+        if self.hparams["gpus"]:
+            self.classifier.to("cuda:0")
+
+        # Forces the inversion model into training mode
         self.train()
 
         self.decoder = nn.Sequential(
@@ -47,6 +54,11 @@ class InversionModel(pl.LightningModule):
         for data in images:
             augmented = torch.empty(1, 1, 28, 28)
             augmented[0] = data
+
+
+            if self.hparams["gpus"]:
+                augmented.to("cuda:0")
+
             #print("Augmented size:", augmented.size())
             Fwx = self.classifier(augmented)
             #print("Fwx vector: ", Fwx)
@@ -63,8 +75,11 @@ class InversionModel(pl.LightningModule):
         for data in images:
             augmented = torch.empty(1, 1, 28, 28)
             augmented[0] = data
+
+            if self.hparams["gpus"]:
+                augmented.to("cuda:0")
+
             Fwx = self.classifier(augmented)
-            #print("Fwx vector: ", Fwx, len(Fwx))
             reconstructed = self(Fwx[0])
             augmented = nnf.pad(input=augmented, pad=(2, 2, 2, 2))
             #print(reconstructed.size(), augmented.size())
@@ -74,9 +89,14 @@ class InversionModel(pl.LightningModule):
         return loss
         
     def forward(self, Fwx):
-        
-        Fwx = add(Fwx, self.c)
         z = torch.zeros(len(Fwx))
+        Fwx = add(Fwx, self.c)
+
+        if self.hparams["gpus"]:
+            z.to("cuda:0")
+            Fwx.to("cuda:0")
+
+        # We create a new vector of all zeros and place the top k entries in their original order
         Fwx = z.scatter_(0, sort(Fwx.topk(self.t).indices).values, Fwx)
         Fwx = torch.reshape(Fwx, (10, 1))
         Fwx = Fwx.view(-1, self.nz, 1, 1)
