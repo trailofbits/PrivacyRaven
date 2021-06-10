@@ -22,8 +22,8 @@ def joint_train_inversion_model(
     dataset_train = None,
     dataset_test = None,
     data_dimensions = (1, 28, 28, 1),
-    t = 3,
-    c = 1,
+    t = 5,
+    c = 7,
     plot=False
     ):
     
@@ -80,10 +80,11 @@ def joint_train_inversion_model(
         forward_model,
         gpus=1,
         forward_model=forward_model,
-        inversion_params={"nz": 10, "ngf": 128, "affine_shift": c, "truncate": t}
+        inversion_params={"nz": 10, "ngf": 128, "affine_shift": c, "truncate": t},
+        max_epochs=300,
     )
 
-    reconstructed = inversion_model(prediction[0])
+    reconstructed = inversion_model(prediction[0]).to("cpu")
     plt.imshow(reconstructed[0][0].reshape(32, 32), cmap="gray")
     plt.show()
     return inversion_model
@@ -93,5 +94,5 @@ if __name__ == "__main__":
 
     model = joint_train_inversion_model(
         dataset_train=emnist_train,
-        dataset_test=emnist_test
+        dataset_test=emnist_test,
     )

@@ -48,16 +48,11 @@ class InversionModel(pl.LightningModule):
         )
 
     def training_step(self, batch, batch_idx):
-        #print(len(batch))
         images, _ = batch
 
         for data in images:
-            augmented = torch.empty(1, 1, 28, 28)
+            augmented = torch.empty(1, 1, 28, 28, device=self.device)
             augmented[0] = data
-
-
-            if self.hparams["gpus"]:
-                augmented.to("cuda:0")
 
             #print("Augmented size:", augmented.size())
             Fwx = self.classifier(augmented)
@@ -73,11 +68,8 @@ class InversionModel(pl.LightningModule):
         images, _ = batch
 
         for data in images:
-            augmented = torch.empty(1, 1, 28, 28)
+            augmented = torch.empty(1, 1, 28, 28, device=self.device)
             augmented[0] = data
-
-            if self.hparams["gpus"]:
-                augmented.to("cuda:0")
 
             Fwx = self.classifier(augmented)
             reconstructed = self(Fwx[0])
@@ -89,12 +81,8 @@ class InversionModel(pl.LightningModule):
         return loss
         
     def forward(self, Fwx):
-        z = torch.zeros(len(Fwx))
+        z = torch.zeros(len(Fwx), device=self.device)
         Fwx = add(Fwx, self.c)
-
-        if self.hparams["gpus"]:
-            z.to("cuda:0")
-            Fwx.to("cuda:0")
 
         # We create a new vector of all zeros and place the top k entries in their original order
         Fwx = z.scatter_(0, sort(Fwx.topk(self.t).indices).values, Fwx)
