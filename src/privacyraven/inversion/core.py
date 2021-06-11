@@ -22,7 +22,7 @@ def joint_train_inversion_model(
     dataset_train = None,
     dataset_test = None,
     data_dimensions = (1, 28, 28, 1),
-    gpus=1
+    gpus=1,
     t = 9,
     c = 2,
     plot=False
