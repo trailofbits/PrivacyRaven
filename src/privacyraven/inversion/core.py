@@ -22,8 +22,9 @@ def joint_train_inversion_model(
     dataset_train = None,
     dataset_test = None,
     data_dimensions = (1, 28, 28, 1),
-    t = 5,
-    c = 7,
+    gpus=1
+    t = 9,
+    c = 2,
     plot=False
     ):
     
@@ -35,7 +36,7 @@ def joint_train_inversion_model(
     dataset_len = 200
     # Classifier to assign prediction vector and target based on (E)MNIST training data
     temp_model = train_four_layer_mnist_victim(
-        gpus=1
+        gpus=gpus
     )
 
     def query_mnist(input_data):
@@ -54,7 +55,7 @@ def joint_train_inversion_model(
         784,  # 28 * 28 or the size of a single image
         emnist_train,
         emnist_test,
-        gpus=1
+        gpus=gpus
     ).substitute_model
 
     # Due to PrivacyRaven's black box threat model, we first run a model extraction attack on the
@@ -78,10 +79,10 @@ def joint_train_inversion_model(
     
     inversion_model = train_mnist_inversion(
         forward_model,
-        gpus=1,
+        gpus=gpus,
         forward_model=forward_model,
         inversion_params={"nz": 10, "ngf": 128, "affine_shift": c, "truncate": t},
-        max_epochs=300,
+        max_epochs=120,
     )
 
     reconstructed = inversion_model(prediction[0]).to("cpu")
@@ -95,4 +96,5 @@ if __name__ == "__main__":
     model = joint_train_inversion_model(
         dataset_train=emnist_train,
         dataset_test=emnist_test,
+        gpus=1
     )

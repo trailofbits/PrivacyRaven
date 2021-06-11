@@ -29,22 +29,46 @@ class InversionModel(pl.LightningModule):
         self.train()
 
         self.decoder = nn.Sequential(
-            # input is Z
-            nn.ConvTranspose2d(10, 512, 4, 1, 0),
-            nn.BatchNorm2d(512),
+            nn.ConvTranspose2d(
+                self.nz,
+                self.ngf * 4,
+                stride=(1, 1), 
+                kernel_size=(4, 4)
+            ),
+            nn.BatchNorm2d(self.ngf * 4),
             nn.Tanh(),
-            # state size. (ngf*8) x 4 x 4
-            nn.ConvTranspose2d(512, 256, 4, 2, 1),
-            nn.BatchNorm2d(256),
+
+            nn.ConvTranspose2d(
+                self.ngf * 4,
+                self.ngf * 2,
+                stride=(2, 2), 
+                kernel_size=(4, 4),
+                padding=(1, 1)
+            ),
+
+            nn.BatchNorm2d(self.ngf * 2),
             nn.Tanh(),
-            # state size. (ngf*4) x 8 x 8
-            nn.ConvTranspose2d(256, 128, 4, 2, 1),
-            nn.BatchNorm2d(128),
+            
+            nn.ConvTranspose2d(
+                self.ngf * 2,
+                self.ngf,
+                stride=(2, 2), 
+                kernel_size=(4, 4),
+                padding=(1, 1)
+            ),
+            nn.BatchNorm2d(self.ngf),
             nn.Tanh(),
-            # state size. (ngf) x 32 x 32
-            nn.ConvTranspose2d(128, 1, 4, 2, 1),
+
+            nn.ConvTranspose2d(
+                self.ngf,
+                1,
+                stride=(2, 2), 
+                padding=(1, 1),
+                kernel_size=(4, 4)
+            ),
+
             nn.Sigmoid()
-            # state size. (nc) x 64 x 64
+
         )
 
     def training_step(self, batch, batch_idx):
