@@ -17,14 +17,12 @@ def get_prediction(model, input_data, emnist_dimensions=(1, 28, 28, 1)):
 
 # Trains the forward and inversion models
 def joint_train_inversion_model(
-    input_size = 784,
-    output_size = 784,
     dataset_train = None,
     dataset_test = None,
     data_dimensions = (1, 28, 28, 1),
     gpus=1,
-    t = 9,
-    c = 2,
+    t = 4,
+    c = 4,
     plot=False
     ):
     
@@ -82,7 +80,7 @@ def joint_train_inversion_model(
         gpus=gpus,
         forward_model=forward_model,
         inversion_params={"nz": 10, "ngf": 128, "affine_shift": c, "truncate": t},
-        max_epochs=120,
+        max_epochs=300,
     )
 
     reconstructed = inversion_model(prediction[0]).to("cpu")
