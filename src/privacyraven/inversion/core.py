@@ -76,7 +76,6 @@ def joint_train_inversion_model(
     # Inversion training process occurs here
     
     inversion_model = train_mnist_inversion(
-        forward_model,
         gpus=gpus,
         forward_model=forward_model,
         inversion_params={"nz": 10, "ngf": 128, "affine_shift": c, "truncate": t},
