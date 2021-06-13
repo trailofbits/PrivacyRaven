@@ -110,6 +110,7 @@ def test_inversion_model(
     if save:
         save_inversion_results(image, reconstructed, filename=filename)
 
+    return nnf.mse_loss(image, reconstructed)
 
 if __name__ == "__main__":
     emnist_train, emnist_test = get_emnist_data()
@@ -126,7 +127,7 @@ if __name__ == "__main__":
     for idx in idx_array:
         image = emnist_test[idx][0]
 
-        test_inversion_model(
+        loss = test_inversion_model(
             forward_model,
             inversion_model,
             image,
