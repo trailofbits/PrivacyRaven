@@ -1,3 +1,5 @@
+import os
+import random
 import torch.nn.functional as nnf
 from tqdm import tqdm
 from privacyraven.models.four_layer import FourLayerClassifier
@@ -15,34 +17,41 @@ def get_prediction(model, input_data, emnist_dimensions=(1, 28, 28, 1)):
     prediction, target = query_model(model, input_data, emnist_dimensions)
     return prediction
 
-def plot_inversion_results(image, reconstructed):
+def save_inversion_results(
+    image, 
+    reconstructed, 
+    plot=False, 
+    save_dir="results",
+    filename="recovered"
+):
+    if not os.path.isdir(save_dir):
+        os.mkdir(save_dir)
+
+    # Generates subplots and plots the results
     plt.subplot(1, 2, 1)
     plt.imshow(image[0].reshape(32, 32), cmap="gray")
     plt.title("Ground truth")
     plt.subplot(1, 2, 2)
     plt.imshow(reconstructed[0][0].reshape(32, 32), cmap="gray")
     plt.title("Reconstructed")
-    plt.show()
+    plt.savefig(f"{save_dir}/{filename}.png")
 
+    if plot:
+        plt.show()
 
 # Trains the forward and inversion models
 def joint_train_inversion_model(
-    dataset_train = None,
-    dataset_test = None,
+    dataset_train=None,
+    dataset_test=None,
     data_dimensions = (1, 28, 28, 1),
     gpus=1,
-    t = 5,
-    c = 50,
-    plot=True
-    ):
+    t=5,
+    c=50
+):
     
     # The following is a proof of concept of Figure 4 from the paper
     # "Neural Network Inversion in Adversarial Setting via Background Knowledge Alignment"
-    # We first train a classifier on a dataset to output a prediction vector 
-
-
-    dataset_len = 200
-    # Classifier to assign prediction vector and target based on (E)MNIST training data
+    
     temp_model = train_four_layer_mnist_victim(
         gpus=gpus
     )
@@ -74,11 +83,6 @@ def joint_train_inversion_model(
     # under the objective of minimizing the MSE loss between the reconstructed and auxiliary
     # datapoints.  
 
-
-    image = emnist_train[2][0]
-    prediction = get_prediction(forward_model, image.float())
-    # Inversion training process occurs here
-    
     inversion_model = train_mnist_inversion(
         gpus=gpus,
         forward_model=forward_model,
@@ -87,19 +91,44 @@ def joint_train_inversion_model(
         batch_size=30
     )
 
+    return forward_model, inversion_model
+
+
+def test_inversion_model(
+    forward_model,
+    inversion_model,
+    image, 
+    filename="recovered",
+    save=True
+):
+    prediction = get_prediction(forward_model, image.float())
+
+    # Inversion training process occurs here
     image = nnf.pad(input=image, pad=(2, 2, 2, 2))
     reconstructed = inversion_model(prediction[0]).to("cpu")
 
-    if plot:
-        plot_inversion_results(image, reconstructed)
+    if save:
+        save_inversion_results(image, reconstructed, filename=filename)
 
-    return inversion_model
-    
+
 if __name__ == "__main__":
     emnist_train, emnist_test = get_emnist_data()
 
-    model = joint_train_inversion_model(
+    forward_model, inversion_model = joint_train_inversion_model(
         dataset_train=emnist_train,
         dataset_test=emnist_test,
         gpus=1
     )
+
+    num_test = 30
+    idx_array = random.sample(range(len(emnist_test)), num_test)
+
+    for idx in idx_array:
+        image = emnist_test[idx][0]
+
+        test_inversion_model(
+            forward_model,
+            inversion_model,
+            image,
+            filename=f"recovered_{idx}.png"
+        )
