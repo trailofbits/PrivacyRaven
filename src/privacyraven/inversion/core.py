@@ -15,15 +15,25 @@ def get_prediction(model, input_data, emnist_dimensions=(1, 28, 28, 1)):
     prediction, target = query_model(model, input_data, emnist_dimensions)
     return prediction
 
+def plot_inversion_results(image, reconstructed):
+    plt.subplot(1, 2, 1)
+    plt.imshow(image[0].reshape(32, 32), cmap="gray")
+    plt.title("Ground truth")
+    plt.subplot(1, 2, 2)
+    plt.imshow(reconstructed[0][0].reshape(32, 32), cmap="gray")
+    plt.title("Reconstructed")
+    plt.show()
+
+
 # Trains the forward and inversion models
 def joint_train_inversion_model(
     dataset_train = None,
     dataset_test = None,
     data_dimensions = (1, 28, 28, 1),
     gpus=1,
-    t = 4,
-    c = 4,
-    plot=False
+    t = 5,
+    c = 50,
+    plot=True
     ):
     
     # The following is a proof of concept of Figure 4 from the paper
@@ -65,26 +75,24 @@ def joint_train_inversion_model(
     # datapoints.  
 
 
-    prediction = get_prediction(forward_model, emnist_train[0][0].float())
-
-    if plot:
-        plt.imshow(emnist_train[0][0][0].reshape(28, 28), cmap="gray")
-        plt.show()
-        print("Prediction: ", prediction, prediction.size())
-
-
+    image = emnist_train[2][0]
+    prediction = get_prediction(forward_model, image.float())
     # Inversion training process occurs here
     
     inversion_model = train_mnist_inversion(
         gpus=gpus,
         forward_model=forward_model,
         inversion_params={"nz": 10, "ngf": 128, "affine_shift": c, "truncate": t},
-        max_epochs=300,
+        max_epochs=100,
+        batch_size=30
     )
 
+    image = nnf.pad(input=image, pad=(2, 2, 2, 2))
     reconstructed = inversion_model(prediction[0]).to("cpu")
-    plt.imshow(reconstructed[0][0].reshape(32, 32), cmap="gray")
-    plt.show()
+
+    if plot:
+        plot_inversion_results(image, reconstructed)
+
     return inversion_model
     
 if __name__ == "__main__":

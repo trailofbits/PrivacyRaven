@@ -106,7 +106,7 @@ class InversionModel(pl.LightningModule):
         
     def forward(self, Fwx):
         z = torch.zeros(len(Fwx), device=self.device)
-        Fwx = add(Fwx, self.c)
+        Fwx = add(torch.clamp(Fwx, min=-1000), self.c)
 
         # We create a new vector of all zeros and place the top k entries in their original order
         Fwx = z.scatter_(0, sort(Fwx.topk(self.t).indices).values, Fwx)
