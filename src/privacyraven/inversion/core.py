@@ -21,6 +21,7 @@ def save_inversion_results(
     image, 
     reconstructed, 
     plot=False, 
+    label=None,
     save_dir="results",
     filename="recovered"
 ):
@@ -30,7 +31,7 @@ def save_inversion_results(
     # Generates subplots and plots the results
     plt.subplot(1, 2, 1)
     plt.imshow(image[0].reshape(32, 32), cmap="gray")
-    plt.title("Ground truth")
+    plt.title("Ground truth ({})".format(label))
     plt.subplot(1, 2, 2)
     plt.imshow(reconstructed[0][0].reshape(32, 32), cmap="gray")
     plt.title("Reconstructed")
@@ -63,7 +64,7 @@ def joint_train_inversion_model(
 
     forward_model = ModelExtractionAttack(
         query_mnist,
-        200,  # Less than the number of MNIST data points: 60000
+        1000,  # Less than the number of MNIST data points: 60000
         (1, 28, 28, 1),
         10,
         (3, 1, 28, 28),  # Shape of an EMNIST data point
@@ -88,7 +89,7 @@ def joint_train_inversion_model(
         forward_model=forward_model,
         inversion_params={"nz": 10, "ngf": 128, "affine_shift": c, "truncate": t},
         max_epochs=100,
-        batch_size=30
+        batch_size=100
     )
 
     return forward_model, inversion_model
@@ -99,16 +100,21 @@ def test_inversion_model(
     inversion_model,
     image, 
     filename="recovered",
-    save=True
+    save=True,
+    label=None,
+    debug=True
 ):
     prediction = get_prediction(forward_model, image.float())
+    
+    if debug:
+        print("Prediction vector: ", prediction)
 
     # Inversion training process occurs here
-    image = nnf.pad(input=image, pad=(2, 2, 2, 2))
+    image = nnf.pad(input=image, pad=(2, 2, 2, 2), value=image[0][0][0])
     reconstructed = inversion_model(prediction[0]).to("cpu")
 
     if save:
-        save_inversion_results(image, reconstructed, filename=filename)
+        save_inversion_results(image, reconstructed, label=label, filename=filename)
 
     return nnf.mse_loss(image, reconstructed)
 
@@ -125,11 +131,12 @@ if __name__ == "__main__":
     idx_array = random.sample(range(len(emnist_test)), num_test)
 
     for idx in idx_array:
-        image = emnist_test[idx][0]
+        image, label = emnist_test[idx]
 
         loss = test_inversion_model(
             forward_model,
             inversion_model,
             image,
-            filename=f"recovered_{idx}.png"
+            label=str(label),
+            filename=f"recovered_{idx}"
         )

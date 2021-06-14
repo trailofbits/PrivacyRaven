@@ -22,9 +22,6 @@ class InversionModel(pl.LightningModule):
         # Forces the classifier into evaluation mode
         self.classifier.eval()
 
-        if self.hparams["gpus"]:
-            self.classifier.to("cuda:0")
-
         # Forces the inversion model into training mode
         self.train()
 
@@ -82,7 +79,7 @@ class InversionModel(pl.LightningModule):
             Fwx = self.classifier(augmented)
             #print("Fwx vector: ", Fwx)
             reconstructed = self(Fwx[0])
-            augmented = nnf.pad(input=augmented, pad=(2, 2, 2, 2))
+            augmented = nnf.pad(input=augmented, pad=(2, 2, 2, 2), value=data[0][0][0])
             loss = nnf.mse_loss(reconstructed, augmented)
             self.log("train_loss: ", loss)
 
@@ -97,7 +94,7 @@ class InversionModel(pl.LightningModule):
 
             Fwx = self.classifier(augmented)
             reconstructed = self(Fwx[0])
-            augmented = nnf.pad(input=augmented, pad=(2, 2, 2, 2))
+            augmented = nnf.pad(input=augmented, pad=(2, 2, 2, 2), value=data[0][0][0])
             #print(reconstructed.size(), augmented.size())
             loss = nnf.mse_loss(reconstructed, augmented)
             self.log("test_loss: ", loss)
@@ -106,10 +103,11 @@ class InversionModel(pl.LightningModule):
         
     def forward(self, Fwx):
         z = torch.zeros(len(Fwx), device=self.device)
-        Fwx = add(torch.clamp(Fwx, min=-1000), self.c)
-
+        topk, indices = torch.topk(Fwx, self.t)
+        topk = torch.clamp(topk, min=-1e3) + self.c
+        topk_min = topk.min()
         # We create a new vector of all zeros and place the top k entries in their original order
-        Fwx = z.scatter_(0, sort(Fwx.topk(self.t).indices).values, Fwx)
+        Fwx = z.scatter_(0, indices, topk) + nnf.relu(-topk_min)
         Fwx = torch.reshape(Fwx, (10, 1))
         Fwx = Fwx.view(-1, self.nz, 1, 1)
         Fwx = self.decoder(Fwx)
