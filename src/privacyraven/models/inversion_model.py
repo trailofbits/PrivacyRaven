@@ -75,9 +75,7 @@ class InversionModel(pl.LightningModule):
             augmented = torch.empty(1, 1, 28, 28, device=self.device)
             augmented[0] = data
 
-            #print("Augmented size:", augmented.size())
             Fwx = self.classifier(augmented)
-            #print("Fwx vector: ", Fwx)
             reconstructed = self(Fwx[0])
             augmented = nnf.pad(input=augmented, pad=(2, 2, 2, 2), value=data[0][0][0])
             loss = nnf.mse_loss(reconstructed, augmented)
@@ -95,7 +93,6 @@ class InversionModel(pl.LightningModule):
             Fwx = self.classifier(augmented)
             reconstructed = self(Fwx[0])
             augmented = nnf.pad(input=augmented, pad=(2, 2, 2, 2), value=data[0][0][0])
-            #print(reconstructed.size(), augmented.size())
             loss = nnf.mse_loss(reconstructed, augmented)
             self.log("test_loss: ", loss)
 
@@ -119,7 +116,7 @@ class InversionModel(pl.LightningModule):
 
     def configure_optimizers(self):
         """Executes optimization for training and validation"""
-        return torch.optim.Adam(self.parameters(), 1e-3)
+        return torch.optim.Adam(self.parameters(), 1e-4)
 
 
 

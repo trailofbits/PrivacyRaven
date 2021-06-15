@@ -45,6 +45,7 @@ def joint_train_inversion_model(
     dataset_train=None,
     dataset_test=None,
     data_dimensions = (1, 28, 28, 1),
+    max_epochs=None,
     gpus=1,
     t=5,
     c=50
@@ -88,7 +89,7 @@ def joint_train_inversion_model(
         gpus=gpus,
         forward_model=forward_model,
         inversion_params={"nz": 10, "ngf": 128, "affine_shift": c, "truncate": t},
-        max_epochs=100,
+        max_epochs=max_epochs,
         batch_size=100
     )
 
@@ -124,10 +125,11 @@ if __name__ == "__main__":
     forward_model, inversion_model = joint_train_inversion_model(
         dataset_train=emnist_train,
         dataset_test=emnist_test,
-        gpus=1
+        gpus=1,
+        max_epochs=200
     )
 
-    num_test = 30
+    num_test = 60
     idx_array = random.sample(range(len(emnist_test)), num_test)
 
     for idx in idx_array:
@@ -138,5 +140,6 @@ if __name__ == "__main__":
             inversion_model,
             image,
             label=str(label),
-            filename=f"recovered_{idx}"
+            filename=f"recovered_{idx}",
+            debug=False
         )
