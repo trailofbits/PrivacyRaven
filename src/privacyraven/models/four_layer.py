@@ -2,7 +2,7 @@ import pytorch_lightning as pl
 import torch
 from torch import nn
 from torch.nn import functional as F
-
+import torchmetrics
 
 class FourLayerClassifier(pl.LightningModule):
     """This module describes a neural network with four fully connected layers
@@ -25,9 +25,12 @@ class FourLayerClassifier(pl.LightningModule):
         self.dropout = nn.Dropout(0.4)
 
         # Instantiate accuracy metrics for each phase
-        self.train_acc = pl.metrics.Accuracy()
-        self.valid_acc = pl.metrics.Accuracy()
-        self.test_acc = pl.metrics.Accuracy()
+        self.train_acc = torchmetrics.Accuracy()
+        self.valid_acc = torchmetrics.Accuracy()
+        self.test_acc = torchmetrics.Accuracy()
+        # self.train_acc = pl.metrics.Accuracy()
+        # self.valid_acc = pl.metrics.Accuracy()
+        # self.test_acc = pl.metrics.Accuracy()
 
     def forward(self, x):
         """Executes the forward pass and inference phase"""
@@ -46,8 +49,8 @@ class FourLayerClassifier(pl.LightningModule):
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
         self.log("train_loss", loss)
-        self.train_acc(y_hat, y)
-        self.log("train_accuracy", self.train_acc, on_step=True, on_epoch=False)
+        self.train_acc(torch.nn.functional.softmax(y_hat, dim=1), y)
+        self.log("train_accuracy", self.train_acc) #, on_step=True, on_epoch=False)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -55,9 +58,10 @@ class FourLayerClassifier(pl.LightningModule):
         x, y = batch
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
-        self.log("valid_loss", loss)
-        self.valid_acc(y_hat, y)
-        self.log("valid_accuracy", self.valid_acc, on_step=True, on_epoch=True)
+        self.log("valid_loss", loss) 
+        self.valid_acc(torch.nn.functional.softmax(y_hat, dim=1), y)
+        # self.valid_acc(y_hat, y)
+        self.log("valid_accuracy", self.valid_acc) #, on_step=True, on_epoch=True)
 
     def test_step(self, batch, batch_idx):
         """Tests the network"""
@@ -65,9 +69,12 @@ class FourLayerClassifier(pl.LightningModule):
         y_hat = self(x)
         loss = F.cross_entropy(y_hat, y)
         self.log("test_loss", loss)
-        self.test_acc(y_hat, y)
-        self.log("test_accuracy", self.test_acc, on_step=True, on_epoch=False)
+        self.test_acc(torch.nn.functional.softmax(y_hat, dim=1), y)
+        # self.test_acc(y_hat, y)
+        self.log("test_accuracy", self.test_acc) #, on_step=True, on_epoch=False)
 
     def configure_optimizers(self):
         """Executes optimization for training and validation"""
         return torch.optim.Adam(self.parameters(), self.hparams["learning_rate"])
+
+

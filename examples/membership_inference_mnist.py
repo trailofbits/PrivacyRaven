@@ -7,7 +7,7 @@ import privacyraven as pr
 
 from privacyraven.utils.data import get_emnist_data, get_mnist_data
 #from privacyraven.extraction.core import ModelExtractionAttack
-from privacyraven.membership_inf.core import TransferMembershipInferenceAttack
+# from privacyraven.membership_inf.core import TransferMembershipInferenceAttack
 from privacyraven.utils.query import get_target, query_model
 from privacyraven.models.victim import train_four_layer_mnist_victim
 from privacyraven.models.four_layer import FourLayerClassifier
@@ -28,12 +28,13 @@ emnist_train, emnist_test = get_emnist_data()
 
 mnist_train, mnist_val, mnist_test = get_mnist_data()
 
-# a, b = query_model(model, mnist_train[0][0], (1, 28, 28, 1))
+a, b = query_model(model, mnist_train[0][0], (1, 28, 28, 1))
 
-# print(a)
-# print("Then")
-# print(b)
+print(a.shape)
+print("Then")
+print(b.shape)
 
+"""
 # Run a model extraction attack
 attack = TransferMembershipInferenceAttack(
     mnist_train[0][0],
@@ -50,3 +51,4 @@ attack = TransferMembershipInferenceAttack(
 )
 
 # print(attack.__dict__)
+"""
