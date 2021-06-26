@@ -30,8 +30,8 @@ def save_inversion_results(
 
     # Generates subplots and plots the results
     plt.subplot(1, 2, 1)
-    plt.imshow(image[0].reshape(32, 32), cmap="gray")
-    plt.title("Ground truth ({})".format(label))
+    plt.imshow(image[0], cmap="gray")
+    plt.title("Auxiliary set ({})".format(label))
     plt.subplot(1, 2, 2)
     plt.imshow(reconstructed[0][0].reshape(32, 32), cmap="gray")
     plt.title("Reconstructed")
@@ -126,10 +126,10 @@ if __name__ == "__main__":
         dataset_train=emnist_train,
         dataset_test=emnist_test,
         gpus=1,
-        max_epochs=200
+        max_epochs=300
     )
 
-    num_test = 60
+    num_test = 250
     idx_array = random.sample(range(len(emnist_test)), num_test)
 
     for idx in idx_array:

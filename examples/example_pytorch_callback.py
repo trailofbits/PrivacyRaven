@@ -9,6 +9,7 @@ Users should refer to https://pytorch-lightning-bolts.readthedocs.io/en/latest/c
 Pytorch Lightning Bolt callbacks.
 """
 import privacyraven as pr
+import torch
 from privacyraven.utils.data import get_emnist_data
 from pl_bolts.callbacks import PrintTableMetricsCallback
 from privacyraven.extraction.core import ModelExtractionAttack
