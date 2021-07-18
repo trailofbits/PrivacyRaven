@@ -47,7 +47,7 @@ def joint_train_inversion_model(
     data_dimensions = (1, 28, 28, 1),
     max_epochs=None,
     gpus=1,
-    t=5,
+    t=1,
     c=50
 ):
     
@@ -72,8 +72,8 @@ def joint_train_inversion_model(
         "copycat", # "copycat",
         FourLayerClassifier,
         784,  # 28 * 28 or the size of a single image
-        emnist_train,
-        emnist_test,
+        dataset_train,
+        dataset_test,
         gpus=gpus
     ).substitute_model
 
@@ -129,7 +129,7 @@ if __name__ == "__main__":
         max_epochs=300
     )
 
-    num_test = 250
+    num_test = 50
     idx_array = random.sample(range(len(emnist_test)), num_test)
 
     for idx in idx_array:
