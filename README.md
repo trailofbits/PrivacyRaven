@@ -114,3 +114,12 @@ While PrivacyRaven was built upon a [plethora of research](https://github.com/st
 + [Neural Network Inversion in Adversarial Setting via Background Knowledge Alignment](https://dl.acm.org/doi/pdf/10.1145/3319535.3354261?casa_token=lDNQ40-4Wa4AAAAA%3Ap9olQ3qMdDZ0n2sl-nNIgk4sOuLRMBTGVTxycZ5wjGpnFPf5lTz-MYw0e8ISggSseHC9T46it5yX)
 + [Copycat CNN: Stealing Knowledge by Persuading Confession with Random Non-Labeled Data](https://ieeexplore.ieee.org/document/8489592)
 + [Knockoff Nets: Stealing Functionality of Black-Box Models](https://arxiv.org/abs/1812.02766)
+
+## Appearances 
+
+This is a list of publications, presentations, blog posts, and other public-facing media discussing PrivacyRaven. 
+
++ [PrivacyRaven: Implementing a proof of concept for model inversion. Trail of Bits Blog](https://www.trailofbits.com/post/privacyraven-implementing-proof-of-concept-model-inversion)
++ [PrivacyRaven: Comprehensive Privacy Testing for Deep Learning. OpenMined Privacy Conference](https://www.youtube.com/watch?v=F46lX5VIoas&list=PLUNOsx6Az_ZGKQd_p4StdZRFQkCBwnaY6&t=8510s)
++ [PrivacyRaven: Comprehensive Privacy Testing for Deep Learning. Empire Hacking](https://www.youtube.com/watch?v=tKFc0ZsWNX4)
++ [PrivacyRaven: Comprehensive Privacy Testing for Deep Learning. Trail of Bits Blog](https://blog.trailofbits.com/2020/10/08/privacyraven-has-left-the-nest/)
