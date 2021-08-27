@@ -1,5 +1,5 @@
 <p align="center">
- <img swidth="300" height="300" src="images/cropped.png">
+ <img swidth="600" height="300" src="images/privacyraven_logo.jpeg">
 </p>
 <hr style="height:5px"/>
 
