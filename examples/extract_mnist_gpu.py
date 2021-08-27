@@ -39,4 +39,8 @@ attack = ModelExtractionAttack(
     emnist_test,
 )
 
-# print(attack.__dict__)
+print(attack.__dict__)
+subs = attack.substitute_model.__dict__
+print(subs)
+tester = subs.get('test_dataloader')
+print(tester.__dict__)

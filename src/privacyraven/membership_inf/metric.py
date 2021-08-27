@@ -1,3 +1,4 @@
+"""
 import numbers
 from privacyraven.extraction.synthesis import process_data
 #metric_functions = ["aucroc"]
@@ -43,6 +44,17 @@ def prediction_correctness(data_point, query_substitute,
 
 @register_metric
 def prediction_loss(data_point, query_substitute,
-                           substitute_model, extraction_attack, loss=None.,
+                           substitute_model, extraction_attack, loss=None,
                            threshold=None):
+    if loss(data_point) > threshold:
+        return "This data point is not likely to be a member of the training
+    dataset."
+    else:
+        return "This data point is likely a member of the training dataset."
 
+
+@register_metric
+def prediction_confidence(data_point, query_substitute,
+                           substitute_model, extraction_attack, loss=None,
+                           threshold=None):
+"""
