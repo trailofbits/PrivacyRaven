@@ -4,12 +4,14 @@ from sklearn.neural_network import MLPClassifier
 import torch
 from torch.cuda import device_count
 import copy
-# from sklearn.metrics import log_loss
+import sklearn.metrics as metrics
+#from sklearn.metrics import roc_auc_score
 from privacyraven.extraction.core import ModelExtractionAttack
-from privacyraven.membership_inf.robustness import find_robustness
+#from privacyraven.membership_inf.robustness import find_robustness
+from privacyraven.membership_inf.threshold import calculate_threshold_value
 from privacyraven.utils.query import establish_query, get_target, query_model
 from privacyraven.models.pytorch import ImagenetTransferLearning
-
+import torchmetrics
 
 @attr.s
 class TransferMembershipInferenceAttack(object):
@@ -26,7 +28,8 @@ class TransferMembershipInferenceAttack(object):
     substitute_input_size = attr.ib(default=1000)
     seed_data_train = attr.ib(default=None)
     seed_data_test = attr.ib(default=None)
-    test_data = attr.ib(default=None)
+    threshold = attr.ib(default=None)
+    # test_data = attr.ib(default=None)
 
     transform = attr.ib(default=None)
     batch_size = attr.ib(default=100)
@@ -38,6 +41,9 @@ class TransferMembershipInferenceAttack(object):
     callback = attr.ib(default=None)
     trainer_args = attr.ib(default=None)
 
+    extraction_attack = attr.ib(init=False)
+    substitute_model = attr.ib(init=False)
+    query_substitute = attr.ib(init=False)
 
     def __attrs_post_init__(self):
         self.query = establish_query(self.query, self.victim_input_shape)
@@ -47,31 +53,37 @@ class TransferMembershipInferenceAttack(object):
 
         config = attr.asdict(self)
         extract_args = copy.deepcopy(config)
+        # print(extract_args)
         extract_args.pop("data_point")
+        extract_args.pop("threshold")
         extract_args = extract_args.values()
 
-        extraction = ModelExtractionAttack(*extract_args)
-        substitute = extraction.substitute_model
+        self.extraction_attack = ModelExtractionAttack(*extract_args)
+        self.substitute_model = extraction.substitute_model
 
-        query_substitute = lambda x: query_model(substitute, x, self.substitute_input_shape)
+        self.query_substitute = lambda x: query_model(substitute, x, self.substitute_input_shape)
         pred, target = query_substitute(self.data_point)
-        print("Generating")
-        print(pred.shape)
-        print(target.shape)
-        print("Using loss")
-        target = torch.nn.functional.one_hot(target, self.victim_output_targets)
 
-        loss = torch.nn.BCELoss()
-        pred = torch.transpose(pred, 0, 1)
-        target = target.unsqueeze(1)
-        
-        pred = pred.float().cpu()
-        target = target.float().cpu()
-        print(pred.shape)
-        print(target.shape)
-        output = loss(pred, target)
+        # target = target.unsqueeze(0)
+        # output = torch.nn.functional.cross_entropy(pred, target)
 
+        # t_pred, t_target = query_substitute(self.seed_data_train)
 
-        # output = log_loss(target, pred)
-        print(output)
+        # We need diff formats for threshold: #, function, string (?) 
+
+        # threshold = torch.nn.functional.cross_entropy()
+        # print("Cross Entropy Loss is: " + output)
+        # print("AUROC is: " + auroc)
+
+        # We need multiple: binary classifier & threshold 
+        # This maps to attackNN-based and metric-based attacks
+        if threshold = None:
+            binary_classifier = True
+        else:
+            binary_classifier = False
+            tr = calculate_threshold_value(threshold)
+
+        # Threshold value must be number, string in list of functions, OR
+        # function
+
 
