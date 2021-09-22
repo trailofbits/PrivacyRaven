@@ -1,6 +1,4 @@
-<p align="center">
- <img swidth="300" height="300" src="images/cropped.png">
-</p>
+![PrivacyRaven Logo](https://github.com/trailofbits/PrivacyRaven/blob/master/images/privacyraven_logo.jpeg) 
 <hr style="height:5px"/>
 
 **PrivacyRaven** is a privacy testing library for deep learning systems.
@@ -82,6 +80,8 @@ Additionally, if you'd like to run PrivacyRaven in a Docker container, run `chmo
 Feel free to join our #privacyraven channel in [Empire Hacking](https://empireslacking.herokuapp.com/) if you need help using or extending PrivacyRaven.
 The official pip release will arrive soon.
 
+Please note that PrivacyRaven is still early in development and is undergoing rapid changes. Users are advised to update frequently and avoid applying PrivacyRaven to critical use cases. 
+
 ## Want to contribute to PrivacyRaven?
 
 PrivacyRaven is still a work-in-progress.
@@ -111,7 +111,16 @@ For an exception to the terms, please [contact us](mailto:opensource@trailofbits
 While PrivacyRaven was built upon a [plethora of research](https://github.com/stratosphereips/awesome-ml-privacy-attacks) on attacking machine learning privacy, the research most critical to the development of PrivacyRaven are:
 
 + [A Survey of Privacy Attacks in Machine Learning](https://arxiv.org/abs/2007.07646)
-+ [Label-Only Membership Inference Attacks](https://arxiv.org/abs/2007.143210)
++ [Membership Inference Attacks on Machine Learning: A Survey](https://arxiv.org/abs/2103.07853)
 + [Neural Network Inversion in Adversarial Setting via Background Knowledge Alignment](https://dl.acm.org/doi/pdf/10.1145/3319535.3354261?casa_token=lDNQ40-4Wa4AAAAA%3Ap9olQ3qMdDZ0n2sl-nNIgk4sOuLRMBTGVTxycZ5wjGpnFPf5lTz-MYw0e8ISggSseHC9T46it5yX)
 + [Copycat CNN: Stealing Knowledge by Persuading Confession with Random Non-Labeled Data](https://ieeexplore.ieee.org/document/8489592)
 + [Knockoff Nets: Stealing Functionality of Black-Box Models](https://arxiv.org/abs/1812.02766)
+
+## Appearances 
+
+This is a list of publications, presentations, blog posts, and other public-facing media discussing PrivacyRaven. 
+
++ [PrivacyRaven: Implementing a proof of concept for model inversion. Trail of Bits Blog](https://www.trailofbits.com/post/privacyraven-implementing-proof-of-concept-model-inversion)
++ [PrivacyRaven: Comprehensive Privacy Testing for Deep Learning. OpenMined Privacy Conference](https://www.youtube.com/watch?v=F46lX5VIoas&list=PLUNOsx6Az_ZGKQd_p4StdZRFQkCBwnaY6&t=8510s)
++ [PrivacyRaven: Comprehensive Privacy Testing for Deep Learning. Empire Hacking](https://www.youtube.com/watch?v=tKFc0ZsWNX4)
++ [PrivacyRaven: Comprehensive Privacy Testing for Deep Learning. Trail of Bits Blog](https://blog.trailofbits.com/2020/10/08/privacyraven-has-left-the-nest/)
