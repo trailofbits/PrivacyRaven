@@ -37,9 +37,10 @@ class FourLayerClassifier(pl.LightningModule):
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
         # Add softmax to obtain probability vector
+        x = F.softmax(x)
         x = self.dropout(x)
         x = self.fc4(x)
-        return x
+        return F.softmax(x)
 
     def training_step(self, batch, batch_idx):
         """Runs the training loop"""
