@@ -1,4 +1,5 @@
 import privacyraven as pr
+import torch
 from privacyraven.extraction.synthesis import register_synth
 from privacyraven.utils.data import get_emnist_data
 from privacyraven.extraction.core import ModelExtractionAttack

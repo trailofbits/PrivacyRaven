@@ -86,4 +86,3 @@ class TransferMembershipInferenceAttack(object):
         # Threshold value must be number, string in list of functions, OR
         # function
 
-

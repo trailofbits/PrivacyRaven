@@ -73,6 +73,44 @@ def set_hparams(
     hparams["targets"] = targets
     return hparams
 
+def train_and_test_inversion(
+    classifier,
+    inversion_model,
+    train_dataloader,
+    val_dataloader,
+    test_dataloader,
+    hparams,
+    inversion_params,
+    callback=None,
+    trainer_args=None,
+):
+    """Trains, validates, and tests a PyTorch Lightning model"""
+    model = inversion_model(hparams, inversion_params, classifier)
+    # model = classifier(hparams, inversion_params, classifier)
+    # We need to configure how the Trainer interprets callbacks and extra arguments.
+    # This should be refactored to be more dynamic and priorize the most common cases.
+    if callback is not None and trainer_args is not None:
+        trainer = pl.Trainer(
+            gpus=hparams["gpus"],
+            max_epochs=hparams["max_epochs"],
+            callbacks=[callback],
+            **trainer_args
+        )
+    elif callback is not None and trainer_args is None:
+        trainer = pl.Trainer(
+            gpus=hparams["gpus"], max_epochs=hparams["max_epochs"], callbacks=[callback]
+        )
+    elif callback is None and trainer_args is None:
+        trainer = pl.Trainer(gpus=hparams["gpus"], max_epochs=hparams["max_epochs"])
+    elif callback is None and trainer_args is not None:
+        trainer = pl.Trainer(
+            gpus=hparams["gpus"], max_epochs=hparams["max_epochs"], **trainer_args
+        )
+
+    # Runs training, validation, and testing
+    trainer.fit(model, train_dataloader, val_dataloader)
+    trainer.test(model, test_dataloaders=test_dataloader)
+    return model
 
 def train_and_test(
     classifier,
@@ -111,12 +149,14 @@ def train_and_test(
     return model
 
 
-def convert_to_inference(model):
+def convert_to_inference(model, gpus=0):
     """Allows a model to be used in an inference setting"""
     model.freeze()
     model.eval()
-    with suppress(Exception):
-        model.cuda()
+    if gpus:
+        with suppress(Exception):
+            pass
+            model.cuda()
     return model
 
 
