@@ -27,7 +27,7 @@ pytorch-lightning-bolts = "0.2.5"
 
 hypothesis = "^5.41.1"
 jupyter = "^1.0.0"
-jupyterlab = "^1.2.0"
+jupyterlab = "^1.2.21"
 wheel = "^0.36.2"
 scalene = "^1.1.12"
 memory_profiler = "^0.58.0"
